@@ -1,0 +1,52 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.mypy_cache/
+.pytest_cache/
+instance/
+.env
+*.sqlite3
+
+# Flask Migrations
+migrations/
+
+# Node.js
+node_modules/
+dist/
+.build/
+.cache/
+
+# Logs & Temporary Files
+logs/
+*.log
+*.out
+*.pid
+*.swp
+*.swo
+*.swn
+*.DS_Store
+*.bak
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Environment & Secrets
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Byte-compiled / optimized files
+*.egg-info/
+*.egg/
+*.manifest
+*.spec
+
+# Package managers
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
