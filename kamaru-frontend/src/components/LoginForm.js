@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { loginUser } from "../api";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
   });
+  const navigate = useNavigate(); // Hook for navigation
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -15,11 +17,22 @@ const LoginForm = () => {
     e.preventDefault();
     loginUser(credentials)
       .then((response) => {
-        const token = response.data.token;
-        localStorage.setItem("token", token); // Save token for authenticated requests
+        const { token, is_admin } = response.data;
+        localStorage.setItem("token", token);
+        localStorage.setItem("is_admin", is_admin); // Store admin status
         alert("Login successful!");
+  
+        // Redirect based on user role
+        if (is_admin) {
+          navigate("/admin");
+        } else {
+          navigate("/"); // Redirect regular users to the home page
+        }
       })
-      .catch((error) => console.error("Error logging in:", error));
+      .catch((error) => {
+        console.error("Error logging in:", error);
+        alert("Login failed. Please check your credentials.");
+      });
   };
 
   return (

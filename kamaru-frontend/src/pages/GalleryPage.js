@@ -1,3 +1,4 @@
+// filepath: /home/kamaru/kamaru-frontend/src/pages/GalleryPage.js
 import React from "react";
 import Gallery from "../components/Gallery";
 

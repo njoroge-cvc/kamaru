@@ -1,3 +1,4 @@
+// filepath: /home/kamaru/kamaru-frontend/src/pages/VideosPage.js
 import React from "react";
 import Videos from "../components/Videos";
 

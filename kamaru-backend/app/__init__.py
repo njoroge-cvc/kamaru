@@ -39,6 +39,6 @@ from app.routes import user_routes, event_routes, participant_routes, gallery_ro
 
 app.register_blueprint(user_routes.bp, url_prefix="/api/users")
 app.register_blueprint(event_routes.bp, url_prefix="/api/events")
-app.register_blueprint(participant_routes.bp, url_prefix="/api/participants")
+app.register_blueprint(participant_routes.bp, url_prefix="/api")
 app.register_blueprint(gallery_routes.bp, url_prefix="/api/gallery")
 app.register_blueprint(video_routes.bp, url_prefix="/api/videos")
