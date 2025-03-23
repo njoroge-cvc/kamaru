@@ -41,7 +41,9 @@ def upload_image():
 @bp.route("/", methods=["GET"])
 def get_gallery():
     images = Gallery.query.order_by(Gallery.uploaded_at.desc()).all()
-    return jsonify([image.to_dict() for image in images]) if images else jsonify({"error": "No images found"}), 404
+    if images:
+        return jsonify({"images": [image.to_dict() for image in images]}), 200
+    return jsonify({"message": "No images found"}), 404
 
 # Admin: Delete Image
 @bp.route("/<int:image_id>", methods=["DELETE"])

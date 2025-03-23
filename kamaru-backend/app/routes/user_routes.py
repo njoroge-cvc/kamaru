@@ -11,6 +11,8 @@ bp = Blueprint("user_routes", __name__)
 @jwt_required(optional=True) # if no token is provided, user is registered as a regular user
 def register():
     data = request.get_json() # Get data from request
+    print("incoming data", data) # Debugging
+
     username = data.get("username")
     email = data.get("email")
     password = data.get("password")
@@ -62,16 +64,5 @@ def login():
 @jwt_required()
 @admin_required
 def admin_dashboard():
-    return jsonify({"message": "Welcome, Admin!"})
-
-# Protected Route Example
-@bp.route("/profile", methods=["GET"])
-@jwt_required()
-def profile():
-    user_id = get_jwt_identity()
-    user = User.query.get(user_id)
-
-    if not user:
-        return jsonify({"error": "User not found"}), 404
-
-    return jsonify(user.to_dict())
+    current_user = get_jwt_identity()
+    return jsonify({"message": "Welcome to the admin dashboard!"}), 200

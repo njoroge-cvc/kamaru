@@ -19,7 +19,6 @@ ALLOWED_CATEGORIES = ["Poetry", "Folk Songs", "Original Songs", "Rendition", "Us
 @bp.route("/register", methods=["POST"])
 def register_participant():
     data = request.get_json()
-    
     name = data.get("name")
     email = data.get("email")
     phone = data.get("phone")
