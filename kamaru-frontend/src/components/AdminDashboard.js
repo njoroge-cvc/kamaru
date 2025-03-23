@@ -26,11 +26,11 @@ const AdminDashboard = () => {
       <h1>Admin Dashboard</h1>
       <nav>
         <ul>
-          <li><Link to="events">Manage Events</Link></li>
-          <li><Link to="participants">Manage Participants</Link></li>
-          <li><Link to="gallery">Manage Gallery</Link></li>
-          <li><Link to="videos">Manage Videos</Link></li>
-          <li><Link to="users">Manage Users</Link></li>
+          <li><Link to="/admin/events">Manage Events</Link></li>
+          <li><Link to="/admin/participants">Manage Participants</Link></li>
+          <li><Link to="/admin/gallery">Manage Gallery</Link></li>
+          <li><Link to="/admin/videos">Manage Videos</Link></li>
+          <li><Link to="/admin/users">Manage Users</Link></li>
         </ul>
       </nav>
       <Routes>
