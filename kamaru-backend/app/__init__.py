@@ -13,6 +13,9 @@ load_dotenv()
 # Initialize Flask app
 app = Flask(__name__)
 
+app.config["BREVO_API_KEY"] = os.getenv("BREVO_API_KEY")
+app.config["BREVO_SENDER_EMAIL"] = os.getenv("BREVO_SENDER_EMAIL")
+
 # Configure Cloudinary using CLOUDINARY_URL from .env
 cloudinary.config(
     cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
@@ -32,13 +35,14 @@ app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 jwt = JWTManager(app)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Import and register routes
-from app.routes import user_routes, event_routes, participant_routes, gallery_routes, video_routes
+from app.routes import user_routes, event_routes, participant_routes, gallery_routes, video_routes, stat_routes
 
 app.register_blueprint(user_routes.bp, url_prefix="/api/users")
-app.register_blueprint(event_routes.bp, url_prefix="/api/events")
-app.register_blueprint(participant_routes.bp, url_prefix="/api")
+app.register_blueprint(event_routes.bp, url_prefix="/api/events", strict_slashes=False)
+app.register_blueprint(stat_routes.bp, url_prefix="/api/stats")
+app.register_blueprint(participant_routes.bp, url_prefix="/api/participants")
 app.register_blueprint(gallery_routes.bp, url_prefix="/api/gallery")
 app.register_blueprint(video_routes.bp, url_prefix="/api/videos")

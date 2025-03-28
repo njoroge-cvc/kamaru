@@ -1,9 +1,9 @@
 from functools import wraps
 from flask import jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
-from app.models.user import User
+from app.models.user import User # Import the User model from app.models.user module to access the User class
 
-def admin_required(f):
+def admin_required(f): # Decorator function that takes a function as an argument and returns a new function that checks if the user is an admin
     @wraps(f)
     @jwt_required()
     def decorated_function(*args, **kwargs):

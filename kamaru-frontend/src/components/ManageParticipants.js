@@ -2,222 +2,307 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   fetchParticipants,
-  registerParticipant,
+  adminRegisterParticipant,
   updateParticipant,
   deleteParticipant,
 } from "../api";
+import { FaEdit, FaTrash, FaPlus, FaTimes } from "react-icons/fa";
 
 const ManageParticipants = ({ isAdmin }) => {
   const navigate = useNavigate();
-  const [participants, setParticipants] = useState([]);
+  const [participants, setParticipants] = useState([]); // State to store participants
   const [newParticipant, setNewParticipant] = useState({
     name: "",
     email: "",
     phone: "",
     category: "",
-  });
-  const [editingParticipant, setEditingParticipant] = useState(null); // For editing a participant
-  const [loading, setLoading] = useState(true);
+  }); // State for new participant form
+  const [editingParticipant, setEditingParticipant] = useState(null); // State for participant being edited
+  const [showEditModal, setShowEditModal] = useState(false); // State to toggle edit modal visibility
 
-  // Check if the user is logged in
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("You must be logged in to access this page.");
-      navigate("/login"); // Redirect to login page
-    }
-  }, [navigate]);
+  // Categories for participants
+  const categories = [
+    "Poetry",
+    "Folk Songs",
+    "Original Songs",
+    "Rendition",
+    "Use of African Proverbs in Spoken Word",
+  ];
 
-  // Fetch all participants on component mount (admin-only)
+  // Fetch participants when the component loads
   useEffect(() => {
-    if (isAdmin) {
+    if (!isAdmin) {
+      alert("Unauthorized access.");
+      navigate("/");
+    } else {
       fetchParticipants()
-        .then((response) => {
-          console.log("Participants fetched successfully:", response.data);
-          setParticipants(response.data);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error("Error fetching participants:", error);
-          setLoading(false);
-        });
+        .then((response) => setParticipants(response.data))
+        .catch((error) => console.error("Error fetching participants:", error));
     }
-  }, [isAdmin]);
+  }, [isAdmin, navigate]);
 
-  // Handle creating a new participant
+  // Handle form submission for creating a new participant
   const handleCreateParticipant = (e) => {
-    e.preventDefault(); // Prevent the default form submission behavior
-  
-    registerParticipant(newParticipant) // Call the API to register the participant
+    e.preventDefault();
+    adminRegisterParticipant(newParticipant)
       .then(() => {
-        alert("Participant registered successfully!"); // Notify the admin
-        setNewParticipant({ name: "", email: "", phone: "", category: "" }); // Reset the form
+        alert("Participant registered successfully!");
+        setNewParticipant({ name: "", email: "", phone: "", category: "" }); // Reset form
+        fetchParticipants().then((response) => setParticipants(response.data)); // Refresh participants list
       })
-      .catch((error) => console.error("Error creating participant:", error)); // Log any errors
+      .catch((error) => {
+        alert("Error registering participant.");
+        console.error(error);
+      });
   };
 
-
-  // Handle updating a participant
+  // Handle form submission for updating an existing participant
   const handleUpdateParticipant = (e) => {
     e.preventDefault();
-
     updateParticipant(editingParticipant.id, editingParticipant)
-      .then((response) => {
+      .then(() => {
         alert("Participant updated successfully!");
         setParticipants(
-          participants.map((participant) =>
-            participant.id === editingParticipant.id
-              ? response.data.participant
-              : participant
+          participants.map((p) =>
+            p.id === editingParticipant.id ? editingParticipant : p
           )
-        );
-        setEditingParticipant(null); // Exit edit mode
+        ); // Update participant in the list
+        setShowEditModal(false); // Close modal
       })
-      .catch((error) => console.error("Error updating participant:", error));
+      .catch((error) => {
+        alert("Error updating participant.");
+        console.error(error);
+      });
   };
 
-  // Handle deleting a participant (admin-only)
+  // Handle deleting a participant
   const handleDeleteParticipant = (participantId) => {
-    deleteParticipant(participantId)
-      .then(() => {
-        alert("Participant deleted successfully!");
-        setParticipants(
-          participants.filter((participant) => participant.id !== participantId)
-        );
-      })
-      .catch((error) => console.error("Error deleting participant:", error));
+    if (window.confirm("Are you sure you want to delete this participant?")) {
+      deleteParticipant(participantId)
+        .then(() => {
+          alert("Participant deleted successfully!");
+          setParticipants(participants.filter((p) => p.id !== participantId)); // Remove participant from the list
+        })
+        .catch((error) => {
+          alert("Error deleting participant.");
+          console.error(error);
+        });
+    }
   };
-
-  if (loading && isAdmin) {
-    return <p>Loading participants...</p>;
-  }
 
   return (
-    <div>
-      <h2>{isAdmin ? "Manage Participants" : "Register Participant on Behalf"}</h2>
+    <div className="p-6 bg-white shadow-md rounded-md">
+      {/* Page Title */}
+      <h2 className="text-2xl font-semibold text-[#8F3B1B] mb-4">
+        Manage Participants
+      </h2>
 
-      {/* Create Participant Form */}
-{isAdmin && (
-  <form onSubmit={handleCreateParticipant}>
-    <h3>Register Participant on Behalf</h3>
-    <input
-      type="text"
-      placeholder="Name"
-      value={newParticipant.name}
-      onChange={(e) =>
-        setNewParticipant({ ...newParticipant, name: e.target.value })
-      }
-      required
-    />
-    <input
-      type="email"
-      placeholder="Email"
-      value={newParticipant.email}
-      onChange={(e) =>
-        setNewParticipant({ ...newParticipant, email: e.target.value })
-      }
-      required
-    />
-    <input
-      type="text"
-      placeholder="Phone"
-      value={newParticipant.phone}
-      onChange={(e) =>
-        setNewParticipant({ ...newParticipant, phone: e.target.value })
-      }
-      required
-    />
-    <input
-      type="text"
-      placeholder="Category"
-      value={newParticipant.category}
-      onChange={(e) =>
-        setNewParticipant({ ...newParticipant, category: e.target.value })
-      }
-      required
-    />
-    <button type="submit">Register</button>
-  </form>
-)}
-      
-      {/* Admin-only: List of Participants */}
-      {isAdmin && (
-        <>
-          <h3>Existing Participants</h3>
-          <ul>
-            {participants.map((participant) => (
-              <li key={participant.id}>
-                <strong>{participant.name}</strong> - {participant.email} -{" "}
-                {participant.phone} - {participant.category}
-                <button onClick={() => setEditingParticipant(participant)}>
-                  Edit
-                </button>
-                <button onClick={() => handleDeleteParticipant(participant.id)}>
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-
-      {/* Edit Participant Form */}
-      {editingParticipant && (
-        <form onSubmit={handleUpdateParticipant}>
-          <h3>Edit Participant</h3>
+      {/* Add Participant Form */}
+      <form onSubmit={handleCreateParticipant} className="mb-6 space-y-4">
+        <div className="grid md:grid-cols-2 gap-4">
+          {/* Name Input */}
           <input
             type="text"
             placeholder="Name"
-            value={editingParticipant.name}
+            value={newParticipant.name}
             onChange={(e) =>
-              setEditingParticipant({
-                ...editingParticipant,
-                name: e.target.value,
-              })
+              setNewParticipant({ ...newParticipant, name: e.target.value })
             }
             required
+            className="border border-gray-300 p-2 rounded-md w-full"
           />
+          {/* Email Input */}
           <input
             type="email"
             placeholder="Email"
-            value={editingParticipant.email}
+            value={newParticipant.email}
             onChange={(e) =>
-              setEditingParticipant({
-                ...editingParticipant,
-                email: e.target.value,
-              })
+              setNewParticipant({ ...newParticipant, email: e.target.value })
             }
             required
+            className="border border-gray-300 p-2 rounded-md w-full"
           />
+        </div>
+        <div className="grid md:grid-cols-2 gap-4">
+          {/* Phone Input */}
           <input
             type="text"
             placeholder="Phone"
-            value={editingParticipant.phone}
+            value={newParticipant.phone}
             onChange={(e) =>
-              setEditingParticipant({
-                ...editingParticipant,
-                phone: e.target.value,
-              })
+              setNewParticipant({ ...newParticipant, phone: e.target.value })
             }
             required
+            className="border border-gray-300 p-2 rounded-md w-full"
           />
-          <input
-            type="text"
-            placeholder="Category"
-            value={editingParticipant.category}
+          {/* Category Dropdown */}
+          <select
+            value={newParticipant.category}
             onChange={(e) =>
-              setEditingParticipant({
-                ...editingParticipant,
-                category: e.target.value,
-              })
+              setNewParticipant({ ...newParticipant, category: e.target.value })
             }
             required
-          />
-          <button type="submit">Update Participant</button>
-          <button type="button" onClick={() => setEditingParticipant(null)}>
-            Cancel
-          </button>
-        </form>
+            className="border border-gray-300 p-2 rounded-md w-full"
+          >
+            <option value="" disabled>
+              Select Category
+            </option>
+            {categories.map((category, index) => (
+              <option key={index} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+        </div>
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className="bg-[#D57500] text-white px-4 py-2 rounded-md flex items-center space-x-2 hover:bg-[#b65e00]"
+        >
+          <FaPlus />
+          <span>Add Participant</span>
+        </button>
+      </form>
+
+      {/* Participants Table */}
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-gray-100 shadow-md rounded-lg">
+          <thead className="bg-[#8F3B1B] text-white">
+            <tr>
+              <th className="p-3">Name</th>
+              <th className="p-3">Email</th>
+              <th className="p-3">Phone</th>
+              <th className="p-3">Category</th>
+              <th className="p-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {participants.length > 0 ? (
+              participants.map((participant) => (
+                <tr key={participant.id} className="border-t">
+                  <td className="p-3">{participant.name}</td>
+                  <td className="p-3">{participant.email}</td>
+                  <td className="p-3">{participant.phone}</td>
+                  <td className="p-3">{participant.category}</td>
+                  <td className="p-3 flex space-x-2">
+                    {/* Edit Button */}
+                    <button
+                      onClick={() => {
+                        setEditingParticipant(participant);
+                        setShowEditModal(true);
+                      }}
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      <FaEdit />
+                    </button>
+                    {/* Delete Button */}
+                    <button
+                      onClick={() => handleDeleteParticipant(participant.id)}
+                      className="text-red-600 hover:text-red-800"
+                    >
+                      <FaTrash />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="p-3 text-center text-gray-600">
+                  No participants registered yet.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Edit Participant Modal */}
+      {showEditModal && editingParticipant && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-md shadow-lg w-96">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold">Edit Participant</h2>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="text-gray-600 hover:text-gray-900"
+              >
+                <FaTimes />
+              </button>
+            </div>
+            <form onSubmit={handleUpdateParticipant} className="space-y-4">
+              {/* Name Input */}
+              <input
+                type="text"
+                value={editingParticipant.name}
+                onChange={(e) =>
+                  setEditingParticipant({
+                    ...editingParticipant,
+                    name: e.target.value,
+                  })
+                }
+                placeholder="Name"
+                className="w-full p-2 border rounded-md"
+                required
+              />
+              {/* Email Input */}
+              <input
+                type="email"
+                value={editingParticipant.email}
+                onChange={(e) =>
+                  setEditingParticipant({
+                    ...editingParticipant,
+                    email: e.target.value,
+                  })
+                }
+                placeholder="Email"
+                className="w-full p-2 border rounded-md"
+                required
+              />
+              {/* Phone Input */}
+              <input
+                type="text"
+                value={editingParticipant.phone}
+                onChange={(e) =>
+                  setEditingParticipant({
+                    ...editingParticipant,
+                    phone: e.target.value,
+                  })
+                }
+                placeholder="Phone"
+                className="w-full p-2 border rounded-md"
+                required
+              />
+              {/* Category Dropdown */}
+              <select
+                value={editingParticipant.category}
+                onChange={(e) =>
+                  setEditingParticipant({
+                    ...editingParticipant,
+                    category: e.target.value,
+                  })
+                }
+                className="w-full p-2 border rounded-md"
+                required
+              >
+                <option value="" disabled>
+                  Select Category
+                </option>
+                {categories.map((category, index) => (
+                  <option key={index} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="w-full bg-[#D57500] text-white py-2 rounded-md"
+              >
+                Update
+              </button>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   );

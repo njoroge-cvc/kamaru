@@ -4,10 +4,11 @@ import axios from "axios";
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
 // Axios instance for API requests
-const api = axios.create({
-  baseURL: API_BASE_URL,
+const api = axios.create({ // Create a new axios instance
+  baseURL: API_BASE_URL, // Set the base URL for the API
+  // Set the content type to JSON for all requests made by this instance (optional) 
   headers: {
-    "Content-Type": "application/json",
+    "Content-Type": "application/json", // Set the default content type for requests
   },
 });
 
@@ -65,19 +66,25 @@ export const deleteUser = (userId) =>
 // Participant API
 // Fetch all participants
 export const fetchParticipants = () =>
-  api.get("/participants", {
+  api.get("/participants/", {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`, // Include the token
     },
   });
 
 // Public registration
-export const registerParticipant = (participantData) =>
-  api.post("/register", participantData);
+export const registerParticipant = (participantData) => {
+  const token = localStorage.getItem("token");
+  return api.post("/participants/", participantData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
 
 // Admin registration
 export const adminRegisterParticipant = (participantData) =>
-  api.post("/admin/register", participantData, {
+  api.post("/participants/admin", participantData, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
@@ -85,7 +92,7 @@ export const adminRegisterParticipant = (participantData) =>
 
 // Update a participant (admin-only)
 export const updateParticipant = (participantId, participantData) =>
-  api.put(`/participant/${participantId}`, participantData, {
+  api.put(`/participants/${participantId}`, participantData, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
@@ -93,7 +100,7 @@ export const updateParticipant = (participantId, participantData) =>
 
 // Delete a participant (admin-only)
 export const deleteParticipant = (participantId) =>
-  api.delete(`/participant/${participantId}`, {
+  api.delete(`/participants/${participantId}`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
@@ -142,27 +149,35 @@ export const deleteVideo = (videoId) =>
     },
   });
 
-// Event API
-export const fetchEvents = () => api.get("/events");
 
+// Event API (CRUD) - Admin-only
+export const fetchEvents = () => api.get("/events/");
 export const fetchEvent = (eventId) => api.get(`/events/${eventId}`);
-
-export const createEvent = (eventData) =>
-  api.post("/events/admin", eventData, {
+export const createEvent = (formData) =>
+  api.post("/events/", formData, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
+      "Content-Type": "multipart/form-data",
     },
   });
-
-export const updateEvent = (eventId, eventData) =>
-  api.put(`/events/admin/${eventId}`, eventData, {
+export const updateEvent = (eventId, formData) =>
+  api.put(`/events/${eventId}`, formData, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
+      "Content-Type": "multipart/form-data", // Set the content type for the request to multipart/form-data
     },
   });
-
 export const deleteEvent = (eventId) =>
-  api.delete(`/events/admin/${eventId}`, {
+  api.delete(`/events/${eventId}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+// Stats API
+// Fetch site-wide statistics
+export const fetchStats = () =>
+  api.get("/stats/", {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },

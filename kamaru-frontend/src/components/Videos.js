@@ -6,39 +6,48 @@ const Videos = () => {
 
   useEffect(() => {
     fetchVideos()
-      .then((response) => {
-        if (response.data && Array.isArray(response.data.videos)) {
-          setVideos(response.data.videos);
-        } else {
-          console.error("Invalid response format:", response.data);
-          setVideos([]); // Fallback to an empty array
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching videos:", error);
-        setVideos([]); // Fallback to an empty array
-      });
+      .then((response) => setVideos(response.data.videos))
+      .catch((error) => console.error("Error fetching videos:", error));
   }, []);
 
   return (
-    <div>
-      <h1>Videos</h1>
-      {videos.length > 0 ? (
-        <ul>
-          {videos.map((video) => (
-            <li key={video.id}>
-              <h3>{video.title}</h3>
-              <a href={video.youtube_url} target="_blank" rel="noopener noreferrer">
-                Watch Video
-              </a>
-            </li>
-          ))}
-        </ul>
+    <div className="w-full">
+      {videos.length === 0 ? (
+        <p className="text-center text-gray-600">No videos available.</p>
       ) : (
-        <p>No videos available.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {videos.map((video) => (
+            <div
+              key={video.id}
+              className="bg-white shadow-md rounded-lg overflow-hidden"
+            >
+              <div className="relative">
+                <iframe
+                  className="w-full h-56 sm:h-64"
+                  src={`https://www.youtube.com/embed/${extractYouTubeID(video.youtube_url)}`}
+                  title={video.title}
+                  allowFullScreen
+                ></iframe>
+              </div>
+              <div className="p-4">
+                <h3 className="text-lg font-semibold text-[#8F3B1B]">
+                  {video.title}
+                </h3>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
+};
+
+// Helper function to extract YouTube video ID
+const extractYouTubeID = (url) => {
+  const match = url.match(
+    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\\s]{11})/
+  );
+  return match ? match[1] : "";
 };
 
 export default Videos;

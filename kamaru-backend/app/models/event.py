@@ -1,20 +1,24 @@
 from app import db
+from datetime import datetime, timezone
 
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-    date = db.Column(db.Date, nullable=False)
+    title = db.Column(db.String(255), nullable=False)
+    theme = db.Column(db.String(255), nullable=False)
+    details = db.Column(db.Text, nullable=False)
+    date_time = db.Column(db.DateTime, nullable=False)
     location = db.Column(db.String(255), nullable=False)
-    mission = db.Column(db.Text, nullable=False)
-    categories = db.Column(db.JSON, nullable=False)  # Store categories as a JSON array
+    image_url = db.Column(db.String(500), nullable=False)  # Cloudinary URL
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     def to_dict(self):
-        """Convert event object to dictionary format."""
         return {
             "id": self.id,
-            "name": self.name,
-            "date": str(self.date),  # Convert date to string for JSON response
+            "title": self.title,
+            "theme": self.theme,
+            "details": self.details,
+            "date_time": self.date_time.strftime("%Y-%m-%d %H:%M:%S"),
             "location": self.location,
-            "mission": self.mission,
-            "categories": self.categories
+            "image_url": self.image_url,
+            "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
         }

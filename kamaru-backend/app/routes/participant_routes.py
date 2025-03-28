@@ -18,7 +18,7 @@ ALLOWED_CATEGORIES = ["Poetry", "Folk Songs", "Original Songs", "Rendition", "Us
 # -------------------- Public Routes --------------------
 
 # Logged-in User Register Participant
-@bp.route("/register", methods=["POST"])
+@bp.route("/", methods=["POST"])
 @jwt_required()
 def user_register_participant():
     current_user_id = get_jwt_identity()
@@ -55,7 +55,7 @@ def user_register_participant():
 # -------------------- Admin Routes --------------------
 
 # Admin: Register Participant
-@bp.route("/admin/register", methods=["POST"])
+@bp.route("/admin", methods=["POST"])
 @jwt_required()
 def admin_register_participant():
     if not is_admin():
@@ -87,7 +87,7 @@ def admin_register_participant():
     return jsonify({"message": "Participant registered successfully by admin!", "participant": participant.to_dict()}), 201
 
 # Admin: Get All Participants
-@bp.route("/participants", methods=["GET"])
+@bp.route("/", methods=["GET"])
 @jwt_required()
 def get_participants():
     if not is_admin():
@@ -96,7 +96,7 @@ def get_participants():
     participants = Participant.query.all()
     return jsonify([p.to_dict() for p in participants]), 200
 # Admin: Update a Participant
-@bp.route("/participant/<int:id>", methods=["PUT"])
+@bp.route("/<int:id>", methods=["PUT"])
 @jwt_required()
 def update_participant(id):
     if not is_admin():
@@ -120,7 +120,7 @@ def update_participant(id):
     return jsonify({"message": "Participant updated successfully!", "participant": participant.to_dict()}), 200
 
 # Admin: Delete a Participant
-@bp.route("/participant/<int:id>", methods=["DELETE"])
+@bp.route("/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_participant(id):
     if not is_admin():
