@@ -1,112 +1,204 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaSignInAlt, FaUserPlus, FaSignOutAlt, FaUserShield } from "react-icons/fa"; // Icons for auth actions
+import { HashLink } from "react-router-hash-link";
+import {
+  FaSignInAlt,
+  FaUserPlus,
+  FaSignOutAlt,
+  FaUserShield,
+  FaUser,
+  FaHandshake,
+  FaImages,
+  FaVideo,
+  FaChevronDown,
+  FaMoon,
+  FaSun,
+  FaTimes,
+  FaBars,
+} from "react-icons/fa";
+import { fetchSystemImage } from "../api";
 
 const Navbar = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(null);
+  const [darkMode, setDarkMode] = useState(false);
+  const [logo, setLogo] = useState(null);
+  const dropdownRef = useRef(null);
   const navigate = useNavigate();
+
   const token = localStorage.getItem("token");
   const isAdmin = localStorage.getItem("is_admin") === "true";
 
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef(null);
+  useEffect(() => {
+    const savedMode = localStorage.getItem("darkMode") === "true";
+    setDarkMode(savedMode);
+    document.documentElement.classList.toggle("dark", savedMode);
+  }, []);
+
+  useEffect(() => {
+    fetchSystemImage("logo")
+      .then((response) => {
+        if (response.data.image) {
+          setLogo(response.data.image.image_url);
+        }
+      })
+      .catch((error) => console.error("Error fetching logo:", error));
+  }, []);
+
+  const toggleDarkMode = () => {
+    const newMode = !darkMode;
+    setDarkMode(newMode);
+    document.documentElement.classList.toggle("dark", newMode);
+    localStorage.setItem("darkMode", newMode);
+  };
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+    setDropdownOpen(null);
+  };
+
+  const handleDropdownToggle = (menu) => {
+    setDropdownOpen((prev) => (prev === menu ? null : menu));
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("is_admin");
-    alert("You have been logged out.");
-    setMenuOpen(false); // Close menu after logout
-    navigate("/login");
+    closeMenu();
+    navigate("/");
   };
 
-  // Close menu when clicking outside or selecting an item
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setMenuOpen(false);
-      }
-    };
-
-    if (menuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [menuOpen]);
-
   return (
-    <nav className="bg-[#8F3B1B] text-white py-4 shadow-md relative z-50">
-      <div className="container mx-auto flex justify-between items-center px-4">
+    <nav className="bg-white dark:bg-[#333] dark:text-white text-[#333] py-4 shadow-md z-50 relative">
+      <div className="container mx-auto px-4 flex justify-between items-center">
         {/* Logo */}
-        <Link to="/" className="text-xl font-bold text-[#DBCA60]">
-          Kamaru Challenge
+        <Link to="/" className="flex items-center gap-2" onClick={closeMenu}>
+          {logo ? (
+            <img src={logo} alt="Kamaru Challenge Logo" className="h-10 w-auto" />
+          ) : (
+            <span className="text-xl font-bold text-[#D57500]">Kamaru Challenge</span>
+          )}
         </Link>
 
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden text-white text-2xl focus:outline-none"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle navigation menu"
-        >
-          {menuOpen ? "✖" : "☰"}
-        </button>
+        {/* Mobile Menu Buttons */}
+        <div className="md:hidden flex gap-4 items-center z-50">
+          <button onClick={toggleDarkMode} className="text-2xl text-[#D57500] dark:text-white">
+            {darkMode ? <FaSun /> : <FaMoon />}
+          </button>
+          <button
+            onClick={() => setMenuOpen((prev) => !prev)}
+            className="text-2xl text-[#D57500] dark:text-white focus:outline-none"
+          >
+            {menuOpen ? <FaTimes className="transition-transform duration-300" /> : <FaBars className="transition-transform duration-300" />}
+          </button>
+        </div>
 
-        {/* Navigation Links */}
+        {/* Navigation Menu */}
         <ul
-          ref={menuRef}
-          className={`absolute md:static left-0 top-16 md:top-0 w-full md:w-auto bg-[#8F3B1B] md:bg-transparent flex flex-col md:flex-row items-center gap-4 md:gap-6 p-6 md:p-0 
-            transition-transform duration-300 ease-in-out ${menuOpen ? "translate-y-0 opacity-100" : "-translate-y-full md:translate-y-0 opacity-0 md:opacity-100"} md:flex`}
+          ref={dropdownRef}
+          className={`${
+            menuOpen ? "flex" : "hidden"
+          } md:flex md:items-center md:gap-6 fixed md:static top-0 left-0 w-full md:w-auto bg-white dark:bg-[#333] shadow-md md:shadow-none flex-col md:flex-row transition-all duration-300 ease-in-out p-8 md:p-0 z-40 md:z-auto`}
         >
+          <li>
+            <Link to="/" onClick={closeMenu} className="block py-2 text-lg hover:text-[#D57500]">
+              Home
+            </Link>
+          </li>
+          <li>
+            <HashLink to="/#events" onClick={closeMenu} className="block py-2 text-lg hover:text-[#D57500]" smooth>
+              Events
+            </HashLink>
+          </li>
+          <li>
+            <HashLink to="/#gallery" onClick={closeMenu} className="block py-2 text-lg hover:text-[#D57500]" smooth>
+              Gallery
+            </HashLink>
+          </li>
+
           {[
-            { path: "/", label: "Home" },
-            { path: "/gallery", label: "Gallery" },
-            { path: "/videos", label: "Videos" },
-            { path: "/register/participant", label: "Participate" },
-          ].map(({ path, label }) => (
-            <li key={path}>
-              <Link
-                to={path}
-                className="block px-4 py-2 hover:text-[#DBCA60] transition-all"
-                onClick={() => setMenuOpen(false)} // Close menu on click
+            {
+              label: "Participate",
+              key: "participate",
+              items: [
+                { to: "/register/participant", icon: <FaUser />, text: "As a Contestant" },
+                { to: "/register/partner", icon: <FaHandshake />, text: "As a Partner" },
+              ],
+            },
+            {
+              label: "Our Journey",
+              key: "journey",
+              items: [
+                { to: "/#gallery", icon: <FaImages />, text: "Gallery" },
+                { to: "/#videos", icon: <FaVideo />, text: "Videos" },
+              ],
+            },
+          ].map((drop) => (
+            <li key={drop.key} className="relative w-full md:w-auto">
+              <button
+                onClick={() => handleDropdownToggle(drop.key)}
+                aria-haspopup="true"
+                aria-expanded={dropdownOpen === drop.key}
+                aria-controls={`dropdown-${drop.key}`}
+                className="flex items-center gap-2 py-2 text-lg hover:text-[#D57500] w-full md:w-auto"
               >
-                {label}
-              </Link>
+                {drop.label}
+                <FaChevronDown className={`transition-transform ${dropdownOpen === drop.key ? "rotate-180" : ""}`} />
+              </button>
+              <ul
+                id={`dropdown-${drop.key}`}
+                className={`${
+                  dropdownOpen === drop.key ? "block" : "hidden"
+                } md:absolute md:top-full md:left-0 text-white bg-[#333] md:mt-2 py-2 md:w-48 z-50`}
+              >
+                {drop.items.map((item, idx) => (
+                  <li key={idx}>
+                    <Link
+                      to={item.to}
+                      onClick={() => {
+                        closeMenu();
+                        setDropdownOpen(null);
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 hover:text-[#D57500] transition"
+                    >
+                      {item.icon} {item.text}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </li>
           ))}
 
-          {/* Admin Dashboard */}
           {isAdmin && (
             <li>
-              <Link
-                to="/admin"
-                className="flex items-center gap-2 px-4 py-2 hover:text-[#DBCA60] transition-all"
-                onClick={() => setMenuOpen(false)}
-              >
-                <FaUserShield className="text-lg" />
+              <Link to="/admin" onClick={closeMenu} className="block py-2 text-lg hover:text-[#D57500]">
+                <FaUserShield className="inline mr-1" />
                 Admin Dashboard
               </Link>
             </li>
           )}
 
-          {/* Authentication Links */}
           {!token ? (
             <>
               <li>
-                <Link
-                  to="/register/user"
-                  className="flex items-center gap-2 px-4 py-2 hover:text-[#DBCA60] transition-all"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  <FaUserPlus className="text-lg" />
+                <Link to="/register/user" onClick={closeMenu} className="block py-2 text-lg hover:text-[#D57500]">
+                  <FaUserPlus className="inline mr-1" />
                   Register
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/login"
-                  className="flex items-center gap-2 px-4 py-2 hover:text-[#DBCA60] transition-all"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  <FaSignInAlt className="text-lg" />
+                <Link to="/login" onClick={closeMenu} className="block py-2 text-lg hover:text-[#D57500]">
+                  <FaSignInAlt className="inline mr-1" />
                   Login
                 </Link>
               </li>
@@ -115,13 +207,19 @@ const Navbar = () => {
             <li>
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 bg-[#D57500] hover:bg-[#DBCA60] text-white px-6 py-2 rounded-md w-full md:w-auto transition-all"
+                className="bg-[#D57500] hover:bg-[#8F3B1B] text-white px-6 py-2 rounded-md transition-all w-full md:w-auto"
               >
-                <FaSignOutAlt className="text-lg" />
+                <FaSignOutAlt className="inline mr-1" />
                 Logout
               </button>
             </li>
           )}
+
+          <li className="hidden md:block">
+            <button onClick={toggleDarkMode} className="text-xl text-[#D57500] dark:text-white">
+              {darkMode ? <FaSun /> : <FaMoon />}
+            </button>
+          </li>
         </ul>
       </div>
     </nav>

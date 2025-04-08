@@ -12,6 +12,9 @@ import AdminDashboard from "./components/AdminDashboard";
 import ForgotPasswordForm from "./components/ForgotPasswordForm";
 import ResetPasswordForm from "./components/ResetPasswordForm";
 import EventPage from "./pages/EventPage";
+import AboutUs from "./pages/AboutUsPage"; 
+import "./index.css"; // Import Tailwind CSS
+
 
 
 const App = () => {
@@ -22,6 +25,7 @@ const App = () => {
         <div className="flex-grow container mx-auto p-4">
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/about_us" element={<AboutUs />} /> 
             <Route path="/events/:id" element={<EventPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/videos" element={<VideosPage />} />

@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
 import { Link, Route, Routes, useNavigate, useLocation } from "react-router-dom";
-import { FaUsers, FaImage, FaVideo, FaUserShield, FaCalendarAlt, FaSignOutAlt } from "react-icons/fa";
+import { FaUsers, FaImage, FaVideo, FaUserShield, FaCalendarAlt, FaSignOutAlt, FaCog } from "react-icons/fa";
 import ManageParticipants from "./ManageParticipants";
 import ManageGallery from "./ManageGallery";
 import ManageVideos from "./ManageVideos";
 import ManageUsers from "./ManageUsers";
 import ManageEvent from "./ManageEvent";
+import ManageSystemImages from "./ManageSystemImages"; // Import the ManageSystemImages component
 import Stats from "./Stats";
 
 const AdminDashboard = () => {
@@ -22,8 +23,10 @@ const AdminDashboard = () => {
 
   // Logout function
   const handleLogout = () => {
+    localStorage.removeItem("token");
     localStorage.removeItem("is_admin");
-    navigate("/");
+    alert("You have been logged out.");
+    navigate("/"); // Redirect to home page after logout
   };
 
   return (
@@ -37,7 +40,8 @@ const AdminDashboard = () => {
             { path: "/admin/participants", icon: <FaUsers />, label: "Manage Participants" },
             { path: "/admin/gallery", icon: <FaImage />, label: "Manage Gallery" },
             { path: "/admin/videos", icon: <FaVideo />, label: "Manage Videos" },
-            { path: "/admin/users", icon: <FaUserShield />, label: "Manage Users" }
+            { path: "/admin/users", icon: <FaUserShield />, label: "Manage Users" },
+            { path: "/admin/system_images", icon: <FaCog />, label: "Manage System Images" }, // New section for system images
           ].map(({ path, icon, label }) => (
             <li key={path} className="w-full">
               <Link
@@ -73,7 +77,7 @@ const AdminDashboard = () => {
         {/* Stats Section */}
         <Stats />
 
-        {/* Added More Spacing Below Stats */}
+        {/* Routes for Admin Sections */}
         <div className="mt-6 md:mt-10">
           <Routes>
             <Route path="events" element={<ManageEvent />} />
@@ -81,6 +85,7 @@ const AdminDashboard = () => {
             <Route path="gallery" element={<ManageGallery />} />
             <Route path="videos" element={<ManageVideos />} />
             <Route path="users" element={<ManageUsers />} />
+            <Route path="system_images" element={<ManageSystemImages />} /> {/* Route for system images */}
           </Routes>
         </div>
       </main>

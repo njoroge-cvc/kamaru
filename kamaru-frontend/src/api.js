@@ -4,57 +4,40 @@ import axios from "axios";
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
 // Axios instance for API requests
-const api = axios.create({ // Create a new axios instance
-  baseURL: API_BASE_URL, // Set the base URL for the API
-  // Set the content type to JSON for all requests made by this instance (optional) 
+const api = axios.create({
+  baseURL: API_BASE_URL,
   headers: {
-    "Content-Type": "application/json", // Set the default content type for requests
+    "Content-Type": "application/json",
   },
 });
 
 // User API
-// Register a new user
 export const registerUser = (userData) => api.post("/users/register", userData);
 export const loginUser = (credentials) => api.post("/users/login", credentials);
-export const getAdminDashboard = () => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    console.error("No token found in local storage.");
-    return Promise.reject("No token found.");
-  }
-
-  return api.get("/users/admin/dashboard", {
+export const getAdminDashboard = () =>
+  api.get("/users/admin/dashboard", {
     headers: {
-      Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
-};
-
-// Fetch all users (admin-only)
 export const fetchUsers = () =>
   api.get("/users/admin/users", {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
-
-// Fetch a single user by ID (admin-only)
 export const fetchUser = (userId) =>
   api.get(`/users/admin/users/${userId}`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
-
-// Update a user (admin-only)
 export const updateUser = (userId, userData) =>
   api.put(`/users/admin/users/${userId}`, userData, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
-
-// Delete a user (admin-only)
 export const deleteUser = (userId) =>
   api.delete(`/users/admin/users/${userId}`, {
     headers: {
@@ -62,43 +45,31 @@ export const deleteUser = (userId) =>
     },
   });
 
-  
 // Participant API
-// Fetch all participants
 export const fetchParticipants = () =>
   api.get("/participants/", {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`, // Include the token
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
-
-// Public registration
-export const registerParticipant = (participantData) => {
-  const token = localStorage.getItem("token");
-  return api.post("/participants/", participantData, {
+export const registerParticipant = (participantData) =>
+  api.post("/participants/", participantData, {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
-};
-
-// Admin registration
 export const adminRegisterParticipant = (participantData) =>
   api.post("/participants/admin", participantData, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
-
-// Update a participant (admin-only)
 export const updateParticipant = (participantId, participantData) =>
   api.put(`/participants/${participantId}`, participantData, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
-
-// Delete a participant (admin-only)
 export const deleteParticipant = (participantId) =>
   api.delete(`/participants/${participantId}`, {
     headers: {
@@ -106,12 +77,8 @@ export const deleteParticipant = (participantId) =>
     },
   });
 
-
 // Gallery API
-// Fetch all gallery images
 export const fetchGalleryImages = () => api.get("/gallery");
-
-// Upload a new image
 export const uploadImage = (formData) =>
   api.post("/gallery/upload", formData, {
     headers: {
@@ -119,8 +86,6 @@ export const uploadImage = (formData) =>
       "Content-Type": "multipart/form-data",
     },
   });
-
-// Delete an image
 export const deleteImage = (imageId) =>
   api.delete(`/gallery/${imageId}`, {
     headers: {
@@ -128,20 +93,49 @@ export const deleteImage = (imageId) =>
     },
   });
 
+// System Images API
+export const uploadSystemImage = (formData) =>
+  api.post("/sys_images/upload", formData, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+export const fetchSystemImage = (section) => api.get(`/sys_images/${section}`);
+
+export const deleteSystemImage = (imageId) =>
+  api.delete(`/sys_images/${imageId}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+
+export const uploadBanner = (formData) =>
+  api.post("/sys_images/banners/upload", formData, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+export const fetchBanners = () => api.get("/sys_images/banners");
+
+export const deleteBanner = (bannerId) =>
+  api.delete(`/sys_images/banners/${bannerId}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
 
 // Video API
-// Fetch all videos
 export const fetchVideos = () => api.get("/videos");
-
-// Add a new video
 export const addVideo = (videoData) =>
   api.post("/videos/add", videoData, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
-
-// Delete a video
 export const deleteVideo = (videoId) =>
   api.delete(`/videos/delete/${videoId}`, {
     headers: {
@@ -149,8 +143,7 @@ export const deleteVideo = (videoId) =>
     },
   });
 
-
-// Event API (CRUD) - Admin-only
+// Event API
 export const fetchEvents = () => api.get("/events/");
 export const fetchEvent = (eventId) => api.get(`/events/${eventId}`);
 export const createEvent = (formData) =>
@@ -164,7 +157,7 @@ export const updateEvent = (eventId, formData) =>
   api.put(`/events/${eventId}`, formData, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
-      "Content-Type": "multipart/form-data", // Set the content type for the request to multipart/form-data
+      "Content-Type": "multipart/form-data",
     },
   });
 export const deleteEvent = (eventId) =>
@@ -175,12 +168,18 @@ export const deleteEvent = (eventId) =>
   });
 
 // Stats API
-// Fetch site-wide statistics
 export const fetchStats = () =>
   api.get("/stats/", {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
+
+// Newsletter API
+export const subscribeToNewsletter = (data) =>
+  api.post("/newsletter/subscribe", data);
+
+// Contact API
+export const sendContactMessage = (data) => api.post("/contact", data);
 
 export default api;

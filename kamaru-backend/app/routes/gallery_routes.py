@@ -45,6 +45,15 @@ def get_gallery():
         return jsonify({"images": [image.to_dict() for image in images]}), 200
     return jsonify({"message": "No images found"}), 404
 
+
+@bp.route("/about-image", methods=["GET"]) # Public: Get About Image
+def get_about_image():
+    # Fetch the image with a specific title (e.g., "About Us")
+    image = Gallery.query.filter_by(title="kc_about_us_img").first()
+    if image:
+        return jsonify({"image": image.to_dict()}), 200
+    return jsonify({"error": "Image not found"}), 404
+
 # Admin: Delete Image
 @bp.route("/<int:image_id>", methods=["DELETE"])
 @jwt_required()

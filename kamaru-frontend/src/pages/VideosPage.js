@@ -3,21 +3,14 @@ import Videos from "../components/Videos";
 import { fetchVideos } from "../api"; // Assuming you have this API function
 
 const VideosPage = () => {
-  const [videos, setVideos] = useState([]);
-  const [mostPopular, setMostPopular] = useState(null);
+  const [videos, setVideos] = useState([]); // State to store the list of videos
 
   useEffect(() => {
+    // Fetch videos from the API
     fetchVideos()
       .then((response) => {
-        const videoList = response.data.videos;
-        setVideos(videoList);
-
-        // Find most popular video (assuming there is a "views" field)
-        if (videoList.length > 0) {
-          const mostWatched = videoList.reduce((prev, current) =>
-            prev.views > current.views ? prev : current
-          );
-          setMostPopular(mostWatched);
+        if (response.data?.videos) {
+          setVideos(response.data.videos); // Set the videos in state
         }
       })
       .catch((error) => console.error("Error fetching videos:", error));
@@ -33,28 +26,17 @@ const VideosPage = () => {
       {/* Short Description */}
       <p className="text-center text-gray-700 max-w-2xl mb-6">
         Explore inspiring performances, musical talent, and cultural showcases 
-        from past **KAMARU CHALLENGE – NDEIYA EDITION** events. Watch and relive 
+        from past <strong>KAMARU CHALLENGE – NDEIYA EDITION</strong> events. Watch and relive 
         the most exciting moments!
       </p>
 
-      {/* Video Stats */}
-      <div className="flex flex-wrap justify-center gap-6 mb-6">
-        <div className="bg-[#F4A261] text-white px-4 py-2 rounded-lg shadow-md">
-          <p className="text-lg font-semibold">{videos.length}</p>
-          <p className="text-sm">Total Videos</p>
-        </div>
-
-        {mostPopular && (
-          <div className="bg-[#D57500] text-white px-4 py-2 rounded-lg shadow-md">
-            <p className="text-lg font-semibold">{mostPopular.title}</p>
-            <p className="text-sm">Most Watched Video</p>
-          </div>
-        )}
-      </div>
-
       {/* Video Content */}
       <div className="w-full max-w-5xl">
-        <Videos />
+        {videos.length > 0 ? (
+          <Videos videos={videos} /> // Pass the videos to the Videos component
+        ) : (
+          <p className="text-center text-gray-500">No videos available.</p>
+        )}
       </div>
     </div>
   );
