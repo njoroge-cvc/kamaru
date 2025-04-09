@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: kamaru-backend
+    env: python
+    region: oregon  # or Frankfurt, etc.
+    plan: free
+    buildCommand: ""
+    startCommand: gunicorn run:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
