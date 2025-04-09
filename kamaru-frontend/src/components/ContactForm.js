@@ -32,7 +32,7 @@ const ContactForm = () => {
         {/* Name and Email Fields */}
         <div className="md:flex md:gap-4">
           <label className="block md:w-1/2">
-            <span className="text-[#8F3B1B] font-semibold">Your Name</span>
+            <span className="text-[#333] font-semibold">Your Name</span>
             <input
               type="text"
               name="name"
@@ -45,7 +45,7 @@ const ContactForm = () => {
           </label>
 
           <label className="block md:w-1/2">
-            <span className="text-[#8F3B1B] font-semibold">Your Email</span>
+            <span className="text-[#333] font-semibold">Your Email</span>
             <input
               type="email"
               name="email"
@@ -60,7 +60,7 @@ const ContactForm = () => {
 
         {/* Message Field */}
         <label className="block">
-          <span className="text-[#8F3B1B] font-semibold">Your Message</span>
+          <span className="text-[#333] font-semibold">Your Message</span>
           <textarea
             name="message"
             placeholder="Type your message here"
@@ -76,7 +76,7 @@ const ContactForm = () => {
           type="submit"
           disabled={isSubmitting}
           className={`w-full py-2 rounded-md text-sm transition duration-300 text-white ${
-            isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-[#D57500] hover:bg-[#8F3B1B]"
+            isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-[#D57500] hover:bg-[#333]"
           }`}
         >
           {isSubmitting ? "Sending..." : "Send Message"}

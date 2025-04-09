@@ -1,24 +1,58 @@
 import React, { useState, useEffect } from "react";
-import ParticipantsRegistrationForm from "../components/ParticipantsRegistrationForm";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { fetchBanners } from "../api"; // Import the fetchBanners API function
+import {
+  FaChevronDown,
+  FaCalendarAlt,
+  FaBullseye,
+  FaMicrophoneAlt,
+  FaTrophy,
+  FaCheckCircle,
+  FaSmile,
+} from "react-icons/fa";
+import ParticipantsRegistrationForm from "../components/ParticipantsRegistrationForm";
+import { fetchBanners } from "../api";
+import "../index.css";
 
 const ParticipantsRegistrationPage = () => {
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [bannerImage, setBannerImage] = useState(null); // State to store the banner image
+  const [bannerImage, setBannerImage] = useState(null);
+  const [countdown, setCountdown] = useState(null);
   const navigate = useNavigate();
 
+  const eventDate = new Date("2025-08-16T00:00:00");
+
   useEffect(() => {
-    // Fetch banners and set the first banner as the page banner
     fetchBanners()
-      .then((response) => {
-        if (response.data.banners.length > 0) {
-          setBannerImage(response.data.banners[0].image_url); // Use the first banner
+      .then((res) => {
+        if (res.data.banners.length > 0) {
+          setBannerImage(res.data.banners[0].image_url);
         }
       })
-      .catch((error) => console.error("Error fetching banners:", error));
+      .catch((err) => console.error("Banner fetch error:", err));
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      const distance = eventDate - now;
+
+      if (distance < 0) {
+        clearInterval(interval);
+        setCountdown(null);
+      } else {
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((distance / 1000 / 60) % 60);
+        const seconds = Math.floor((distance / 1000) % 60);
+
+        setCountdown({ days, hours, minutes, seconds });
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, []);
 
   const handleParticipateClick = () => {
@@ -34,119 +68,150 @@ const ParticipantsRegistrationPage = () => {
       setTimeout(() => {
         setShowForm(true);
         setLoading(false);
-      }, 1000); // Smooth transition effect
+      }, 1000);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Banner Section */}
+    <div className="min-h-screen bg-gray-50 text-[#333]">
+
+      {/* Banner */}
       <div
-        className="relative w-full h-80 bg-cover bg-center"
-        style={{
-          backgroundImage: `url(${bannerImage || "/path/to/default-banner.jpg"})`, // Use the fetched banner or a default image
-        }}
+        className="relative h-48 sm:h-64 w-full bg-cover bg-center"
+        style={{ backgroundImage: `url(${bannerImage || "/default-banner.jpg"})` }}
       >
-        <div className="absolute inset-0  flex items-center justify-center">
-        <div className="absolute bottom-6 flex justify-center w-full">
-  <div className="animate-bounce">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-8 w-8 text-[#333]"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M19 9l-7 7-7-7"
-      />
-    </svg>
-  </div>
-</div>
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+          <FaChevronDown className="text-white animate-bounce text-xl sm:text-2xl" />
         </div>
       </div>
 
       {/* Breadcrumbs */}
-      <nav className="bg-white py-3 px-6 shadow-sm">
-        <ul className="flex space-x-2 text-sm text-gray-600">
-          <li>
-            <Link to="/" className="hover:text-[#D57500]">
-              Home
-            </Link>
-          </li>
-          <li>/</li>
-          <li>
-            <Link to="/register/participant" className="text-[#8F3B1B] font-semibold">
-              Participate
-            </Link>
-          </li>
-        </ul>
-      </nav>
+      <div className="bg-white px-4 py-2 text-sm shadow-sm">
+        <nav className="flex space-x-2 text-gray-600">
+          <Link to="/" className="hover:text-[#D57500]">Home</Link>
+          <span>/</span>
+          <span className="text-[#D57500] font-semibold">Participate</span>
+        </nav>
+      </div>
 
-      {/* How to Participate Section */}
-      <section className="p-8 bg-white">
-        <h2 className="text-3xl font-bold text-[#8F3B1B] text-center mb-6">
-          How to Participate
-        </h2>
-        <p className="text-gray-700 text-center mb-6 max-w-3xl mx-auto">
-          Be part of the <strong>Kamaru Challenge – Ndeiya Edition</strong>. 
-          Showcase your talent creatively using the Kikuyu language and promote timeless values. 
-          Follow the steps below to register and participate.
+      {/* About */}
+      <section className="py-8 px-4 text-center">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-4">About the Event</h2>
+        <p className="text-sm sm:text-base text-gray-700 max-w-xl mx-auto leading-relaxed">
+          The <strong>Kamaru Challenge – Ndeiya Edition</strong> is an annual musical competition offering a platform for the Ndeiya community to showcase their talent in Kikuyu language, promoting timeless values and joyful, positive living.
         </p>
-        <hr className="border-t border-gray-300 w-1/4 mx-auto mb-6" />
       </section>
 
-      {/* Eligibility, Judging Criteria, and Prizes Section */}
-      <section className="p-8 bg-[#FFF7ED]">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 border-t border-b border-gray-300 py-6">
-          {/* Eligibility */}
-          <div className="text-center md:border-r md:border-gray-300 px-6">
-            <h3 className="text-xl font-bold text-[#8F3B1B] mb-4">Eligibility</h3>
-            <p className="text-gray-700">
-              Open to all ages. Participants must creatively use the Kikuyu language in their performances.
-            </p>
-          </div>
+      {/* Objectives */}
+      <section className="bg-[#FFF7ED] py-10 px-4">
+  <div className="max-w-7xl mx-auto grid gap-8 lg:grid-cols-3">
 
-          {/* Judging Criteria */}
-          <div className="text-center md:border-r md:border-gray-300 px-6">
-            <h3 className="text-xl font-bold text-[#8F3B1B] mb-4">Judging Criteria</h3>
-            <p className="text-gray-700">
-              Performances will be judged based on creativity, adherence to moral values, and audience engagement.
-            </p>
-          </div>
+    {/* Objectives */}
+    <div>
+      <h3 className="text-xl font-bold text-[#D57500] flex items-center gap-2 mb-4">
+        <FaBullseye className="text-[#333]" /> Objectives
+      </h3>
+      <p className="text-sm text-[#333] mb-4">
+        The Perfomed Items Must:
+      </p>
+      <ul className="space-y-4 text-sm text-[#333]">
+        {[
+          "Praise, enhance, and promote moral values.",
+          "Identify and call out moral vices in the community.",
+          "Encourage joyful and positive living in the community.",
+          "Be performed in Kikuyu language.",
+        ].map((obj, i) => (
+          <li key={i} className="flex items-start gap-3">
+            <FaCheckCircle className="text-[#D57500] mt-1" />
+            <span>{obj}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
 
-          {/* Prizes */}
-          <div className="text-center px-6">
-            <h3 className="text-xl font-bold text-[#8F3B1B] mb-4">Prizes</h3>
-            <p className="text-gray-700">
-              Winners will receive cash prizes: <br />
-              🏆 <strong>Ksh 50,000</strong> for best performers <br />
-              🥈 <strong>Ksh 25,000</strong> for first runners-up <br />
-              🥉 <strong>Ksh 15,000</strong> for second runners-up
-            </p>
+    {/* Categories */}
+    <div>
+      <h3 className="text-xl font-bold text-[#D57500] flex items-center gap-2 mb-4">
+        <FaMicrophoneAlt className="text-[#333]" /> Competition Categories
+      </h3>
+      <ul className="text-sm text-[#333] space-y-2 pl-1">
+        {[
+          "Poetry",
+          "Folk Songs",
+          "Original Songs",
+          "Rendition",
+          "Use of African Proverbs in Spoken Word",
+        ].map((cat, i) => (
+          <li key={i} className="flex items-center gap-2">
+            <span className="w-2 h-2 bg-[#D57500] rounded-full"></span>
+            {cat}
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    {/* Prizes */}
+    <div>
+      <h3 className="text-xl font-bold text-[#D57500] flex items-center gap-2 mb-4">
+        <FaTrophy className="text-[#333]" /> Prizes
+      </h3>
+      <p className="text-sm text-[#333] leading-relaxed">
+        Top performers win <strong className="text-[#D57500]">Ksh 50,000</strong>, with runners-up receiving <strong className="text-[#D57500]">Ksh 25,000</strong> and <strong className="text-[#D57500]">Ksh 15,000</strong>.
+        <br />
+        The best rendition gets <strong className="text-[#D57500]">Ksh 40,000</strong>, and runners-up receive <strong className="text-[#D57500]">Ksh 20,000</strong> and <strong className="text-[#D57500]">Ksh 10,000</strong>.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<div className="py-8 px-4 text-center">
+        <p className="text-sm sm:text-base text-gray-700 max-w-xl mx-auto leading-relaxed">
+        <strong>NB:</strong>Entry categories that register less than 4 participants will be grouped together and the best
+        performers determined irrespective of category
+        </p>
+      </div>
+
+
+      {/* Countdown */}
+      <section className="bg-[#FFF7ED] py-8 px-4 text-center">
+        <h3 className="text-xl sm:text-2xl font-bold mb-2 flex justify-center items-center gap-2">
+          <FaCalendarAlt /> Event Date: August 16, 2025
+        </h3>
+        <p className="text-sm sm:text-base text-gray-700 mb-4">
+          Mark your calendar and prepare your performance!
+        </p>
+        {countdown ? (
+          <div className="flex justify-center gap-3 text-white font-medium text-sm sm:text-base">
+            {Object.entries(countdown).map(([label, val]) => (
+              <div key={label} className="bg-[#D57500] px-3 py-2 rounded-lg shadow">
+                {val} {label}
+              </div>
+            ))}
           </div>
-        </div>
+        ) : (
+          <p className="text-lg font-semibold text-[#D57500] flex justify-center items-center gap-2">
+            <FaSmile /> The event has started!
+          </p>
+        )}
       </section>
 
-      {/* Participate Button */}
-      <section className="p-8 text-center">
+      {/* CTA Registration */}
+      <section className="py-8 px-4 text-center">
         {!showForm ? (
           <button
             onClick={handleParticipateClick}
-            className="bg-[#D57500] text-white px-8 py-3 rounded-md shadow-md hover:bg-[#8F3B1B] transition duration-300 flex items-center justify-center mx-auto"
             disabled={loading}
+            className="bg-[#D57500] hover:bg-[#333] text-white px-6 py-3 rounded-md font-semibold shadow-md transition-all"
           >
             {loading ? (
-              <span className="animate-spin mr-2 h-5 w-5 border-t-2 border-white rounded-full"></span>
+              <span className="inline-block h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
             ) : (
-              "Register to Participate"
+              "Click to Register"
             )}
           </button>
         ) : (
-          <div className="mt-6">
+          <div className="mt-6 max-w-md mx-auto">
             <ParticipantsRegistrationForm />
           </div>
         )}

@@ -8,7 +8,7 @@ const GalleryPage = () => {
       {/* Breadcrumbs */}
       <div className="w-full max-w-7xl mx-auto mb-6">
         <nav className="text-sm text-gray-600">
-          <Link to="/" className="text-[#D57500] hover:underline hover:text-[#8F3B1B] transition">
+          <Link to="/" className="text-[#D57500] hover:underline hover:text-[#333] transition">
             Home
           </Link>
           <span className="mx-2">/</span>

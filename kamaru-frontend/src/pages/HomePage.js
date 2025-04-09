@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
-import { fetchGalleryImages, fetchEvents, fetchVideos, fetchSystemImage } from "../api";
+import { fetchGalleryImages, fetchEvents, fetchVideos, fetchSystemImage, fetchBanners} from "../api";
 import { Link } from "react-router-dom";
 import ContactForm from "../components/ContactForm";
 import Stats from "../components/Stats";
@@ -46,6 +46,20 @@ const HomePage = () => {
   const [latestVideo, setLatestVideo] = useState(null);
   const [aboutImage, setAboutImage] = useState("");
   const [contactImage, setContactImage] = useState("");
+  const [bannerImage, setBannerImage] = useState("");
+
+  useEffect(() => {
+    // Fetch the banner image
+  fetchBanners()
+      .then((res) => {
+        // Check if the response contains banners
+        // and set the first one as the banner image
+        if (res.data.banners.length > 0) {
+          setBannerImage(res.data.banners[1].image_url); //
+        }
+      })
+      .catch((err) => console.error("Banner fetch error:", err));
+  }, []);
 
   useEffect(() => {
     fetchGalleryImages()
@@ -131,7 +145,7 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="relative w-full h-64 md:h-[400px] overflow-hidden">
+      <div className="relative w-full max-h-screen md:h-[400px] overflow-hidden">
         {heroImages.map((img, index) => (
           <img
             key={index}
@@ -145,16 +159,17 @@ const HomePage = () => {
       </div>
 
       {/* Event Overview */}
-   
-
-<section className="text-center p-6 bg-gray-50">
+      <section
+  className="text-center p-6 bg-gray-50 bg-fixed bg-cover bg-center"
+  style={{ backgroundImage: `url(${bannerImage || "/default-banner.jpg"})` }}
+>
   <h1 className="text-3xl md:text-4xl font-bold text-[#333] mb-6">
-    Kamaru Challenge - Ndeiya Edition
+    Kamaru Challenge
   </h1>
   <p className="text-lg text-[#D57500] mb-6">
     Fanning the Flame of Values through Music & Culture
   </p>
-  <hr className="border-t border-gray-300 w-1/2 mx-auto mb-8" />
+  <hr className="border-t border-[#D57500] w-64 border-2 mx-auto mb-8" />
 
   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
     {/* Tile 1: Who we are */}
@@ -211,7 +226,6 @@ const HomePage = () => {
   </div>
 </section>
 
-
       {/* Stats Section */}
       <section className="bg-gray-50 py-8">
         <Stats />
@@ -224,7 +238,7 @@ const HomePage = () => {
           Join us for our upcoming events and be part of the Kamaru Challenge
           community!
         </p>
-        <hr className="border-t border-gray-300 mt-6 mb-6 w-1/2 mx-auto" />
+        <hr className="border-t border-[#D57500] w-64 border-2 mx-auto mb-8" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {events.map((event) => (
             <EventCard key={event.id} event={event} />
@@ -238,7 +252,7 @@ const HomePage = () => {
   <p className="text-center text-[#D57500] mb-4">
     Discover our mission and values.
   </p>
-  <hr className="border-t border-gray-300 mt-6 mb-6 w-1/2 mx-auto" />
+  <hr className="border-t border-[#333] w-64 border-2 mx-auto mb-8" />
   <div className="md:flex gap-6 items-center">
     {/* Image Section */}
     <div className="md:w-1/2 relative">
@@ -291,7 +305,7 @@ const HomePage = () => {
   <p className="text-center text-[#D57500] mb-4">
   Captured Moments in a Thousand Words since 2024...
   </p>
-  <hr className="border-t border-gray-300 mt-6 mb-6 w-1/2 mx-auto" />
+  <hr className="border-t border-[#D57500] w-64 border-2 mx-auto mb-8" />
 
   <div className="max-w-5xl mx-auto relative">
     {galleryImages.length > 0 ? (
@@ -351,14 +365,14 @@ const HomePage = () => {
         <p className="text-center text-[#D57500] mb-4">
           Have questions or need more information?
         </p>
-        <hr className="border-t border-gray-300 mt-6 mb-6 w-1/2 mx-auto" />
+        <hr className="border-t border-[#333] w-64 border-2 mx-auto " />
         <div className="md:flex gap-6 items-center">
           <div className="md:w-1/3">
             {contactImage ? (
               <img
                 src={contactImage}
                 alt="Contact Us"
-                className="rounded-lg w-full h-auto object-cover"
+                className="rounded-lg w-4/5 h-auto object-cover justify-center mx-auto"
               />
             ) : (
               <div className="w-full h-48 bg-gray-200 animate-pulse rounded-lg"></div>

@@ -6,10 +6,7 @@ import {
   FaUserPlus,
   FaSignOutAlt,
   FaUserShield,
-  FaUser,
-  FaHandshake,
-  FaImages,
-  FaVideo,
+  FaChevronRight,
   FaChevronDown,
   FaMoon,
   FaSun,
@@ -84,7 +81,7 @@ const Navbar = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2" onClick={closeMenu}>
           {logo ? (
-            <img src={logo} alt="Kamaru Challenge Logo" className="h-10 w-auto" />
+            <img src={logo} alt="Kamaru Challenge Logo" className="h-32 w-auto" />
           ) : (
             <span className="text-xl font-bold text-[#D57500]">Kamaru Challenge</span>
           )}
@@ -120,27 +117,22 @@ const Navbar = () => {
               Events
             </HashLink>
           </li>
-          <li>
-            <HashLink to="/#gallery" onClick={closeMenu} className="block py-2 text-lg hover:text-[#D57500]" smooth>
-              Gallery
-            </HashLink>
-          </li>
 
           {[
             {
               label: "Participate",
               key: "participate",
               items: [
-                { to: "/register/participant", icon: <FaUser />, text: "As a Contestant" },
-                { to: "/register/partner", icon: <FaHandshake />, text: "As a Partner" },
+                { to: "/register/participant", text: "Contend", icon: <FaChevronRight className="text-small"/> },
+                { to: "/register/partner", text: "Partner", icon: <FaChevronRight className="text-small"/> },
               ],
             },
             {
               label: "Our Journey",
               key: "journey",
               items: [
-                { to: "/#gallery", icon: <FaImages />, text: "Gallery" },
-                { to: "/#videos", icon: <FaVideo />, text: "Videos" },
+                { to: "/#gallery",  text: "Gallery", icon: <FaChevronRight className="text-sm"/>, hash: true },
+                { to: "/#videos",  text: "Videos", icon: <FaChevronRight className="text-sm" />, hash: true },
               ],
             },
           ].map((drop) => (
@@ -163,16 +155,30 @@ const Navbar = () => {
               >
                 {drop.items.map((item, idx) => (
                   <li key={idx}>
-                    <Link
-                      to={item.to}
-                      onClick={() => {
-                        closeMenu();
-                        setDropdownOpen(null);
-                      }}
-                      className="flex items-center gap-2 px-4 py-2 hover:text-[#D57500] transition"
-                    >
-                      {item.icon} {item.text}
-                    </Link>
+                    {item.hash ? (
+                      <HashLink
+                        smooth
+                        to={item.to}
+                        onClick={() => {
+                          closeMenu();
+                          setDropdownOpen(null);
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 hover:text-[#D57500] transition"
+                      >
+                        {item.text}
+                      </HashLink>
+                    ) : (
+                      <Link
+                        to={item.to}
+                        onClick={() => {
+                          closeMenu();
+                          setDropdownOpen(null);
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 hover:text-[#D57500] transition"
+                      >
+                        {item.text} {item.icon}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>

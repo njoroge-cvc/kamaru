@@ -32,7 +32,7 @@ const NewsletterForm = () => {
   };
 
   return (
-    <div className="bg-[#FFF7ED] p-6 rounded-lg shadow-md">
+    <div className="bg-[#FFF7ED] p-6 rounded-lg bg-opacity-25">
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="email"
@@ -45,7 +45,7 @@ const NewsletterForm = () => {
         <button
   type="submit"
   className={`w-full py-2 rounded-md text-sm transition duration-300 ${
-    loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#D57500] hover:bg-[#8F3B1B] text-white"
+    loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#D57500] hover:bg-[#333] text-white"
   }`}
   disabled={loading}
 >

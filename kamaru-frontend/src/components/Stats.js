@@ -75,7 +75,7 @@ const Stats = () => {
         Discover the numbers that tell our story. From events to participants,
         explore the impact we've made together.
       </p>
-      <hr className="border-t border-gray-300 mt-6 mb-6 w-1/2 mx-auto" />
+      <hr className="border-t border-[#333] w-64 border-2 mx-auto mb-8" />
 
       {/* Custom Nav Arrows Positioned Outside */}
       <div className="absolute mt-24 left-32 right-32 z-10 hidden md:flex items-center justify-between pointer-events-none">

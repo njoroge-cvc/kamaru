@@ -80,7 +80,7 @@ const UserRegistrationForm = () => {
 
           <button
             type="submit"
-            className="w-full bg-[#D57500] hover:bg-[#8F3B1B] text-white py-3 rounded-md transition duration-300"
+            className="w-full bg-[#D57500] hover:bg-[#333] text-white py-3 rounded-md transition duration-300"
             disabled={loading}
           >
             {loading ? "Registering..." : "Register"}
@@ -92,7 +92,7 @@ const UserRegistrationForm = () => {
             Already have an account?{" "}
             <button
               onClick={() => navigate("/login")}
-              className="text-[#D57500] hover:text-[#8F3B1B] transition-all underline"
+              className="text-[#D57500] hover:text-[#333] transition-all underline"
             >
               Log in
             </button>
