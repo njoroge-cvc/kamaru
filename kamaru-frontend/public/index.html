@@ -1,48 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/kamaru-challenge-icon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <!-- Android Icon -->
-    <link rel="icon" sizes="192x192" href="%PUBLIC_URL%/kamaru-challenge-icon-192.png" /> 
-    <!-- Apple Touch Icon (for iOS devices) -->
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/kamaru-challenge-icon-32.png" />
     
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Kamaru Challenge is a music competition that celebrates African culture, Kikuyu language, and talent in Ndeiya, Kenya." />
+    <meta name="keywords" content="Kamaru Challenge, Ndeiya, African values, Kikuyu language, music competition, community events, African culture, music, competition, talent" />
+    <meta name="author" content="Kamaru Challenge Team" />
+    
+    <!-- Open Graph Tags for Social Media Sharing -->
+    <meta property="og:title" content="Kamaru Challenge - Ndeiya Edition" />
+    <meta property="og:description" content="Join the Kamaru Challenge in Ndeiya this August, a musical competition celebrating African values and showcasing Kikuyu language and talent." />
+    <meta property="og:image" content="%PUBLIC_URL%/kamaru-challenge-icon.svg" />
+    <meta property="og:url" content="https://kamaruchallenge.africa" />
+    <meta property="og:type" content="website" />
+    
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Kamaru Challenge - Ndeiya Edition" />
+    <meta name="twitter:description" content="Join the Kamaru Challenge in Ndeiya this August, a musical competition celebrating African values and showcasing Kikuyu language and talent." />
+    <meta name="twitter:image" content="%PUBLIC_URL%/kamaru-challenge-icon.svg" />
+    <meta name="twitter:site" content="@KamaruChallenge" />
+    
+    <!-- Favicon and Icons -->
+    <link rel="icon" href="%PUBLIC_URL%/kamaru-challenge-icon.svg" type="image/svg+xml" />
+    <link rel="icon" sizes="192x192" href="%PUBLIC_URL%/kamaru-challenge-icon-192.png" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/kamaru-challenge-icon-32.png" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/kamaru-challenge-icon.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
+    
+    <!-- Web App Manifest -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
+    
+    <!-- Title of the page -->
+    <title>Kamaru Challenge - Ndeiya Edition | Rediscover African Values Through Music</title>
+    
+    <!-- Structured Data: JSON-LD for SEO -->
+    <script type="application/ld+json">
+        {
+            "@context": "http://schema.org",
+            "@type": "Event",
+            "name": "Kamaru Challenge - Ndeiya Edition",
+            "startDate": "2024-08-17",
+            "location": {
+                "@type": "Place",
+                "name": "Ndeiya",
+                "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": "Ndeiya",
+                    "addressRegion": "Kiambu",
+                    "addressCountry": "Kenya"
+                }
+            },
+            "image": "%PUBLIC_URL%/kamaru-challenge-icon.svg",
+            "description": "Kamaru Challenge is a musical competition celebrating African cultural values, talent, and the Kikuyu language.",
+            "offers": {
+                "@type": "Offer",
+                "priceCurrency": "KES",
+                "price": "0",
+                "url": "https://kamaruchallenge.africa"
+            },
+            "performer": {
+                "@type": "Organization",
+                "name": "Kamaru Challenge Team"
+            }
+        }
+    </script>
+</head>
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>Kamaru Challenge</title>
-  </head>
-  <body>
+<body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
+</body>
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
-  </body>
 </html>
