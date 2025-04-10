@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Base URL for the backend API
-const API_BASE_URL = process.env.REACT_APP_API_URL;
+const API_BASE = "https://kamaru-challenge.onrender.com";
 
 // Axios instance for API requests
 const api = axios.create({
