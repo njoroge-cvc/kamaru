@@ -76,7 +76,7 @@ def handle_operational_error(e):
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 jwt = JWTManager(app)
-CORS(app, resources={r"/*": {"origins": "https://kamaru-challenge.netlify.app"}})
+CORS(app, resources={r"/*": {"origins": "https://kamaruchallenge.africa"}})
 
 
 # Configure Cloudinary using CLOUDINARY_URL from .env
