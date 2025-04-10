@@ -145,7 +145,7 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="relative w-full max-h-screen md:h-[400px] overflow-hidden">
+      <div className="relative w-full min-h-[300px] md:h-[400px] overflow-hidden">
         {heroImages.map((img, index) => (
           <img
             key={index}
