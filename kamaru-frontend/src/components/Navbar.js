@@ -60,7 +60,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white text-[#333] py-4 shadow-md z-50 relative">
+    <nav className="bg-[#333] text-white py-4 shadow-md z-50 relative">
       <div className="container mx-auto px-4 flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2" onClick={closeMenu}>
