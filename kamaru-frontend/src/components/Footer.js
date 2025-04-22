@@ -43,7 +43,7 @@ const Footer = () => {
               <img
                 src={logo}
                 alt="Kamaru Challenge Logo"
-                className="h-32 mx-auto"
+                className="h-16 sm:h-20 md:h-24 lg:h-32 w-auto max-w-[80%] mx-auto"
               />
             ) : (
               <p className="text-lg font-bold">Kamaru Challenge</p>
