@@ -86,7 +86,7 @@ const Navbar = () => {
           ref={dropdownRef}
           className={`${
             menuOpen ? "flex" : "hidden"
-          } md:flex md:items-center md:gap-6 fixed md:static top-0 left-0 w-full md:w-auto bg-white shadow-md md:shadow-none flex-col md:flex-row transition-all duration-300 ease-in-out p-8 md:p-0 z-40 md:z-auto`}
+          } md:flex md:items-center md:gap-6 fixed md:static top-0 left-0 w-full md:w-auto bg-[#333] shadow-md md:shadow-none flex-col md:flex-row transition-all duration-300 ease-in-out p-8 md:p-0 z-40 md:z-auto`}
         >
           <li>
             <Link to="/" onClick={closeMenu} className="block py-2 text-lg hover:text-[#D57500]">
@@ -194,7 +194,7 @@ const Navbar = () => {
             <li>
               <button
                 onClick={handleLogout}
-                className="bg-[#D57500] hover:bg-[#8F3B1B] text-white px-6 py-2 rounded-md transition-all w-full md:w-auto"
+                className="bg-[#D57500] hover:bg-[#333] text-white px-6 py-2 rounded-md transition-all w-full md:w-auto"
               >
                 <FaSignOutAlt className="inline mr-1" />
                 Logout
