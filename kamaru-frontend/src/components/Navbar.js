@@ -81,7 +81,7 @@ const Navbar = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2" onClick={closeMenu}>
           {logo ? (
-            <img src={logo} alt="Kamaru Challenge Logo" className="h-32 w-auto" />
+            <img src={logo} alt="Kamaru Challenge Logo" className="h-32 w-auto sm:h-24" />
           ) : (
             <span className="text-xl font-bold text-[#D57500]">Kamaru Challenge</span>
           )}
