@@ -8,8 +8,6 @@ import {
   FaUserShield,
   FaChevronRight,
   FaChevronDown,
-  FaMoon,
-  FaSun,
   FaTimes,
   FaBars,
 } from "react-icons/fa";
@@ -18,19 +16,12 @@ import { fetchSystemImage } from "../api";
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(null);
-  const [darkMode, setDarkMode] = useState(false);
   const [logo, setLogo] = useState(null);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
   const isAdmin = localStorage.getItem("is_admin") === "true";
-
-  useEffect(() => {
-    const savedMode = localStorage.getItem("darkMode") === "true";
-    setDarkMode(savedMode);
-    document.documentElement.classList.toggle("dark", savedMode);
-  }, []);
 
   useEffect(() => {
     fetchSystemImage("logo")
@@ -41,13 +32,6 @@ const Navbar = () => {
       })
       .catch((error) => console.error("Error fetching logo:", error));
   }, []);
-
-  const toggleDarkMode = () => {
-    const newMode = !darkMode;
-    setDarkMode(newMode);
-    document.documentElement.classList.toggle("dark", newMode);
-    localStorage.setItem("darkMode", newMode);
-  };
 
   const closeMenu = () => {
     setMenuOpen(false);
@@ -76,25 +60,22 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white dark:bg-[#333] dark:text-white text-[#333] py-4 shadow-md z-50 relative">
+    <nav className="bg-white text-[#333] py-4 shadow-md z-50 relative">
       <div className="container mx-auto px-4 flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2" onClick={closeMenu}>
           {logo ? (
-            <img src={logo} alt="Kamaru Challenge Logo" className="h-32 w-auto sm:h-16" />
+            <img src={logo} alt="Kamaru Challenge Logo" className="h-16 sm:h-20 md:h-24 lg:h-32 w-auto max-h-32 max-w-[80%]" />
           ) : (
             <span className="text-xl font-bold text-[#D57500]">Kamaru Challenge</span>
           )}
         </Link>
 
-        {/* Mobile Menu Buttons */}
+        {/* Mobile Menu Button */}
         <div className="md:hidden flex gap-4 items-center z-50">
-          <button onClick={toggleDarkMode} className="text-2xl text-[#D57500] dark:text-white">
-            {darkMode ? <FaSun /> : <FaMoon />}
-          </button>
           <button
             onClick={() => setMenuOpen((prev) => !prev)}
-            className="text-2xl text-[#D57500] dark:text-white focus:outline-none"
+            className="text-2xl text-[#D57500] focus:outline-none"
           >
             {menuOpen ? <FaTimes className="transition-transform duration-300" /> : <FaBars className="transition-transform duration-300" />}
           </button>
@@ -105,7 +86,7 @@ const Navbar = () => {
           ref={dropdownRef}
           className={`${
             menuOpen ? "flex" : "hidden"
-          } md:flex md:items-center md:gap-6 fixed md:static top-0 left-0 w-full md:w-auto bg-white dark:bg-[#333] shadow-md md:shadow-none flex-col md:flex-row transition-all duration-300 ease-in-out p-8 md:p-0 z-40 md:z-auto`}
+          } md:flex md:items-center md:gap-6 fixed md:static top-0 left-0 w-full md:w-auto bg-white shadow-md md:shadow-none flex-col md:flex-row transition-all duration-300 ease-in-out p-8 md:p-0 z-40 md:z-auto`}
         >
           <li>
             <Link to="/" onClick={closeMenu} className="block py-2 text-lg hover:text-[#D57500]">
@@ -123,16 +104,16 @@ const Navbar = () => {
               label: "Participate",
               key: "participate",
               items: [
-                { to: "/register/participant", text: "Contend", icon: <FaChevronRight className="text-small"/> },
-                { to: "/register/partner", text: "Partner", icon: <FaChevronRight className="text-small"/> },
+                { to: "/register/participant", text: "Contend", icon: <FaChevronRight className="text-small" /> },
+                { to: "/register/partner", text: "Partner", icon: <FaChevronRight className="text-small" /> },
               ],
             },
             {
               label: "Our Journey",
               key: "journey",
               items: [
-                { to: "/#gallery",  text: "Gallery", icon: <FaChevronRight className="text-sm"/>, hash: true },
-                { to: "/#videos",  text: "Videos", icon: <FaChevronRight className="text-sm" />, hash: true },
+                { to: "/#gallery", text: "Gallery", icon: <FaChevronRight className="text-sm" />, hash: true },
+                { to: "/#videos", text: "Videos", icon: <FaChevronRight className="text-sm" />, hash: true },
               ],
             },
           ].map((drop) => (
@@ -151,7 +132,7 @@ const Navbar = () => {
                 id={`dropdown-${drop.key}`}
                 className={`${
                   dropdownOpen === drop.key ? "block" : "hidden"
-                } md:absolute md:top-full md:left-0 text-white bg-[#333] md:mt-2 py-2 md:w-48 z-50`}
+                } md:absolute md:top-full md:left-0 bg-[#333] text-white md:mt-2 py-2 md:w-48 z-50`}
               >
                 {drop.items.map((item, idx) => (
                   <li key={idx}>
@@ -220,12 +201,6 @@ const Navbar = () => {
               </button>
             </li>
           )}
-
-          <li className="hidden md:block">
-            <button onClick={toggleDarkMode} className="text-xl text-[#D57500] dark:text-white">
-              {darkMode ? <FaSun /> : <FaMoon />}
-            </button>
-          </li>
         </ul>
       </div>
     </nav>
