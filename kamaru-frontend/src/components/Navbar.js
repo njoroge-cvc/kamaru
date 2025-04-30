@@ -112,8 +112,8 @@ const Navbar = () => {
               label: "Our Journey",
               key: "journey",
               items: [
-                { to: "/#gallery", text: "Gallery", icon: <FaChevronRight className="text-sm" />, hash: true },
-                { to: "/#videos", text: "Videos", icon: <FaChevronRight className="text-sm" />, hash: true },
+                { to: "/#gallery", text: "Gallery", icon: <FaAngleDoubleRight className="text-sm" />, hash: true },
+                { to: "/#videos", text: "Videos", icon: <FaAngleDoubleRight className="text-sm" />, hash: true },
               ],
             },
           ].map((drop) => (
