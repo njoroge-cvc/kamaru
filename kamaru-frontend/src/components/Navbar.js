@@ -104,7 +104,7 @@ const Navbar = () => {
               label: "Participate",
               key: "participate",
               items: [
-                { to: "/register/participant", text: "To Contend", icon: <FaAngleDoubleRight className="text-small" /> },
+                { to: "/register/participant", text: "To Contest", icon: <FaAngleDoubleRight className="text-small" /> },
                 { to: "/register/partner", text: "To Partner", icon:  <FaAngleDoubleRight className="text-small" /> },
               ],
             },
