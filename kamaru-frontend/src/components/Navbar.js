@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import {
+  FaAngleDoubleRight,
   FaSignInAlt,
   FaUserPlus,
   FaSignOutAlt,
   FaUserShield,
-  FaChevronRight,
   FaChevronDown,
   FaTimes,
   FaBars,
@@ -104,8 +104,8 @@ const Navbar = () => {
               label: "Participate",
               key: "participate",
               items: [
-                { to: "/register/participant", text: "Contend", icon: <FaChevronRight className="text-small" /> },
-                { to: "/register/partner", text: "Partner", icon: <FaChevronRight className="text-small" /> },
+                { to: "/register/participant", text: "To Contend", icon: <FaAngleDoubleRight className="text-small" /> },
+                { to: "/register/partner", text: "To Partner", icon:  <FaAngleDoubleRight className="text-small" /> },
               ],
             },
             {
