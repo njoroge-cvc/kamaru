@@ -3,10 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import {
   FaAngleDoubleRight,
-  FaSignInAlt,
-  FaUserPlus,
   FaSignOutAlt,
-  FaUserShield,
   FaChevronDown,
   FaTimes,
   FaBars,
@@ -67,7 +64,7 @@ const Navbar = () => {
           {logo ? (
             <img src={logo} alt="Kamaru Challenge Logo" className="h-16 sm:h-20 md:h-24 lg:h-32 w-auto max-h-32 max-w-[80%]" />
           ) : (
-            <span className="text-xl font-bold text-[#D57500]">Kamaru Challenge</span>
+            <span className="text-xl font-bold text-[#333]">Kamaru Challenge</span>
           )}
         </Link>
 
@@ -75,7 +72,7 @@ const Navbar = () => {
         <div className="md:hidden flex gap-4 items-center z-50">
           <button
             onClick={() => setMenuOpen((prev) => !prev)}
-            className="text-2xl text-[#D57500] focus:outline-none"
+            className="text-2xl text-[#333] focus:outline-none"
           >
             {menuOpen ? <FaTimes className="transition-transform duration-300" /> : <FaBars className="transition-transform duration-300" />}
           </button>
@@ -89,17 +86,17 @@ const Navbar = () => {
           } md:flex md:items-center md:gap-6 fixed md:static top-0 left-0 w-full md:w-auto bg-[#333] shadow-md md:shadow-none flex-col md:flex-row transition-all duration-300 ease-in-out p-8 md:p-0 z-40 md:z-auto`}
         >
           <li>
-            <Link to="/" onClick={closeMenu} className="block py-2 text-lg hover:text-[#D57500]">
+            <Link to="/" onClick={closeMenu} className="block py-2 text-lg hover:text-white">
               Home
             </Link>
           </li>
           <li>
-            <HashLink to="/#events" onClick={closeMenu} className="block py-2 text-lg hover:text-[#D57500]" smooth>
+            <HashLink to="/#events" onClick={closeMenu} className="block py-2 text-lg hover:text-white" smooth>
               Events
             </HashLink>
           </li>
 
-          {[
+          {[ 
             {
               label: "Participate",
               key: "participate",
@@ -123,7 +120,7 @@ const Navbar = () => {
                 aria-haspopup="true"
                 aria-expanded={dropdownOpen === drop.key}
                 aria-controls={`dropdown-${drop.key}`}
-                className="flex items-center gap-2 py-2 text-lg hover:text-[#D57500] w-full md:w-auto"
+                className="flex items-center gap-2 py-2 text-lg hover:text-white w-full md:w-auto"
               >
                 {drop.label}
                 <FaChevronDown className={`transition-transform ${dropdownOpen === drop.key ? "rotate-180" : ""}`} />
@@ -144,9 +141,9 @@ const Navbar = () => {
                           closeMenu();
                           setDropdownOpen(null);
                         }}
-                        className="flex items-center gap-2 px-4 py-2 hover:text-[#D57500] transition"
+                        className="flex items-center gap-8 px-4 py-2 hover:text-[#D57500] transition"
                       >
-                        {item.text}
+                        {item.text} {item.icon}
                       </HashLink>
                     ) : (
                       <Link
@@ -155,7 +152,7 @@ const Navbar = () => {
                           closeMenu();
                           setDropdownOpen(null);
                         }}
-                        className="flex items-center gap-2 px-4 py-2 hover:text-[#D57500] transition"
+                        className="flex items-center gap-8 px-4 py-2 hover:text-[#D57500] transition"
                       >
                         {item.text} {item.icon}
                       </Link>
@@ -169,8 +166,7 @@ const Navbar = () => {
           {isAdmin && (
             <li>
               <Link to="/admin" onClick={closeMenu} className="block py-2 text-lg hover:text-[#D57500]">
-                <FaUserShield className="inline mr-1" />
-                Admin Dashboard
+                Admin
               </Link>
             </li>
           )}
@@ -179,13 +175,11 @@ const Navbar = () => {
             <>
               <li>
                 <Link to="/register/user" onClick={closeMenu} className="block py-2 text-lg hover:text-[#D57500]">
-                  <FaUserPlus className="inline mr-1" />
                   Register
                 </Link>
               </li>
               <li>
                 <Link to="/login" onClick={closeMenu} className="block py-2 text-lg hover:text-[#D57500]">
-                  <FaSignInAlt className="inline mr-1" />
                   Login
                 </Link>
               </li>
