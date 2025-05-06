@@ -167,7 +167,7 @@ const Navbar = () => {
               </Link>
               <Link
                 to="/login"
-                className="text-sm font-semibold hover:text-[#D57500]"
+                className="px-5 py-2.5 rounded-lg text-sm tracking-wider font-semibold border-2 border-white outline-none bg-transparent hover:bg-[#D57500] text-white hover:text-[#333] hover:border-transparent transition-all duration-300"
               >
                 Login
               </Link>

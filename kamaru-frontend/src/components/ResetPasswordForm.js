@@ -1,5 +1,8 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { fetchBanners } from "../api"; // Import fetchBanners
+import FloatingLabelInput from "./FloatingLabelInput"; // Import the reusable component
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import icons for password toggle
 
 const ResetPasswordForm = () => {
   const [shortToken, setShortToken] = useState("");
@@ -8,7 +11,21 @@ const ResetPasswordForm = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [bannerImage, setBannerImage] = useState(""); // State for the banner image
+  const [showNewPassword, setShowNewPassword] = useState(false); // State for toggling new password visibility
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State for toggling confirm password visibility
   const navigate = useNavigate();
+
+  // Fetch the banner image
+  useEffect(() => {
+    fetchBanners()
+      .then((res) => {
+        if (res.data.banners.length > 0) {
+          setBannerImage(res.data.banners[1].image_url); // Set the banner image
+        }
+      })
+      .catch((err) => console.error("Error fetching banner image:", err));
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,56 +66,94 @@ const ResetPasswordForm = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-[#FFFFFF] px-4">
-      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-[#F4A261]">
-        <h2 className="text-3xl font-bold text-[#8F3B1B] text-center mb-6">
+    <div
+      className="flex justify-center items-center min-h-screen bg-fixed bg-cover bg-center"
+      style={{
+        backgroundImage: `url(${bannerImage || "/default-banner.jpg"})`, // Use fetched banner or default
+        backgroundColor: "#FFF5EC",
+      }}
+    >
+      <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-sm">
+        <h2 className="text-3xl font-bold text-[#333] text-center mb-6">
           Reset Password
         </h2>
 
-        {message && <p className="text-green-600 text-center">{message}</p>}
-        {error && <p className="text-red-500 text-center">{error}</p>}
+        {message && (
+          <p className="text-green-600 text-sm text-center bg-green-100 py-2 px-3 rounded mb-4">
+            {message}
+          </p>
+        )}
+        {error && (
+          <p className="text-red-500 text-sm text-center bg-red-100 py-2 px-3 rounded mb-4">
+            {error}
+          </p>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <input
+          {/* Reset Code Field */}
+          <FloatingLabelInput
             type="text"
-            placeholder="Enter the reset code"
+            id="reset-code"
+            name="reset-code"
             value={shortToken}
             onChange={(e) => setShortToken(e.target.value)}
+            label="Reset Code"
             required
-            className="w-full px-4 py-3 border border-[#D57500] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4A261] transition-all"
           />
 
-          <input
-            type="password"
-            placeholder="Enter new password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            required
-            className="w-full px-4 py-3 border border-[#D57500] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4A261] transition-all"
-          />
+          {/* New Password Field with Visibility Toggle */}
+          <div className="relative">
+            <FloatingLabelInput
+              type={showNewPassword ? "text" : "password"}
+              id="new-password"
+              name="new-password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              label="New Password"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowNewPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xl text-[#D57500] hover:text-[#333] focus:outline-none"
+            >
+              {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
 
-          <input
-            type="password"
-            placeholder="Confirm new password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            className="w-full px-4 py-3 border border-[#D57500] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4A261] transition-all"
-          />
+          {/* Confirm Password Field with Visibility Toggle */}
+          <div className="relative">
+            <FloatingLabelInput
+              type={showConfirmPassword ? "text" : "password"}
+              id="confirm-password"
+              name="confirm-password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              label="Confirm Password"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xl text-[#D57500] hover:text-[#333] focus:outline-none"
+            >
+              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
 
           <button
             type="submit"
-            className="w-full bg-[#D57500] hover:bg-[#8F3B1B] text-white py-3 rounded-lg font-semibold transition-all duration-300 disabled:opacity-50"
+            className="w-full bg-[#D57500] hover:bg-[#333] text-white py-3 rounded-lg font-semibold transition-all duration-300 disabled:bg-[#333] disabled:cursor-not-allowed"
             disabled={loading}
           >
-            {loading ? "Resetting..." : "Reset Password"}
+            {loading ? "Resetting Password..." : "Reset Password"}
           </button>
         </form>
 
         <div className="text-center mt-5">
           <button
             onClick={() => navigate("/login")}
-            className="text-[#D57500] hover:text-[#8F3B1B] font-semibold transition-all"
+            className="text-[#D57500] hover:text-[#333] font-semibold transition-all"
           >
             Back to Login
           </button>

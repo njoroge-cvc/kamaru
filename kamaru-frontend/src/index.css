@@ -76,3 +76,19 @@ code {
 .animate-slide-up {
   animation: slide-up 0.7s ease-out both;
 }
+
+
+/* Fix for autofill background color for forms */
+input:-webkit-autofill {
+  background-color: white !important;
+  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+  box-shadow: 0 0 0px 1000px white inset !important;
+  color: #333 !important;
+}
+
+input:-webkit-autofill:focus {
+  background-color: white !important;
+  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+  box-shadow: 0 0 0px 1000px white inset !important;
+  color: #333 !important;
+}

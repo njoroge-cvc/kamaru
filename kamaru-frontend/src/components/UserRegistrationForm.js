@@ -1,6 +1,8 @@
-import React, { useState } from "react";
-import { registerUser } from "../api";
+import React, { useState, useEffect } from "react";
+import { registerUser, fetchBanners } from "../api"; // Import fetchBanners
 import { useNavigate } from "react-router-dom";
+import FloatingLabelInput from "./FloatingLabelInput"; // Import the reusable component
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const UserRegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -11,7 +13,20 @@ const UserRegistrationForm = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
+  const [bannerImage, setBannerImage] = useState(""); // State for the banner image
   const navigate = useNavigate();
+
+  // Fetch the banner image
+  useEffect(() => {
+    fetchBanners()
+      .then((res) => {
+        if (res.data.banners.length > 0) {
+          setBannerImage(res.data.banners[1].image_url); // Set the banner image
+        }
+      })
+      .catch((err) => console.error("Error fetching banner image:", err));
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -35,9 +50,18 @@ const UserRegistrationForm = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-[#FFF5EC] px-4">
-      <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-sm">
-        <h2 className="text-3xl font-bold text-[#8F3B1B] text-center mb-4">Register</h2>
+    <div
+      className="flex justify-center items-center min-h-screen bg-fixed bg-cover bg-center"
+      style={{
+        backgroundImage: `url(${bannerImage || "/default-banner.jpg"})`, // Use fetched banner or default
+        backgroundColor: "#FFF5EC",
+      }}
+    >
+      <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-sm">
+        <h2 className="text-3xl font-bold text-[#333] text-center mb-8">Register</h2>
+        <p className="text-sm text-[#333] text-center mb-4">
+          Please fill in the details below to create an account.
+        </p>
 
         {/* Error & Success Messages */}
         {error && <p className="text-red-500 text-sm text-center bg-red-100 p-2 rounded">{error}</p>}
@@ -48,35 +72,47 @@ const UserRegistrationForm = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          <input
+          {/* Username Field */}
+          <FloatingLabelInput
             type="text"
+            id="username"
             name="username"
-            placeholder="Username"
             value={formData.username}
             onChange={handleChange}
+            label="Username"
             required
-            className="w-full px-4 py-3 border border-[#D57500] rounded-md focus:outline-none focus:ring-2 focus:ring-[#F4A261]"
           />
 
-          <input
+          {/* Email Field */}
+          <FloatingLabelInput
             type="email"
+            id="email"
             name="email"
-            placeholder="Email"
             value={formData.email}
             onChange={handleChange}
+            label="Email"
             required
-            className="w-full px-4 py-3 border border-[#D57500] rounded-md focus:outline-none focus:ring-2 focus:ring-[#F4A261]"
           />
 
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-3 border border-[#D57500] rounded-md focus:outline-none focus:ring-2 focus:ring-[#F4A261]"
-          />
+          {/* Password Field with Visibility Toggle */}
+          <div className="relative">
+            <FloatingLabelInput
+              type={showPassword ? "text" : "password"}
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              label="Password"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xl text-[#D57500] hover:text-[#333] focus:outline-none"
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
 
           <button
             type="submit"
