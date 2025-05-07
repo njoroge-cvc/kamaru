@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import {
@@ -8,6 +8,7 @@ import {
   FaTimes,
   FaBars,
 } from "react-icons/fa";
+import { FiLogIn, FiUserPlus } from "react-icons/fi";
 import { fetchSystemImage } from "../api";
 
 const Navbar = () => {
@@ -15,6 +16,7 @@ const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const [logo, setLogo] = useState(null);
   const navigate = useNavigate();
+  const dropdownRef = useRef(null);
 
   const token = localStorage.getItem("token");
   const isAdmin = localStorage.getItem("is_admin") === "true";
@@ -27,6 +29,17 @@ const Navbar = () => {
         }
       })
       .catch((error) => console.error("Error fetching logo:", error));
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const closeMenu = () => {
@@ -67,7 +80,7 @@ const Navbar = () => {
   return (
     <nav className="bg-[#333] text-white py-4 shadow-md z-50 relative">
       <div className="container mx-auto px-4 flex justify-between items-center">
-        {/* Left: Logo */}
+        {/* Logo */}
         <div className="flex items-center">
           <Link to="/" className="flex items-center gap-2" onClick={closeMenu}>
             {logo ? (
@@ -78,7 +91,7 @@ const Navbar = () => {
           </Link>
         </div>
 
-        {/* Right: Menu Toggle */}
+        {/* Mobile Toggle */}
         <div className="lg:hidden">
           <button
             onClick={() => setMenuOpen((prev) => !prev)}
@@ -88,8 +101,8 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Center: Nav Links */}
-        <div className="hidden lg:flex items-center gap-6">
+        {/* Desktop Nav */}
+        <div className="hidden lg:flex items-center gap-6" ref={dropdownRef}>
           <Link to="/" className="text-lg hover:text-[#D57500]">Home</Link>
           <HashLink smooth to="/#events" className="text-lg hover:text-[#D57500]">Events</HashLink>
 
@@ -106,31 +119,22 @@ const Navbar = () => {
               </button>
               <ul
                 id={`${drop.key}-dropdown`}
-                className={`absolute top-full left-0 bg-[#333] mt-2 py-2 w-56 z-50 ${
+                className={`absolute top-full left-0 bg-[#333] mt-2 py-2 w-64 rounded-md shadow-lg z-50 ${
                   dropdownOpen === drop.key ? "block" : "hidden"
                 }`}
               >
                 {drop.items.map((item, idx) => (
                   <li key={idx} className="flex items-center px-4 py-2 hover:text-[#D57500]">
-                    {item.icon}
                     {item.hash ? (
-                      <HashLink
-                        smooth
-                        to={item.to}
-                        onClick={closeMenu}
-                        className="ml-2"
-                      >
+                      <HashLink smooth to={item.to} onClick={closeMenu} className="mr-2">
                         {item.text}
                       </HashLink>
                     ) : (
-                      <Link
-                        to={item.to}
-                        onClick={closeMenu}
-                        className="ml-2"
-                      >
+                      <Link to={item.to} onClick={closeMenu} className="mr-2">
                         {item.text}
                       </Link>
                     )}
+                    {item.icon}
                   </li>
                 ))}
               </ul>
@@ -142,12 +146,18 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Auth Buttons */}
+        {/* Desktop Auth */}
         <div className="hidden lg:flex items-center gap-4">
           {!token ? (
             <>
-              <Link to="/register/user" className="text-lg hover:text-[#D57500]">Register</Link>
-              <Link to="/login" className="text-lg hover:text-[#D57500]">Login</Link>
+              <Link to="/register/user" className="text-lg px-3 py-1 rounded-2xl border-2 border-white hover:text-[#333] hover:border-transparent hover:bg-[#D57500] flex items-center gap-2">
+                <span>Register</span>
+                <FiUserPlus />
+              </Link>
+              <Link to="/login" className="text-lg px-3 py-1 rounded-2xl border-2 border-white hover:text-[#333] hover:border-transparent hover:bg-[#D57500] flex items-center gap-2">
+                <span>Login</span>
+                <FiLogIn />
+              </Link>
             </>
           ) : (
             <button
@@ -184,20 +194,11 @@ const Navbar = () => {
                     <li key={idx} className="flex items-center py-1 hover:text-[#D57500]">
                       {item.icon}
                       {item.hash ? (
-                        <HashLink
-                          smooth
-                          to={item.to}
-                          onClick={closeMenu}
-                          className="ml-2"
-                        >
+                        <HashLink smooth to={item.to} onClick={closeMenu} className="ml-2">
                           {item.text}
                         </HashLink>
                       ) : (
-                        <Link
-                          to={item.to}
-                          onClick={closeMenu}
-                          className="ml-2"
-                        >
+                        <Link to={item.to} onClick={closeMenu} className="ml-2">
                           {item.text}
                         </Link>
                       )}
@@ -213,6 +214,8 @@ const Navbar = () => {
               Admin
             </Link>
           )}
+
+          <hr className="border-t border-gray-500 my-2" />
 
           {!token ? (
             <>

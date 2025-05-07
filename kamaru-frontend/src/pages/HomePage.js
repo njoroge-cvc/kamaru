@@ -394,7 +394,7 @@ const FloatingRegisterButton = () => (
   <div className="fixed bottom-6 left-6 md:hidden z-50">
     <Link
       to="/register/participant"
-      className="bg-[#D57500] text-white px-6 py-3 rounded-full shadow-lg bounce-animation"
+      className="bg-[#D57500] text-white px-6 py-3 rounded-full shadow-lg bounce-animation hover:bg-[#333]"
     >
       Register Now
     </Link>
