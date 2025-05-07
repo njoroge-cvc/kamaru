@@ -13,7 +13,8 @@ import { fetchSystemImage } from "../api";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(null); // for desktop
+  const [mobileDropdownOpen, setMobileDropdownOpen] = useState(null); // for mobile
   const [logo, setLogo] = useState(null);
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
@@ -43,12 +44,19 @@ const Navbar = () => {
   }, []);
 
   const closeMenu = () => {
-    setMenuOpen(false);
-    setDropdownOpen(null);
+    setTimeout(() => {
+      setMenuOpen(false);
+      setDropdownOpen(null);
+      setMobileDropdownOpen(null);
+    }, 300);
   };
 
   const handleDropdownToggle = (menu) => {
     setDropdownOpen((prev) => (prev === menu ? null : menu));
+  };
+
+  const handleMobileDropdownToggle = (menu) => {
+    setMobileDropdownOpen((prev) => (prev === menu ? null : menu));
   };
 
   const handleLogout = () => {
@@ -111,14 +119,11 @@ const Navbar = () => {
               <button
                 onClick={() => handleDropdownToggle(drop.key)}
                 className="flex items-center gap-2 text-lg hover:text-[#D57500]"
-                aria-expanded={dropdownOpen === drop.key}
-                aria-controls={`${drop.key}-dropdown`}
               >
                 {drop.label}
                 <FaChevronDown className={`transition-transform ${dropdownOpen === drop.key ? "rotate-180" : ""}`} />
               </button>
               <ul
-                id={`${drop.key}-dropdown`}
                 className={`absolute top-full left-0 bg-[#333] mt-2 py-2 w-64 rounded-md shadow-lg z-50 ${
                   dropdownOpen === drop.key ? "block" : "hidden"
                 }`}
@@ -180,25 +185,32 @@ const Navbar = () => {
           {dropdowns.map((drop) => (
             <div key={drop.key}>
               <button
-                onClick={() => handleDropdownToggle(drop.key)}
+                onClick={() => handleMobileDropdownToggle(drop.key)}
                 className="flex items-center gap-2 py-2 text-lg hover:text-[#D57500]"
-                aria-expanded={dropdownOpen === drop.key}
-                aria-controls={`${drop.key}-mobile-dropdown`}
               >
                 {drop.label}
-                <FaChevronDown className={`transition-transform ${dropdownOpen === drop.key ? "rotate-180" : ""}`} />
+                <FaChevronDown className={`transition-transform ${mobileDropdownOpen === drop.key ? "rotate-180" : ""}`} />
               </button>
-              {dropdownOpen === drop.key && (
-                <ul id={`${drop.key}-mobile-dropdown`} className="pl-4">
+              {mobileDropdownOpen === drop.key && (
+                <ul className="pl-4">
                   {drop.items.map((item, idx) => (
                     <li key={idx} className="flex items-center py-1 hover:text-[#D57500]">
                       {item.icon}
                       {item.hash ? (
-                        <HashLink smooth to={item.to} onClick={closeMenu} className="ml-2">
+                        <HashLink
+                          smooth
+                          to={item.to}
+                          onClick={closeMenu}
+                          className="ml-2"
+                        >
                           {item.text}
                         </HashLink>
                       ) : (
-                        <Link to={item.to} onClick={closeMenu} className="ml-2">
+                        <Link
+                          to={item.to}
+                          onClick={closeMenu}
+                          className="ml-2"
+                        >
                           {item.text}
                         </Link>
                       )}
