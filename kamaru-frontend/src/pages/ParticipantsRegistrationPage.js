@@ -27,7 +27,10 @@ const ParticipantsRegistrationPage = () => {
     fetchBanners()
       .then((res) => {
         if (res.data.banners.length > 0) {
-          setBannerImage(res.data.banners[0].image_url);
+          setBannerImage({
+            main: res.data.banners[0].image_url,
+            cta: res.data.banners[1].image_url,
+          });
         }
       })
       .catch((err) => console.error("Banner fetch error:", err));
@@ -78,7 +81,7 @@ const ParticipantsRegistrationPage = () => {
       {/* Banner */}
       <div
         className="relative h-48 sm:h-64 w-full bg-cover bg-center"
-        style={{ backgroundImage: `url(${bannerImage || "/default-banner.jpg"})` }}
+        style={{ backgroundImage: `url(${bannerImage?.main || "/default-banner.jpg"})` }}
       >
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
           <FaChevronDown className="text-white animate-bounce text-xl sm:text-2xl" />
@@ -197,7 +200,13 @@ const ParticipantsRegistrationPage = () => {
       </section>
 
       {/* CTA Registration */}
-      <section className="py-8 px-4 text-center">
+      <section 
+      className="py-8 px-4 text-center"
+      style={{
+        backgroundImage: `url(${bannerImage?.cta || "/default-banner.jpg"})`,
+        backgroundColor: "white",
+      }}
+      >
         {!showForm ? (
           <button
             onClick={handleParticipateClick}

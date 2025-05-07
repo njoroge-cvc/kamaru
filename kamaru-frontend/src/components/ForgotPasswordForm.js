@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchBanners } from "../api"; // Import fetchBanners
 import FloatingLabelInput from "./FloatingLabelInput"; // Import the reusable component
+import { Loader2 } from "lucide-react"; // Import the loader icon
 
 const ForgotPasswordForm = () => {
   const [email, setEmail] = useState("");
@@ -87,12 +88,14 @@ const ForgotPasswordForm = () => {
             required
           />
 
+
           <button
-            type="submit"
-            className="w-full bg-[#D57500] hover:bg-[#333] text-white py-3 rounded-lg font-semibold transition-all duration-300 disabled:bg-[#333] disabled:cursor-not-allowed"
-            disabled={loading}
-          >
-            {loading ? "Sending code..." : "Send Reset Code"}
+                    type="submit"
+                    disabled={loading}
+                    className="w-full flex items-center justify-center gap-2 bg-[#D57500] text-white font-semibold py-3 rounded-md hover:bg-[#333] transition duration-300 disabled:bg-[#333] disabled:cursor-not-allowed"
+                  >
+                    {loading && <Loader2 className="animate-spin w-5 h-5" />}
+                    {loading ? "Sending code..." : "Send Reset Code"}
           </button>
         </form>
 

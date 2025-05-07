@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { registerParticipant } from "../api";
 import { useNavigate } from "react-router-dom";
-import { Loader2 } from "lucide-react"; // Spinner icon from lucide-react
+import { Loader2, ChevronDown, ChevronUp } from "lucide-react";
+import FloatingLabelInput from "./FloatingLabelInput";
 
 const ParticipantsRegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ const ParticipantsRegistrationForm = () => {
   });
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
   const categories = [
@@ -34,6 +36,11 @@ const ParticipantsRegistrationForm = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleCategorySelect = (category) => {
+    setFormData({ ...formData, category });
+    setDropdownOpen(false);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
@@ -54,122 +61,99 @@ const ParticipantsRegistrationForm = () => {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="max-w-xl mx-auto p-6 bg-white shadow-2xl rounded-2xl space-y-6 animate-fade-in"
-    >
-      <h2 className="text-2xl font-bold text-center text-[#D57500]">Register to Contend</h2>
-      <p className="text-center text-sm text-gray-500">
-        Fill in your details to participate in the upcoming festival.
-      </p>
+    <div className="flex justify-center items-center min-h-full bg-fixed bg-cover bg-center relative z-10">
+      <form
+        onSubmit={handleSubmit}
+        className="max-w-xl mx-auto p-6 bg-white shadow-2xl rounded-2xl space-y-6 animate-fade-in w-full"
+      >
+        <h2 className="text-2xl font-bold text-center text-[#D57500]">Register to Contend</h2>
+        <p className="text-center text-sm text-gray-500">
+          Fill in your details to participate in the upcoming festival.
+        </p>
 
-      {feedback && (
-        <div
-          className={`p-3 rounded-md text-sm text-center font-medium ${
-            feedback.type === "success" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"
-          }`}
-        >
-          {feedback.message}
-        </div>
-      )}
+        {feedback && (
+          <div
+            className={`p-3 rounded-md text-sm text-center font-medium ${
+              feedback.type === "success"
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-600"
+            }`}
+          >
+            {feedback.message}
+          </div>
+        )}
 
-      {/* Name */}
-      <div className="relative">
-        <input
+        <FloatingLabelInput
           id="name"
           name="name"
           value={formData.name}
           onChange={handleChange}
-          placeholder=" "
+          label="Full Name"
           required
-          disabled={loading}
-          className="peer w-full px-3 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#DBCA60] placeholder-transparent"
         />
-        <label
-          htmlFor="name"
-          className="absolute left-3 top-2 text-sm text-gray-600 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-[#8F3B1B]"
-        >
-          Full Name
-        </label>
-      </div>
 
-      {/* Email */}
-      <div className="relative">
-        <input
-          id="email"
+        <FloatingLabelInput
           type="email"
+          id="email"
           name="email"
           value={formData.email}
           onChange={handleChange}
-          placeholder=" "
+          label="Email Address"
           required
-          disabled={loading}
-          className="peer w-full px-3 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#DBCA60] placeholder-transparent"
         />
-        <label
-          htmlFor="email"
-          className="absolute left-3 top-2 text-sm text-gray-600 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-[#8F3B1B]"
-        >
-          Email Address
-        </label>
-      </div>
 
-      {/* Phone */}
-      <div className="relative">
-        <input
-          id="phone"
+        <FloatingLabelInput
           type="tel"
+          id="phone"
           name="phone"
           value={formData.phone}
           onChange={handleChange}
-          placeholder=" "
+          label="Phone Number"
           required
-          disabled={loading}
-          className="peer w-full px-3 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#DBCA60] placeholder-transparent"
         />
-        <label
-          htmlFor="phone"
-          className="absolute left-3 top-2 text-sm text-gray-600 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-[#8F3B1B]"
-        >
-          Phone Number
-        </label>
-      </div>
 
-      {/* Category */}
-      <div>
-        <label htmlFor="category" className="block text-sm font-medium text-[#333] mb-1">
-          Select Category
-        </label>
-        <select
-          id="category"
-          name="category"
-          value={formData.category}
-          onChange={handleChange}
-          required
+        {/* Custom Dropdown for Category */}
+        <div className="relative z-50">
+          <label htmlFor="category" className="block text-sm font-medium text-[#333] mb-1">
+            Select Category
+          </label>
+          <button
+            type="button"
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="w-full px-3 py-2 border rounded-md bg-white text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#D57500]"
+          >
+            {formData.category || "-- Choose --"}
+            {dropdownOpen ? (
+              <ChevronUp className="w-5 h-5 text-gray-500" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-gray-500" />
+            )}
+          </button>
+          {dropdownOpen && (
+            <ul className="absolute w-full bg-white border rounded-md shadow-md mt-1 z-50">
+              {categories.map((cat, idx) => (
+                <li
+                  key={idx}
+                  onClick={() => handleCategorySelect(cat)}
+                  className="px-3 py-2 hover:bg-[#333] hover:text-white cursor-pointer items-start transition"
+                >
+                  {cat}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <button
+          type="submit"
           disabled={loading}
-          className="w-full px-3 py-2 border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#DBCA60]"
+          className="w-full flex items-center justify-center gap-2 bg-[#D57500] text-white font-semibold py-3 rounded-md hover:bg-[#333] transition duration-300 disabled:bg-[#333] disabled:cursor-not-allowed"
         >
-          <option value="" disabled>
-            -- Choose --
-          </option>
-          {categories.map((cat, idx) => (
-            <option key={idx} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Submit Button */}
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full flex items-center justify-center gap-2 bg-[#D57500] text-white font-semibold py-3 rounded-md hover:bg-[#333] transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {loading && <Loader2 className="animate-spin w-5 h-5" />}
-        {loading ? "Submitting..." : "Register"}
-      </button>
-    </form>
+          {loading && <Loader2 className="animate-spin w-5 h-5" />}
+          {loading ? "Submitting..." : "Register"}
+        </button>
+      </form>
+    </div>
   );
 };
 

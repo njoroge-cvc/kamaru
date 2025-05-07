@@ -3,6 +3,7 @@ import { registerUser, fetchBanners } from "../api"; // Import fetchBanners
 import { useNavigate } from "react-router-dom";
 import FloatingLabelInput from "./FloatingLabelInput"; // Import the reusable component
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { Loader2 } from "lucide-react"; // Import the loader icon
 
 const UserRegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -115,11 +116,12 @@ const UserRegistrationForm = () => {
           </div>
 
           <button
-            type="submit"
-            className="w-full bg-[#D57500] hover:bg-[#333] text-white py-3 rounded-md transition duration-300"
-            disabled={loading}
-          >
-            {loading ? "Registering..." : "Register"}
+                    type="submit"
+                    disabled={loading}
+                    className="w-full flex items-center justify-center gap-2 bg-[#D57500] text-white font-semibold py-3 rounded-md hover:bg-[#333] transition duration-300 disabled:bg-[#333] disabled:cursor-not-allowed"
+                  >
+                    {loading && <Loader2 className="animate-spin w-5 h-5" />}
+                    {loading ? "Registering..." : "Register"}
           </button>
         </form>
 
