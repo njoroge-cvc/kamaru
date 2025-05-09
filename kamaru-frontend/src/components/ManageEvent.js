@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { fetchEvents, createEvent, deleteEvent, updateEvent } from "../api";
+import {
+  fetchEvents,
+  createEvent,
+  deleteEvent,
+  updateEvent,
+} from "../api";
 import { FaTrash, FaPlus, FaTimes, FaEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
+import LexicalEditor from "../components/LexicalEditor";
 
 const ManageEvent = () => {
   const [events, setEvents] = useState([]);
@@ -17,6 +23,7 @@ const ManageEvent = () => {
   });
   const [editMode, setEditMode] = useState(false);
   const [editEventId, setEditEventId] = useState(null);
+  const [expandedRows, setExpandedRows] = useState({});
 
   useEffect(() => {
     loadEvents();
@@ -27,24 +34,33 @@ const ManageEvent = () => {
       const response = await fetchEvents();
       setEvents(response.data);
     } catch (error) {
-      console.error("Error fetching events:", error);
       toast.error("Failed to load events.");
+      console.error("Error fetching events:", error);
     }
   };
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: files ? files[0] : value,
-    });
+    }));
+  };
+
+  const handleDetailsChange = (value) => {
+    setFormData((prev) => ({
+      ...prev,
+      details: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     const data = new FormData();
-    Object.entries(formData).forEach(([key, value]) => data.append(key, value));
+    Object.entries(formData).forEach(([key, value]) => {
+      data.append(key, value);
+    });
 
     try {
       if (editMode) {
@@ -57,8 +73,8 @@ const ManageEvent = () => {
       setShowForm(false);
       loadEvents();
     } catch (error) {
-      console.error("Error saving event:", error);
       toast.error("Failed to save event.");
+      console.error("Error saving event:", error);
     } finally {
       setLoading(false);
     }
@@ -72,8 +88,8 @@ const ManageEvent = () => {
       setEvents(events.filter((event) => event.id !== id));
       toast.success("Event deleted successfully!");
     } catch (error) {
-      console.error("Error deleting event:", error);
       toast.error("Failed to delete event.");
+      console.error("Error deleting event:", error);
     }
   };
 
@@ -86,197 +102,193 @@ const ManageEvent = () => {
       details: event.details,
       date_time: event.date_time,
       location: event.location,
-      image: null, // Image is handled separately
+      image: null,
     });
     setShowForm(true);
   };
 
+  const toggleExpand = (id) => {
+    setExpandedRows((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
   return (
-    <div className="p-6 bg-white shadow-md rounded-md">
-      <h2 className="text-2xl font-semibold text-[#8F3B1B] mb-4">Manage Events</h2>
-
-      {/* Create Event Button */}
-      <button
-        onClick={() => {
-          setEditMode(false);
-          setFormData({
-            title: "",
-            theme: "",
-            details: "",
-            date_time: "",
-            location: "",
-            image: null,
-          });
-          setShowForm(true);
-        }}
-        className="bg-[#D57500] text-white px-4 py-2 rounded-md flex items-center space-x-2 mb-4 hover:bg-[#8F3B1B] transition"
-      >
-        <FaPlus />
-        <span>Create Event</span>
-      </button>
-
-      {/* Event Table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200 rounded-md">
-          <thead className="bg-[#D57500] text-white">
-            <tr>
-              <th className="px-4 py-2 text-left">Title</th>
-              <th className="px-4 py-2 text-left">Theme</th>
-              <th className="px-4 py-2 text-left">Details</th>
-              <th className="px-4 py-2 text-left">Date & Time</th>
-              <th className="px-4 py-2 text-left">Location</th>
-              <th className="px-4 py-2 text-left">Image</th>
-              <th className="px-4 py-2 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {events.map((event) => (
-              <tr key={event.id} className="border-b">
-                <td className="px-4 py-2">{event.title}</td>
-                <td className="px-4 py-2">{event.theme}</td>
-                <td className="px-4 py-2">{event.details}</td>
-                <td className="px-4 py-2">{new Date(event.date_time).toLocaleString()}</td>
-                <td className="px-4 py-2">{event.location}</td>
-                <td className="px-4 py-2">
-                  <img
-                    src={event.image_url}
-                    alt={event.title}
-                    className="w-16 h-16 object-cover rounded-md"
-                  />
-                </td>
-                <td className="px-4 py-2 flex space-x-2">
-                  <button
-                    onClick={() => handleEdit(event)}
-                    className="bg-[#8F3B1B] text-white px-3 py-1 rounded-md flex items-center"
-                  >
-                    <FaEdit />
-                    <span className="hidden md:inline">Edit</span>
-                  </button>
-                  <button
-                    onClick={() => handleDelete(event.id)}
-                    className="bg-red-600 text-white px-3 py-1 rounded-md flex items-center"
-                  >
-                    <FaTrash />
-                    <span className="hidden md:inline">Delete</span>
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="p-0 md:p-6 bg-white rounded-md shadow-md">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+        <h2 className="text-xl md:text-2xl font-semibold text-[#333]">Manage Events</h2>
+        <button
+          onClick={() => {
+            setEditMode(false);
+            setFormData({
+              title: "",
+              theme: "",
+              details: "",
+              date_time: "",
+              location: "",
+              image: null,
+            });
+            setShowForm(true);
+          }}
+          className="bg-[#D57500] text-white px-3 py-2 rounded hover:bg-[#333] flex items-center gap-2 w-full sm:w-auto"
+        >
+          <FaPlus /> <span>Create Event</span>
+        </button>
       </div>
 
-      {/* Create/Edit Event Form */}
+      <div className="relative w-full mt-4">
+        <div className="overflow-x-auto">
+          <table className="min-w-[900px] w-full border border-gray-200 rounded-md">
+            <thead className="bg-[#D57500] text-white">
+              <tr>
+                <th className="p-2 text-left">Title</th>
+                <th className="p-2 text-left">Theme</th>
+                <th className="p-2 text-left">Details</th>
+                <th className="p-2 text-left">Date & Time</th>
+                <th className="p-2 text-left">Location</th>
+                <th className="p-2 text-left">Image</th>
+                <th className="p-2 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {events.map((event) => {
+                const isExpanded = expandedRows[event.id];
+                const plainDetails = event.details.replace(/<[^>]+>/g, "");
+                const preview = plainDetails.length > 60 ? plainDetails.slice(0, 60) + "..." : plainDetails;
+                return (
+                  <tr key={event.id} className="border-b">
+                    <td className="p-2 break-words whitespace-normal text-xs sm:text-sm">{event.title}</td>
+                    <td className="p-2 break-words whitespace-normal text-xs sm:text-sm">{event.theme}</td>
+                    <td className="p-2 max-w-[120px] break-words whitespace-normal text-xs sm:text-sm">
+                      {isExpanded ? (
+                        <>
+                          <div dangerouslySetInnerHTML={{ __html: event.details }} />
+                          <button
+                            className="text-[#D57500] text-xs underline mt-1"
+                            onClick={() => toggleExpand(event.id)}
+                          >
+                            Show less
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <span>{preview}</span>
+                          {plainDetails.length > 60 && (
+                            <button
+                              className="text-[#D57500] text-xs underline ml-1"
+                              onClick={() => toggleExpand(event.id)}
+                            >
+                              Show more
+                            </button>
+                          )}
+                        </>
+                      )}
+                    </td>
+                    <td className="p-2 break-words whitespace-normal text-xs sm:text-sm">
+                      {new Date(event.date_time).toLocaleString()}
+                    </td>
+                    <td className="p-2 break-words whitespace-normal text-xs sm:text-sm">{event.location}</td>
+                    <td className="p-2">
+                      <img
+                        src={event.image_url}
+                        alt={event.title}
+                        className="w-10 h-10 md:w-14 md:h-14 object-cover rounded-md"
+                      />
+                    </td>
+                    <td className="p-2 flex flex-col md:flex-row gap-2">
+                      <button
+                        onClick={() => handleEdit(event)}
+                        className="bg-[#D57500] text-white px-3 py-1 rounded hover:bg-[#c26a00] flex items-center gap-1 justify-center"
+                      >
+                        <FaEdit /> <span className="hidden md:inline">Edit</span>
+                      </button>
+                      <button
+                        onClick={() => handleDelete(event.id)}
+                        className="bg-[#333] text-white px-3 py-1 rounded hover:bg-[#222] flex items-center gap-1 justify-center"
+                      >
+                        <FaTrash /> <span className="hidden md:inline">Delete</span>
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-md shadow-lg w-96">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white w-[95%] md:w-[500px] p-6 rounded-md shadow-xl">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold text-[#8F3B1B]">
                 {editMode ? "Edit Event" : "Create Event"}
               </h3>
               <button
                 onClick={() => setShowForm(false)}
-                className="text-gray-600 hover:text-gray-900"
+                className="text-[#333] hover:text-[#D57500]"
               >
-                <FaTimes className="text-xl" />
+                <FaTimes />
               </button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                placeholder="Event Title"
+                required
+                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-[#D57500]"
+              />
+              <input
+                type="text"
+                name="theme"
+                value={formData.theme}
+                onChange={handleChange}
+                placeholder="Event Theme"
+                required
+                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-[#D57500]"
+              />
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Title
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  placeholder="Enter event title"
-                  value={formData.title}
-                  onChange={handleChange}
-                  required
-                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#D57500]"
-                />
+                <label className="block text-sm mb-1 font-medium">Details</label>
+                <div className="w-full border rounded p-2">
+                  <LexicalEditor
+                    initialContent={formData.details}
+                    onChange={handleDetailsChange}
+                  />
+                </div>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Theme
-                </label>
-                <input
-                  type="text"
-                  name="theme"
-                  placeholder="Enter event theme"
-                  value={formData.theme}
-                  onChange={handleChange}
-                  required
-                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#D57500]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Details
-                </label>
-                <textarea
-                  name="details"
-                  placeholder="Enter event details"
-                  value={formData.details}
-                  onChange={handleChange}
-                  required
-                  className="w-full p-2 border rounded-md h-24 focus:outline-none focus:ring-2 focus:ring-[#D57500]"
-                ></textarea>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Date & Time
-                </label>
-                <input
-                  type="datetime-local"
-                  name="date_time"
-                  value={formData.date_time}
-                  onChange={handleChange}
-                  required
-                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#D57500]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Location
-                </label>
-                <input
-                  type="text"
-                  name="location"
-                  placeholder="Enter event location"
-                  value={formData.location}
-                  onChange={handleChange}
-                  required
-                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#D57500]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Image
-                </label>
-                <input
-                  type="file"
-                  name="image"
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#D57500]"
-                />
-              </div>
-
+              <input
+                type="datetime-local"
+                name="date_time"
+                value={formData.date_time}
+                onChange={handleChange}
+                required
+                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-[#D57500]"
+              />
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                placeholder="Event Location"
+                required
+                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-[#D57500]"
+              />
+              <input
+                type="file"
+                name="image"
+                onChange={handleChange}
+                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#D57500]"
+              />
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#D57500] text-white py-2 rounded-md hover:bg-[#8F3B1B] transition"
+                className="w-full bg-[#D57500] text-white py-2 rounded hover:bg-[#333] transition"
               >
-                {loading
-                  ? "Processing..."
-                  : editMode
-                  ? "Update Event"
-                  : "Create Event"}
+                {loading ? "Processing..." : editMode ? "Update Event" : "Create Event"}
               </button>
             </form>
           </div>
@@ -287,36 +299,3 @@ const ManageEvent = () => {
 };
 
 export default ManageEvent;
-// This component is responsible for managing events, including creating, editing, and deleting events.
-// It uses the `useState` and `useEffect` hooks to manage state and side effects.
-// The `loadEvents` function fetches the list of events from the server.
-// The `handleChange` function updates the form data state when the user types in the input fields.
-// The `handleSubmit` function handles the form submission, either creating or updating an event.
-// The `handleDelete` function deletes an event when the user confirms the action.
-// The `handleEdit` function sets the form data for editing an existing event.
-// The component renders a table of events and a form for creating/editing events.
-// It also uses the `toast` library to show notifications for success and error messages.
-// The component is styled using Tailwind CSS classes for a modern and responsive design.
-// The form is displayed as a modal when the user clicks the "Create Event" button or the edit button for an existing event.
-// The modal can be closed by clicking the close button or submitting the form.
-// The component is designed to be reusable and can be easily integrated into a larger application.
-// The component is also responsive and works well on different screen sizes.
-// The form includes validation to ensure that required fields are filled out before submission.
-// The component uses Font Awesome icons for the action buttons, providing a clean and modern look.
-// The component is easy to maintain and extend, allowing for future enhancements or changes.
-// The component is designed to be user-friendly, with clear labels and placeholders for input fields.
-// The component is well-structured and follows best practices for React development.
-// The component can be easily tested using unit tests or integration tests.
-// The component is compatible with modern browsers and follows accessibility standards.
-// The component is designed to be performant, with efficient state management and rendering.
-// The component can be easily integrated with a backend API for event management.
-// The component is designed to be modular, allowing for easy reuse in different parts of the application.
-// The component can be easily styled or themed to match the overall design of the application.
-// The component is designed to be maintainable, with clear separation of concerns and reusable functions.
-// The component is designed to be scalable, allowing for future enhancements or changes.
-// The component is designed to be flexible, allowing for different configurations or options.
-// The component is designed to be robust, with error handling and fallback mechanisms.
-// The component is designed to be secure, with proper validation and sanitization of user input.
-// The component is designed to be efficient, with minimal resource usage and fast loading times.
-// The component is designed to be reliable, with consistent behavior and performance.
-// The component is designed to be extensible, allowing for easy addition of new features or functionality.

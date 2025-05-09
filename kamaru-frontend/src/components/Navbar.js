@@ -3,12 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import {
   FaAngleDoubleRight,
-  FaSignOutAlt,
   FaChevronDown,
   FaTimes,
   FaBars,
 } from "react-icons/fa";
-import { FiLogIn, FiUserPlus } from "react-icons/fi";
+import { FiLogIn, FiLogOut,FiUserPlus } from "react-icons/fi";
 import { fetchSystemImage } from "../api";
 
 const Navbar = () => {
@@ -155,11 +154,11 @@ const Navbar = () => {
         <div className="hidden lg:flex items-center gap-4">
           {!token ? (
             <>
-              <Link to="/register/user" className="text-lg px-3 py-1 rounded-2xl border-2 border-white hover:text-[#333] hover:border-transparent hover:bg-[#D57500] flex items-center gap-2">
+              <Link to="/register/user" className="text-lg px-3 py-1 rounded border-2 border-white hover:text-[#333] hover:border-transparent hover:bg-[#D57500] flex items-center gap-2">
                 <span>Register</span>
                 <FiUserPlus />
               </Link>
-              <Link to="/login" className="text-lg px-3 py-1 rounded-2xl border-2 border-white hover:text-[#333] hover:border-transparent hover:bg-[#D57500] flex items-center gap-2">
+              <Link to="/login" className="text-lg px-3 py-1 rounded border-2 border-white hover:text-[#333] hover:border-transparent hover:bg-[#D57500] flex items-center gap-2">
                 <span>Login</span>
                 <FiLogIn />
               </Link>
@@ -167,10 +166,9 @@ const Navbar = () => {
           ) : (
             <button
               onClick={handleLogout}
-              className="bg-[#D57500] hover:bg-[#444] text-white px-4 py-2 rounded-md"
+              className="text-lg px-3 py-1 rounded border-2 border-white hover:text-[#333] hover:border-transparent hover:bg-[#D57500] flex items-center gap-2"
             >
-              <FaSignOutAlt className="inline mr-1" />
-              Logout
+              <FiLogOut className="inline mr-1" />Logout
             </button>
           )}
         </div>
@@ -237,10 +235,10 @@ const Navbar = () => {
           ) : (
             <button
               onClick={handleLogout}
-              className="block w-full text-left bg-[#D57500] hover:bg-[#444] text-white px-4 py-2 mt-2 rounded-md"
+              className="block py-2 text-lg hover:text-[#D57500]"
             >
-              <FaSignOutAlt className="inline mr-1" />
-              Logout
+              <FiLogOut className="inline mr-1" />Logout
+              
             </button>
           )}
         </div>
