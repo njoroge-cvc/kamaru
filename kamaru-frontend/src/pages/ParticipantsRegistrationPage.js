@@ -143,7 +143,6 @@ const ParticipantsRegistrationPage = () => {
           "Folk Songs",
           "Original Songs",
           "Rendition",
-          "Use of African Proverbs in Spoken Word",
         ].map((cat, i) => (
           <li key={i} className="flex items-center gap-2">
             <span className="w-2 h-2 bg-[#D57500] rounded-full"></span>

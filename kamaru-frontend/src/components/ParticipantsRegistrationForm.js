@@ -21,7 +21,6 @@ const ParticipantsRegistrationForm = () => {
     "Folk Songs",
     "Original Songs",
     "Rendition",
-    "Use of African Proverbs in Spoken Word",
   ];
 
   useEffect(() => {

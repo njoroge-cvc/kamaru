@@ -266,7 +266,7 @@ const HomePage = () => {
           {/* Text Overlay */}
           <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-[#D57500] bg-opacity-80 text-white px-4 py-2 rounded-t-md shadow-md">
             <p className="text-sm font-semibold">Paul Ndung'u Kioi</p>
-            <p className="text-xs">Director, Kamaru Challenge</p>
+            <p className="text-xs">Patron, Kamaru Challenge</p>
           </div>
         </div>
       ) : (
