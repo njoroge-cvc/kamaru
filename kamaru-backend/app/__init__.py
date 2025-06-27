@@ -1,5 +1,6 @@
 import os
 import cloudinary
+import logging
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -14,6 +15,9 @@ import time
 
 # Load environment variables
 load_dotenv()
+
+# Enable debug logging globally
+logging.basicConfig(level=logging.DEBUG)
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -76,7 +80,11 @@ def handle_operational_error(e):
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 jwt = JWTManager(app)
-CORS(app, resources={r"/api/*": {"origins": ["http://localhost:3000", "https://kamaruchallenge.africa"]}})
+CORS(app, resources={r"/api/*": {
+    "origins": ["http://localhost:3000", 
+                "https://kamaruchallenge.africa"],
+                "supports_credentials": True
+                }})
 
 # Configure Cloudinary using CLOUDINARY_URL from .env
 cloudinary.config(
