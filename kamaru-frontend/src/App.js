@@ -13,6 +13,8 @@ import ForgotPasswordForm from "./components/ForgotPasswordForm";
 import ResetPasswordForm from "./components/ResetPasswordForm";
 import EventPage from "./pages/EventPage";
 import AboutUs from "./pages/AboutUsPage"; 
+import TermsAndConditionsPage from "./pages/TermsAndConditionsPage";
+import ScrollToTop from "./components/ScrollToTop";
 import "./index.css"; // Import Tailwind CSS
 
 
@@ -20,6 +22,7 @@ import "./index.css"; // Import Tailwind CSS
 const App = () => {
   return (
     <Router>
+      <ScrollToTop />
       <div className="min-h-screen flex flex-col bg-gray-100">
         <Navbar />
         <div className="flex-grow container mx-auto p-4">
@@ -35,6 +38,7 @@ const App = () => {
             <Route path="/forgot_password" element={<ForgotPasswordForm />} />
             <Route path="/reset_password" element={<ResetPasswordForm />} />
             <Route path="/admin/*" element={<AdminDashboard />} /> {/* Admin routes */}
+            <Route path="/terms" element={<TermsAndConditionsPage />} />
           </Routes>
         </div>
         <Footer />

@@ -55,7 +55,7 @@ const HomePage = () => {
         // Check if the response contains banners
         // and set the first one as the banner image
         if (res.data.banners.length > 0) {
-          setBannerImage(res.data.banners[1].image_url); //
+          setBannerImage(res.data.banners[0].image_url); //
         }
       })
       .catch((err) => console.error("Banner fetch error:", err));
@@ -145,7 +145,7 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="relative w-full min-h-[300px] md:h-[400px] overflow-hidden">
+      <div className="relative w-full min-h-[600px] md:h-[400px]  lg:h-[600px] overflow-hidden">
         {heroImages.map((img, index) => (
           <img
             key={index}
@@ -167,7 +167,7 @@ const HomePage = () => {
     Kamaru Challenge
   </h1>
   <p className="text-lg text-[#D57500] mb-6">
-    Fanning the Flame of Values through Music & Culture
+    Songs of the Land, Voices for Values and Justice.
   </p>
   <hr className="border-t border-[#D57500] w-64 border-2 mx-auto mb-8" />
 

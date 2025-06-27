@@ -18,7 +18,7 @@ const LoginForm = () => {
     fetchBanners()
       .then((res) => {
         if (res.data.banners.length > 0) {
-          setBannerImage(res.data.banners[1].image_url); // Set the first banner image
+          setBannerImage(res.data.banners[0].image_url); // Set the first banner image
         }
       })
       .catch((err) => console.error("Error fetching banner image:", err));

@@ -21,42 +21,40 @@ const ParticipantsRegistrationPage = () => {
   const [countdown, setCountdown] = useState(null);
   const navigate = useNavigate();
 
-  const eventDate = new Date("2025-08-16T00:00:00");
-
   useEffect(() => {
     fetchBanners()
       .then((res) => {
         if (res.data.banners.length > 0) {
           setBannerImage({
-            main: res.data.banners[0].image_url,
-            cta: res.data.banners[1].image_url,
+            main: res.data.banners[1].image_url,
+            cta: res.data.banners[0].image_url,
           });
         }
       })
       .catch((err) => console.error("Banner fetch error:", err));
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      const distance = eventDate - now;
+useEffect(() => {
+  const eventDate = new Date("2025-08-16T00:00:00");
+  const interval = setInterval(() => {
+    const now = new Date();
+    const distance = eventDate - now;
 
-      if (distance < 0) {
-        clearInterval(interval);
-        setCountdown(null);
-      } else {
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
-        const minutes = Math.floor((distance / 1000 / 60) % 60);
-        const seconds = Math.floor((distance / 1000) % 60);
+    if (distance < 0) {
+      clearInterval(interval);
+      setCountdown(null);
+    } else {
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((distance / 1000 / 60) % 60);
+      const seconds = Math.floor((distance / 1000) % 60);
 
-        setCountdown({ days, hours, minutes, seconds });
-      }
-    }, 1000);
+      setCountdown({ days, hours, minutes, seconds });
+    }
+  }, 1000);
 
-    return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps 
-  }, []);
+  return () => clearInterval(interval);
+}, []);
 
   const handleParticipateClick = () => {
     const token = localStorage.getItem("token");
@@ -80,7 +78,7 @@ const ParticipantsRegistrationPage = () => {
 
       {/* Banner */}
       <div
-        className="relative h-48 sm:h-64 w-full bg-cover bg-center"
+        className="relative w-full h-[100px] md:h-[200px] lg:h-[300px] xl:h-[600px] bg-cover bg-center"
         style={{ backgroundImage: `url(${bannerImage?.main || "/default-banner.jpg"})` }}
       >
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
@@ -105,75 +103,69 @@ const ParticipantsRegistrationPage = () => {
         </p>
       </section>
 
-      {/* Objectives */}
+      {/* Objectives, Categories, Prizes */}
       <section className="bg-[#FFF7ED] py-10 px-4">
-  <div className="max-w-7xl mx-auto grid gap-8 lg:grid-cols-3">
+        <div className="max-w-7xl mx-auto grid gap-8 lg:grid-cols-3">
+          <div>
+            <h3 className="text-xl font-bold text-[#D57500] flex items-center gap-2 mb-4">
+              <FaBullseye className="text-[#333]" /> Objectives
+            </h3>
+            <p className="text-sm text-[#333] mb-4">The Performed Items Must:</p>
+            <ul className="space-y-4 text-sm text-[#333]">
+              {[
+                "Praise, enhance, and promote moral values.",
+                "Identify and call out moral vices in the community.",
+                "Encourage joyful and positive living in the community.",
+                "Be performed in Kikuyu language.",
+              ].map((obj, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <FaCheckCircle className="text-[#D57500] mt-1" />
+                  <span>{obj}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-    {/* Objectives */}
-    <div>
-      <h3 className="text-xl font-bold text-[#D57500] flex items-center gap-2 mb-4">
-        <FaBullseye className="text-[#333]" /> Objectives
-      </h3>
-      <p className="text-sm text-[#333] mb-4">
-        The Perfomed Items Must:
-      </p>
-      <ul className="space-y-4 text-sm text-[#333]">
-        {[
-          "Praise, enhance, and promote moral values.",
-          "Identify and call out moral vices in the community.",
-          "Encourage joyful and positive living in the community.",
-          "Be performed in Kikuyu language.",
-        ].map((obj, i) => (
-          <li key={i} className="flex items-start gap-3">
-            <FaCheckCircle className="text-[#D57500] mt-1" />
-            <span>{obj}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+          <div>
+            <h3 className="text-xl font-bold text-[#D57500] flex items-center gap-2 mb-4">
+              <FaMicrophoneAlt className="text-[#333]" /> Competition Categories
+            </h3>
+            <ul className="text-sm text-[#333] space-y-2 pl-1">
+              {["Poetry", "Folk Songs", "Original Songs", "Rendition"].map((cat, i) => (
+                <li key={i} className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-[#D57500] rounded-full"></span>
+                  {cat}
+                </li>
+              ))}
+            </ul>
+          </div>
 
-    {/* Categories */}
-    <div>
-      <h3 className="text-xl font-bold text-[#D57500] flex items-center gap-2 mb-4">
-        <FaMicrophoneAlt className="text-[#333]" /> Competition Categories
-      </h3>
-      <ul className="text-sm text-[#333] space-y-2 pl-1">
-        {[
-          "Poetry",
-          "Folk Songs",
-          "Original Songs",
-          "Rendition",
-        ].map((cat, i) => (
-          <li key={i} className="flex items-center gap-2">
-            <span className="w-2 h-2 bg-[#D57500] rounded-full"></span>
-            {cat}
-          </li>
-        ))}
-      </ul>
-    </div>
+          <div>
+            <h3 className="text-xl font-bold text-[#D57500] flex items-center gap-2 mb-4">
+              <FaTrophy className="text-[#333]" /> Prizes
+            </h3>
+            <p className="text-sm text-[#333] leading-relaxed">
+              Top performers win <strong className="text-[#D57500]">Ksh 50,000</strong>, with runners-up receiving <strong className="text-[#D57500]">Ksh 25,000</strong> and <strong className="text-[#D57500]">Ksh 15,000</strong>.
+              <br />
+              The best rendition gets <strong className="text-[#D57500]">Ksh 40,000</strong>, and runners-up receive <strong className="text-[#D57500]">Ksh 20,000</strong> and <strong className="text-[#D57500]">Ksh 10,000</strong>.
+            </p>
+          </div>
+        </div>
+      </section>
 
-    {/* Prizes */}
-    <div>
-      <h3 className="text-xl font-bold text-[#D57500] flex items-center gap-2 mb-4">
-        <FaTrophy className="text-[#333]" /> Prizes
-      </h3>
-      <p className="text-sm text-[#333] leading-relaxed">
-        Top performers win <strong className="text-[#D57500]">Ksh 50,000</strong>, with runners-up receiving <strong className="text-[#D57500]">Ksh 25,000</strong> and <strong className="text-[#D57500]">Ksh 15,000</strong>.
-        <br />
-        The best rendition gets <strong className="text-[#D57500]">Ksh 40,000</strong>, and runners-up receive <strong className="text-[#D57500]">Ksh 20,000</strong> and <strong className="text-[#D57500]">Ksh 10,000</strong>.
-      </p>
-    </div>
-
-  </div>
-</section>
-
-<div className="py-8 px-4 text-center">
+      {/* NB Section */}
+      <div className="py-8 px-4 text-center">
         <p className="text-sm sm:text-base text-gray-700 max-w-xl mx-auto leading-relaxed">
-        <strong>NB:</strong>Entry categories that register less than 4 participants will be grouped together and the best
-        performers determined irrespective of category
+          <strong>NB:</strong> Entry categories that register less than 4 participants will be grouped together and the best
+          performers determined irrespective of category.
         </p>
       </div>
-
+      <div className="py-4 px-4 text-center">
+        <p className="text-sm sm:text-base text-[#D57500] font-semibold max-w-xl mx-auto leading-relaxed">
+          No song that previously won in any past Kamaru Challenge contest is allowed to win again when sung by the same participant.<br />
+          However, if performed by a different individual or group, it may only qualify for <strong>2<sup>nd</sup></strong> or <strong>3<sup>rd</sup></strong> place.
+        </p>
+      </div>
 
       {/* Countdown */}
       <section className="bg-[#FFF7ED] py-8 px-4 text-center">
@@ -199,12 +191,12 @@ const ParticipantsRegistrationPage = () => {
       </section>
 
       {/* CTA Registration */}
-      <section 
-      className="py-8 px-4 text-center"
-      style={{
-        backgroundImage: `url(${bannerImage?.cta || "/default-banner.jpg"})`,
-        backgroundColor: "white",
-      }}
+      <section
+        className="py-8 px-4 text-center"
+        style={{
+          backgroundImage: `url(${bannerImage?.cta || "/default-banner.jpg"})`,
+          backgroundColor: "white",
+        }}
       >
         {!showForm ? (
           <button

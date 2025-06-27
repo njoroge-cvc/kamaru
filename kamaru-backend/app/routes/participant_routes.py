@@ -13,7 +13,7 @@ def is_admin():
     return user and user.is_admin
 
 # Allowed categories
-ALLOWED_CATEGORIES = ["Poetry", "Folk Songs", "Original Songs", "Rendition", "Use of African Proverbs in Spoken Word"]
+ALLOWED_CATEGORIES = ["Poetry", "Folk Songs", "Original Songs", "Rendition"]
 
 # -------------------- Public Routes --------------------
 
