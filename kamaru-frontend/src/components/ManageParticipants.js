@@ -9,7 +9,8 @@ import {
 import { FaEdit, FaTrash, FaPlus, FaTimes, FaFilePdf, FaFileExcel } from "react-icons/fa";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable"; // Fixed import
+autoTable(jsPDF); // Attach to jsPDF prototype
 
 const ManageParticipants = ({ isAdmin }) => {
   const navigate = useNavigate();
@@ -93,13 +94,21 @@ const ManageParticipants = ({ isAdmin }) => {
   };
 
   const exportToPDF = () => {
+    if (participants.length === 0) {
+      alert("No data to export.");
+      return;
+    }
+
     const doc = new jsPDF();
     doc.text("Participants List", 14, 10);
+
     const tableData = participants.map(p => [p.name, p.email, p.phone, p.category]);
+
     doc.autoTable({
       head: [["Name", "Email", "Phone", "Category"]],
       body: tableData,
     });
+
     doc.save("Participants_List.pdf");
   };
 
