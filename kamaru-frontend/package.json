@@ -14,6 +14,8 @@
     "ajv-keywords": "^5.1.0",
     "axios": "^1.8.4",
     "framer-motion": "^12.6.3",
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2",
     "lexical": "^0.31.0",
     "lucide-react": "^0.487.0",
     "quill": "^2.0.3",
@@ -28,7 +30,8 @@
     "react-toastify": "^11.0.5",
     "slick-carousel": "^1.8.1",
     "swiper": "^11.2.6",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",
