@@ -157,13 +157,8 @@ useEffect(() => {
       <div className="py-8 px-4 text-center">
         <p className="text-sm sm:text-base text-gray-700 max-w-xl mx-auto leading-relaxed">
           <strong>NB:</strong> Entry categories that register less than 4 participants will be grouped together and the best
-          performers determined irrespective of category.
-        </p>
-      </div>
-      <div className="py-4 px-4 text-center">
-        <p className="text-sm sm:text-base text-[#D57500] font-semibold max-w-xl mx-auto leading-relaxed">
-          No song that previously won in any past Kamaru Challenge contest is allowed to win again when sung by the same participant.<br />
-          However, if performed by a different individual or group, it may only qualify for <strong>2<sup>nd</sup></strong> or <strong>3<sup>rd</sup></strong> place.
+          performers determined irrespective of category.<br />
+          No song/poem that previously won in any past Kamaru Challenge contest is allowed to win again when sung by the same participant.
         </p>
       </div>
 
