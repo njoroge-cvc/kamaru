@@ -5,7 +5,7 @@ from app.utils.email_service import send_email
 
 bp = Blueprint("newsletter_routes", __name__)
 
-# Subscribe to the newsletter
+# 📩 Subscribe to Newsletter
 @bp.route("/newsletter/subscribe", methods=["POST"])
 def subscribe_newsletter():
     data = request.get_json()
@@ -14,18 +14,18 @@ def subscribe_newsletter():
     if not email:
         return jsonify({"error": "Email is required"}), 400
 
-    # Check if the email is already subscribed
+    # Check for duplicate subscriptions
     if NewsletterSubscriber.query.filter_by(email=email).first():
         return jsonify({"error": "Email is already subscribed"}), 409
 
-    # Add the email to the database
+    # Save the new subscriber
     subscriber = NewsletterSubscriber(email=email)
     db.session.add(subscriber)
     db.session.commit()
 
     return jsonify({"message": "Subscribed successfully!"}), 201
 
-# Contact Us Form Submission
+# 📬 Contact Us Form Handler
 @bp.route("/contact", methods=["POST"])
 def contact_us():
     data = request.get_json()
@@ -33,10 +33,11 @@ def contact_us():
     email = data.get("email")
     message = data.get("message")
 
+    # Validation
     if not name or not email or not message:
         return jsonify({"error": "All fields are required"}), 400
 
-    # Send the email using the email service
+    # Prepare email
     subject = f"New Contact Us Message from {name}"
     content = f"""
     <p><strong>Name:</strong> {name}</p>
@@ -45,7 +46,8 @@ def contact_us():
     <p>{message}</p>
     """
 
-    if send_email("njoroge@colourful-visual-communication.com", subject, content):
+    # Send email to the designated admin
+    if send_email("info@kamaruchallenge.africa", subject, content):
         return jsonify({"message": "Message sent successfully!"}), 200
     else:
         return jsonify({"error": "Failed to send message"}), 500
