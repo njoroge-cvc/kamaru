@@ -11,6 +11,7 @@ from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
+from urllib.parse import quote_plus # For URL encoding the database password
 import time
 
 # Load environment variables
@@ -23,10 +24,18 @@ logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
 
 # Database configuration using environment variables
+db_user = os.getenv("DB_USER")
+db_password = quote_plus(os.getenv("DB_PASSWORD"))  # URL encode the password
+db_host = os.getenv("DB_HOST")
+db_port = os.getenv("DB_PORT")
+db_name = os.getenv("DB_NAME")
+
+# Construct the database URI
+# Note: Ensure that the password is URL-encoded to handle special characters
 app.config["SQLALCHEMY_DATABASE_URI"] = (
-    f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
-    f"@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
+    f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}?sslmode=require" # Ensure SSL is required for secure connections
 )
+# Disable SQLAlchemy event system to reduce overhead
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 
@@ -80,11 +89,14 @@ def handle_operational_error(e):
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 jwt = JWTManager(app)
+
+# Configure CORS to allow requests from the frontend
+# Note: In production, you should restrict origins to your frontend domain
+# CORS(app, resources={r"/api/*": {"origins": "*"}})  # Allow all origins for development
 CORS(app, resources={r"/api/*": {
-    "origins": ["http://localhost:3000", 
-                "https://kamaruchallenge.africa"],
-                "supports_credentials": True
-                }})
+    "origins": ["http://localhost:3000", "http://172.20.226.189:5000", "https://kamaruchallenge.africa"], 
+    "supports_credentials": True
+}})
 
 # Configure Cloudinary using CLOUDINARY_URL from .env
 cloudinary.config(
