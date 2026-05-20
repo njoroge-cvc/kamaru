@@ -105,10 +105,22 @@ useEffect(() => {
 
       {/* Objectives, Categories, Awards */}
       <section className="bg-[#FFF7ED] py-10 px-4">
-        <div className="max-w-7xl mx-auto grid gap-8 lg:grid-cols-3 text-center lg:text-left">
-          <div className="mx-auto max-w-lg">
-            <h3 className="text-xl font-bold text-[#D57500] mb-4">Objectives</h3>
-            <p className="text-sm text-[#333] mb-4">The Performed Items Must:</p>
+        <div className="max-w-7xl mx-auto grid gap-8 lg:grid-cols-3">
+    
+          {/* Objectives */}
+          <div className="max-w-lg mx-auto text-center lg:text-left">
+            <div className="flex justify-center lg:justify-start mb-4">
+              <FaBullseye className="text-[#333] text-6xl" />
+            </div>
+
+            <h3 className="text-xl font-bold text-[#D57500] mb-4">
+              Objectives
+            </h3>
+
+            <p className="text-sm text-[#333] mb-4">
+              The Performed Items Must:
+            </p>
+
             <ul className="space-y-4 text-sm text-[#333]">
               {[
                 "Praise, enhance, and promote moral values.",
@@ -121,22 +133,51 @@ useEffect(() => {
             </ul>
           </div>
 
-          <div>
+          {/* Categories */}
+          <div className="text-center lg:text-left">
+            <div className="flex justify-center lg:justify-start mb-4">
+              <FaMicrophoneAlt className="text-[#333] text-5xl" />
+            </div>
+
             <h3 className="text-xl font-bold text-[#D57500] mb-4">
               Competition Categories
             </h3>
-            <ul className="mx-auto text-sm text-[#333] space-y-2">
-              {/* Note: The categories here should ideally be fetched from the backend to ensure consistency with the ManageParticipants component. For now, they are hardcoded to match the backend categories. */}
-              {["Poetry", "Folk Songs and Dances", "Original Songs"].map((cat, i) => (
+
+            <ul className="text-sm text-[#333] space-y-2">
+              {[
+                "Poetry",
+                "Folk Songs and Dances",
+                "Original Songs",
+              ].map((cat, i) => (
                 <li key={i}>{cat}</li>
               ))}
             </ul>
           </div>
 
-          <div>
-            <h3 className="text-xl font-bold text-[#D57500] mb-4">Awards</h3>
+          {/* Awards */}
+          <div className="text-center lg:text-left">
+            <div className="flex justify-center lg:justify-start mb-3">
+              <FaTrophy className="text-[#333] text-5xl" />
+            </div>
+
+            <h3 className="text-xl font-bold text-[#D57500] mb-4">
+              Awards
+            </h3>
+
             <p className="text-sm text-[#333] leading-relaxed">
-              Winners in each Category will receive <strong className="text-[#D57500]">Ksh 50,000</strong>, with first runners-up and second runners-up receiving <strong className="text-[#D57500]">Ksh 25,000</strong> and <strong className="text-[#D57500]">Ksh 15,000</strong> respectively.
+              Winners in each Category will receive{" "}
+              <strong className="text-[#D57500]">
+                Ksh 50,000
+              </strong>
+              , with first runners-up and second runners-up receiving{" "}
+              <strong className="text-[#D57500]">
+                Ksh 25,000
+              </strong>{" "}
+              and{" "}
+              <strong className="text-[#D57500]">
+                Ksh 15,000
+              </strong>{" "}
+              respectively.
             </p>
           </div>
         </div>
