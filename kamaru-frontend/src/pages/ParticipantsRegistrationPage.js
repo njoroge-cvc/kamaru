@@ -119,7 +119,7 @@ useEffect(() => {
                 "Encourage joyful and positive living in the community.",
                 "Be performed in Kikuyu language.",
               ].map((obj, i) => (
-                <li key={i} className="flex items-start gap-3">
+                <li key={i} className="flex items-center gap-3">
                   <FaCheckCircle className="text-[#D57500] mt-1" />
                   <span>{obj}</span>
                 </li>
