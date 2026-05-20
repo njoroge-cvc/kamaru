@@ -105,50 +105,35 @@ useEffect(() => {
 
       {/* Objectives, Categories, Awards */}
       <section className="bg-[#FFF7ED] py-10 px-4">
-        <div className="max-w-7xl mx-auto grid gap-8 lg:grid-cols-3 text-left sm:text-center">
-          <div className="text-center mx-auto max-w-lg">
-            <div className="flex justify-center mb-4">
-              <FaBullseye className="text-[#333] text-6xl" />
-            </div>
+        <div className="max-w-7xl mx-auto grid gap-8 lg:grid-cols-3 text-center lg:text-left">
+          <div className="mx-auto max-w-lg">
             <h3 className="text-xl font-bold text-[#D57500] mb-4">Objectives</h3>
             <p className="text-sm text-[#333] mb-4">The Performed Items Must:</p>
-            <ul className="flex flex-col items-center space-y-4 text-sm text-[#333]">
+            <ul className="space-y-4 text-sm text-[#333]">
               {[
                 "Praise, enhance, and promote moral values.",
                 "Identify and call out moral vices in the community.",
                 "Encourage joyful and positive living in the community.",
                 "Be performed in Kikuyu language.",
               ].map((obj, i) => (
-                <li key={i} className="flex items-center gap-3">
-                  <FaCheckCircle className="text-[#D57500] mt-1 flex-shrink-0" />
-                  <span>{obj}</span>
-                </li>
+                <li key={i}>{obj}</li>
               ))}
             </ul>
           </div>
 
-          <div className="text-center">
-            <div className="flex justify-center mb-4">
-              <FaMicrophoneAlt className="text-[#333] text-5xl" />
-            </div>
+          <div>
             <h3 className="text-xl font-bold text-[#D57500] mb-4">
               Competition Categories
             </h3>
-            <ul className="mx-auto text-sm text-[#333] space-y-2 text-left inline-block">
+            <ul className="mx-auto text-sm text-[#333] space-y-2">
               {/* Note: The categories here should ideally be fetched from the backend to ensure consistency with the ManageParticipants component. For now, they are hardcoded to match the backend categories. */}
               {["Poetry", "Folk Songs and Dances", "Original Songs"].map((cat, i) => (
-                <li key={i} className="flex items-center gap-2 justify-center">
-                  <span className="w-2 h-2 bg-[#D57500] rounded-full"></span>
-                  {cat}
-                </li>
+                <li key={i}>{cat}</li>
               ))}
             </ul>
           </div>
 
-          <div className="text-center">
-            <div className="flex justify-center mb-3">
-              <FaTrophy className="text-[#333] text-5xl" />
-            </div>
+          <div>
             <h3 className="text-xl font-bold text-[#D57500] mb-4">Awards</h3>
             <p className="text-sm text-[#333] leading-relaxed">
               Winners in each Category will receive <strong className="text-[#D57500]">Ksh 50,000</strong>, with first runners-up and second runners-up receiving <strong className="text-[#D57500]">Ksh 25,000</strong> and <strong className="text-[#D57500]">Ksh 15,000</strong> respectively.
