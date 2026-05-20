@@ -112,7 +112,7 @@ useEffect(() => {
             </div>
             <h3 className="text-xl font-bold text-[#D57500] mb-4">Objectives</h3>
             <p className="text-sm text-[#333] mb-4">The Performed Items Must:</p>
-            <ul className="mx-auto inline-block text-center space-y-4 text-sm text-[#333]">
+            <ul className="flex flex-col items-center space-y-4 text-sm text-[#333]">
               {[
                 "Praise, enhance, and promote moral values.",
                 "Identify and call out moral vices in the community.",
@@ -120,7 +120,7 @@ useEffect(() => {
                 "Be performed in Kikuyu language.",
               ].map((obj, i) => (
                 <li key={i} className="flex items-center gap-3">
-                  <FaCheckCircle className="text-[#D57500] mt-1" />
+                  <FaCheckCircle className="text-[#D57500] mt-1 flex-shrink-0" />
                   <span>{obj}</span>
                 </li>
               ))}
