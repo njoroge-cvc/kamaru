@@ -126,7 +126,7 @@ useEffect(() => {
             </ul>
           </div>
 
-          <div>
+          <div className="text-center">
             <h3 className="text-xl font-bold text-[#D57500] flex items-center gap-2 mb-4">
               <FaMicrophoneAlt className="text-[#333]" /> Competition Categories
             </h3>
@@ -141,8 +141,8 @@ useEffect(() => {
             </ul>
           </div>
 
-          <div>
-            <h3 className="text-xl font-bold text-[#D57500] gap-2 mb-4">
+          <div className="text-center">
+            <h3 className="text-xl font-bold text-[#D57500] flex items-center gap-2 mb-4">
               <FaTrophy className="text-[#333]" /> Awards
             </h3>
             <p className="text-sm text-[#333] leading-relaxed">
@@ -153,11 +153,13 @@ useEffect(() => {
       </section>
 
       {/* NB Section */}
-      <div className="py-8 px-4 text-left sm:text-center">
+      <div className="py-8 px-4 text-center">
         <p className="text-sm sm:text-base text-gray-700 max-w-xl mx-auto leading-relaxed">
           <strong>NB:</strong> Entry categories that register less than 4 participants will be grouped together and the best
-          performers determined irrespective of category.<br />
-          No song/poem/folk song & dance that previously won in any past Kamaru Challenge contest is allowed to win again when sung by the same participant.
+          performers determined irrespective of category.
+          <br />
+          <br />
+          No item (song/poem/folk song & dance) that previously won in any past Kamaru Challenge contest is allowed to win again when done by the same participant(s).
         </p>
       </div>
 
