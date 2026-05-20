@@ -7,7 +7,6 @@ import {
   FaBullseye,
   FaMicrophoneAlt,
   FaTrophy,
-  FaCheckCircle,
   FaSmile,
 } from "react-icons/fa";
 import ParticipantsRegistrationForm from "../components/ParticipantsRegistrationForm";
