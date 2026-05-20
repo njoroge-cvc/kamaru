@@ -106,12 +106,13 @@ useEffect(() => {
       {/* Objectives, Categories, Awards */}
       <section className="bg-[#FFF7ED] py-10 px-4">
         <div className="max-w-7xl mx-auto grid gap-8 lg:grid-cols-3 text-left sm:text-center">
-          <div>
-            <h3 className="text-xl font-bold text-[#D57500] flex items-center gap-2 mb-4">
-              <FaBullseye className="text-[#333]" /> Objectives
-            </h3>
+          <div className="text-center mx-auto max-w-lg">
+            <div className="flex justify-center mb-4">
+              <FaBullseye className="text-[#333] text-6xl" />
+            </div>
+            <h3 className="text-xl font-bold text-[#D57500] mb-4">Objectives</h3>
             <p className="text-sm text-[#333] mb-4">The Performed Items Must:</p>
-            <ul className="space-y-4 text-sm text-[#333]">
+            <ul className="mx-auto inline-block text-left space-y-4 text-sm text-[#333]">
               {[
                 "Praise, enhance, and promote moral values.",
                 "Identify and call out moral vices in the community.",
@@ -127,13 +128,16 @@ useEffect(() => {
           </div>
 
           <div className="text-center">
-            <h3 className="text-xl font-bold text-[#D57500] flex items-center gap-2 mb-4">
-              <FaMicrophoneAlt className="text-[#333]" /> Competition Categories
+            <div className="flex justify-center mb-4">
+              <FaMicrophoneAlt className="text-[#333] text-5xl" />
+            </div>
+            <h3 className="text-xl font-bold text-[#D57500] mb-4">
+              Competition Categories
             </h3>
-            <ul className="text-sm text-[#333] space-y-2 pl-1">
+            <ul className="mx-auto text-sm text-[#333] space-y-2 text-left inline-block">
               {/* Note: The categories here should ideally be fetched from the backend to ensure consistency with the ManageParticipants component. For now, they are hardcoded to match the backend categories. */}
               {["Poetry", "Folk Songs and Dances", "Original Songs"].map((cat, i) => (
-                <li key={i} className="flex items-center gap-2">
+                <li key={i} className="flex items-center gap-2 justify-center">
                   <span className="w-2 h-2 bg-[#D57500] rounded-full"></span>
                   {cat}
                 </li>
@@ -142,9 +146,10 @@ useEffect(() => {
           </div>
 
           <div className="text-center">
-            <h3 className="text-xl font-bold text-[#D57500] flex items-center gap-2 mb-4">
-              <FaTrophy className="text-[#333]" /> Awards
-            </h3>
+            <div className="flex justify-center mb-3">
+              <FaTrophy className="text-[#333] text-5xl" />
+            </div>
+            <h3 className="text-xl font-bold text-[#D57500] mb-4">Awards</h3>
             <p className="text-sm text-[#333] leading-relaxed">
               Winners in each Category will receive <strong className="text-[#D57500]">Ksh 50,000</strong>, with first runners-up and second runners-up receiving <strong className="text-[#D57500]">Ksh 25,000</strong> and <strong className="text-[#D57500]">Ksh 15,000</strong> respectively.
             </p>
@@ -155,7 +160,9 @@ useEffect(() => {
       {/* NB Section */}
       <div className="py-8 px-4 text-center">
         <p className="text-sm sm:text-base text-gray-700 max-w-xl mx-auto leading-relaxed">
-          <strong>NB:</strong> Entry categories that register less than 4 participants will be grouped together and the best
+          <strong>NB:</strong> 
+          <br />
+          Entry categories that register less than 4 participants will be grouped together and the best
           performers determined irrespective of category.
           <br />
           <br />
