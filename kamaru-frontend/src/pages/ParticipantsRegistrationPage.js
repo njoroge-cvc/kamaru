@@ -109,16 +109,16 @@ useEffect(() => {
           {/* Objectives */}
           <div className="max-w-lg mx-auto text-center lg:text-left">
             <div className="flex justify-center lg:justify-start mb-4">
-              <FaBullseye className="text-[#333] text-6xl" />
+              <FaBullseye className="text-[#333] text-5xl" />
             </div>
 
             <h3 className="text-xl font-bold text-[#D57500] mb-4">
               Objectives
             </h3>
 
-            <p className="text-sm text-[#333] mb-4">
+            <strong className="text-sm text-[#333] mb-4">
               The Performed Items Must:
-            </p>
+            </strong>
 
             <ul className="space-y-4 text-sm text-[#333]">
               {[
@@ -155,7 +155,7 @@ useEffect(() => {
 
           {/* Awards */}
           <div className="text-center lg:text-left">
-            <div className="flex justify-center lg:justify-start mb-3">
+            <div className="flex justify-center lg:justify-start mb-4">
               <FaTrophy className="text-[#333] text-5xl" />
             </div>
 
