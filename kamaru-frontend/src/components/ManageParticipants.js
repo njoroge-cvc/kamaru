@@ -28,12 +28,11 @@ const ManageParticipants = ({ isAdmin }) => {
   const [editingParticipant, setEditingParticipant] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
 
+  // Predefined categories for dropdown selection when adding/editing participants
   const categories = [
     "Poetry",
-    "Folk Songs",
+    "Folk Songs & Dances",
     "Original Songs",
-    "Rendition",
-    "Use of African Proverbs in Spoken Word",
   ];
 
   useEffect(() => {
@@ -232,13 +231,13 @@ const ManageParticipants = ({ isAdmin }) => {
                         setEditingParticipant(p);
                         setShowEditModal(true);
                       }}
-                      className="text-blue-600 hover:text-blue-800"
+                      className="bg-[#D57500] hover:bg-[#B65E00]"
                     >
                       <FaEdit />
                     </button>
                     <button
                       onClick={() => handleDeleteParticipant(p.id)}
-                      className="text-red-600 hover:text-red-800"
+                      className="bg-[#333] hover:bg-[#222]"
                     >
                       <FaTrash />
                     </button>

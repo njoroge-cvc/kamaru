@@ -35,7 +35,7 @@ const ParticipantsRegistrationPage = () => {
   }, []);
 
 useEffect(() => {
-  const eventDate = new Date("2025-08-16T00:00:00");
+  const eventDate = new Date("2026-08-15T00:00:00"); // Set to August 15, 2026 (the day of the event)
   const interval = setInterval(() => {
     const now = new Date();
     const distance = eventDate - now;
@@ -103,9 +103,9 @@ useEffect(() => {
         </p>
       </section>
 
-      {/* Objectives, Categories, Prizes */}
+      {/* Objectives, Categories, Awards */}
       <section className="bg-[#FFF7ED] py-10 px-4">
-        <div className="max-w-7xl mx-auto grid gap-8 lg:grid-cols-3">
+        <div className="max-w-7xl mx-auto grid gap-8 lg:grid-cols-3 text-left sm:text-center">
           <div>
             <h3 className="text-xl font-bold text-[#D57500] flex items-center gap-2 mb-4">
               <FaBullseye className="text-[#333]" /> Objectives
@@ -131,7 +131,8 @@ useEffect(() => {
               <FaMicrophoneAlt className="text-[#333]" /> Competition Categories
             </h3>
             <ul className="text-sm text-[#333] space-y-2 pl-1">
-              {["Poetry", "Folk Songs", "Original Songs", "Rendition"].map((cat, i) => (
+              {/* Note: The categories here should ideally be fetched from the backend to ensure consistency with the ManageParticipants component. For now, they are hardcoded to match the backend categories. */}
+              {["Poetry", "Folk Songs and Dances", "Original Songs"].map((cat, i) => (
                 <li key={i} className="flex items-center gap-2">
                   <span className="w-2 h-2 bg-[#D57500] rounded-full"></span>
                   {cat}
@@ -141,35 +142,35 @@ useEffect(() => {
           </div>
 
           <div>
-            <h3 className="text-xl font-bold text-[#D57500] flex items-center gap-2 mb-4">
-              <FaTrophy className="text-[#333]" /> Prizes
+            <h3 className="text-xl font-bold text-[#D57500] gap-2 mb-4">
+              <FaTrophy className="text-[#333]" /> Awards
             </h3>
             <p className="text-sm text-[#333] leading-relaxed">
-              Top performers win <strong className="text-[#D57500]">Ksh 50,000</strong>, with runners-up receiving <strong className="text-[#D57500]">Ksh 25,000</strong> and <strong className="text-[#D57500]">Ksh 15,000</strong>.
-              <br />
-              The best rendition gets <strong className="text-[#D57500]">Ksh 40,000</strong>, and runners-up receive <strong className="text-[#D57500]">Ksh 20,000</strong> and <strong className="text-[#D57500]">Ksh 10,000</strong>.
+              Winners in each Category will receive <strong className="text-[#D57500]">Ksh 50,000</strong>, with first runners-up and second runners-up receiving <strong className="text-[#D57500]">Ksh 25,000</strong> and <strong className="text-[#D57500]">Ksh 15,000</strong> respectively.
             </p>
           </div>
         </div>
       </section>
 
       {/* NB Section */}
-      <div className="py-8 px-4 text-center">
+      <div className="py-8 px-4 text-left sm:text-center">
         <p className="text-sm sm:text-base text-gray-700 max-w-xl mx-auto leading-relaxed">
           <strong>NB:</strong> Entry categories that register less than 4 participants will be grouped together and the best
           performers determined irrespective of category.<br />
-          No song/poem that previously won in any past Kamaru Challenge contest is allowed to win again when sung by the same participant.
+          No song/poem/folk song & dance that previously won in any past Kamaru Challenge contest is allowed to win again when sung by the same participant.
         </p>
       </div>
 
       {/* Countdown */}
       <section className="bg-[#FFF7ED] py-8 px-4 text-center">
         <h3 className="text-xl sm:text-2xl font-bold mb-2 flex justify-center items-center gap-2">
-          <FaCalendarAlt /> Event Date: August 16, 2025
+          <FaCalendarAlt /> Event Date: August 15, 2026
         </h3>
         <p className="text-sm sm:text-base text-gray-700 mb-4">
           Mark your calendar and prepare your performance!
         </p>
+        {/* Countdown will only show if the event date is in the future - 
+        once the event date has passed, it will show a message instead*/}
         {countdown ? (
           <div className="flex justify-center gap-3 text-white font-medium text-sm sm:text-base">
             {Object.entries(countdown).map(([label, val]) => (
@@ -180,7 +181,7 @@ useEffect(() => {
           </div>
         ) : (
           <p className="text-lg font-semibold text-[#D57500] flex justify-center items-center gap-2">
-            <FaSmile /> The event has started!
+            <FaSmile /> Today is the Big Day! Have fun!
           </p>
         )}
       </section>

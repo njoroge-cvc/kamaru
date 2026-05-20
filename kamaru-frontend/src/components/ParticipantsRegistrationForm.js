@@ -18,9 +18,8 @@ const ParticipantsRegistrationForm = () => {
 
   const categories = [
     "Poetry",
-    "Folk Songs",
+    "Folk Songs and Dances",
     "Original Songs",
-    "Rendition",
   ];
 
   useEffect(() => {
@@ -65,9 +64,9 @@ const ParticipantsRegistrationForm = () => {
         onSubmit={handleSubmit}
         className="max-w-xl mx-auto p-6 bg-white shadow-2xl rounded-2xl space-y-6 animate-fade-in w-full"
       >
-        <h2 className="text-2xl font-bold text-center text-[#D57500]">Register to Contend</h2>
+        <h2 className="text-2xl font-bold text-center text-[#D57500]">Register to Compete</h2>
         <p className="text-center text-sm text-gray-500">
-          Fill in your details to participate in the upcoming festival.
+         Enter your details to compete in Kamaru Challenge Season 3.
         </p>
 
         {feedback && (
