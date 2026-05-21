@@ -17,7 +17,7 @@ class Event(db.Model):
             "title": self.title,
             "theme": self.theme,
             "details": self.details,
-            "date_time": self.date_time.strftime("%Y-%m-%d %H:%M:%S"),
+            "date_time": self.date_time.isoformat(),
             "location": self.location,
             "image_url": self.image_url,
             "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S"),

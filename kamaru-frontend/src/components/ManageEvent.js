@@ -57,9 +57,17 @@ const ManageEvent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     const data = new FormData();
+
     Object.entries(formData).forEach(([key, value]) => {
-      data.append(key, value);
+      if (
+        value !== null &&
+        value !== undefined &&
+        value !== ""
+      ){
+        data.append(key, value);
+      }
     });
 
     try {
