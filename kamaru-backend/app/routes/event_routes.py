@@ -75,15 +75,22 @@ def update_event(id):
         return jsonify({"error": "Event not found"}), 404
 
     data = request.form
+
+    # Handle image upload if a new image is provided
     image = request.files.get("image")
-    if image:
+
+    # If a new image is uploaded, upload it to Cloudinary and update the event's image URL
+    if image and image.filename:
         upload_result = cloudinary.uploader.upload(image)
         event.image_url = upload_result.get("secure_url")
 
     try:
-        # Parse datetime-local format if provided
-        if "date_time" in data:
-            event.date_time = datetime.strptime(data.get("date_time"), "%Y-%m-%dT%H:%M")
+        # Parse datetime-local format if provided and update the event fields
+        if data.get("date_time"): # Only update date_time if it's provided in the request
+            event.date_time = datetime.strptime( # Parse the date_time string from the frontend
+                data.get("date_time"), # Expecting date_time in "YYYY-MM-DDTHH:MM" format from the frontend
+                "%Y-%m-%dT%H:%M" # Adjusted format to match datetime-local input
+            )
         event.title = data.get("title", event.title)
         event.theme = data.get("theme", event.theme)
         event.details = data.get("details", event.details)
@@ -92,7 +99,12 @@ def update_event(id):
         db.session.commit()
         return jsonify(event.to_dict()), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 400
+        import traceback
+        traceback.print_exc()  # Print the stack trace for debugging
+
+        return jsonify({
+            "error": str(e)
+        }), 400
 
 # Delete an event (Admin-only)
 @bp.route("/<int:id>", methods=["DELETE"])
