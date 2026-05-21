@@ -93,17 +93,27 @@ const ManageEvent = () => {
     }
   };
 
+  // Edit event handler - populates form with existing data and opens it in edit mode
   const handleEdit = (event) => {
-    setEditMode(true);
-    setEditEventId(event.id);
+    setEditMode(true); // Enable edit mode
+    setEditEventId(event.id); // Store the ID of the event being edited
+
+    // Format date_time for input field (YYYY-MM-DDTHH:MM) and handle null case gracefully
+    const formattedDateTime = event.date_time // Check if date_time exists before formatting
+    ? new Date(event.date_time).toISOString().slice(0, 16) // Format for datetime-local input
+    : ""; // If date_time is null or undefined, set it to an empty string to avoid errors
+    
+    // Populate form data with existing event details
     setFormData({
       title: event.title,
       theme: event.theme,
       details: event.details,
-      date_time: event.date_time,
+      date_time: formattedDateTime,
       location: event.location,
       image: null,
     });
+
+
     setShowForm(true);
   };
 
