@@ -21,6 +21,7 @@ const ParticipantsRegistrationPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Fetch banner images on component mount and set the main and CTA banners if available - otherwise, the default banner will be used
     fetchBanners()
       .then((res) => {
         if (res.data.banners.length > 0) {
@@ -76,10 +77,18 @@ useEffect(() => {
     <div className="min-h-screen bg-gray-50 text-[#333]">
 
       {/* Banner */}
-      <div
-        className="relative w-full h-[100px] md:h-[200px] lg:h-[300px] xl:h-[600px] bg-cover bg-center"
-        style={{ backgroundImage: `url(${bannerImage?.main || "/default-banner.jpg"})` }}
-      >
+      <div classname="relative w-full bg-white overflow-hidden">
+        <img
+        src={bannerImage?.main || "/default-banner.jpg"}
+        alt="Kamaru Challenge Banner"
+        classname="\
+        w-full
+        h-auto
+        object-contain
+        block
+        "
+        />
+        
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
           <FaChevronDown className="text-white animate-bounce text-xl sm:text-2xl" />
         </div>
