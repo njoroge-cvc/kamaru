@@ -77,11 +77,11 @@ useEffect(() => {
     <div className="min-h-screen bg-gray-50 text-[#333]">
 
       {/* Banner */}
-      <div classname="relative w-full bg-white overflow-hidden">
+      <div className="relative w-full bg-white overflow-hidden">
         <img
         src={bannerImage?.main || "/default-banner.jpg"}
         alt="Kamaru Challenge Banner"
-        classname="\
+        className="\
         w-full
         h-auto
         object-contain

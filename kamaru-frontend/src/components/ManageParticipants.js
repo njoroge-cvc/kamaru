@@ -5,6 +5,7 @@ import {
   adminRegisterParticipant,
   updateParticipant,
   deleteParticipant,
+  fetchSeasons,
 } from "../api";
 import {
   FaEdit,
@@ -19,6 +20,8 @@ import * as XLSX from "xlsx";
 const ManageParticipants = ({ isAdmin }) => {
   const navigate = useNavigate();
   const [participants, setParticipants] = useState([]);
+  const [seasons, setSeasons] = useState([]);
+  const [selectedSeason, setSelectedSeason] = useState("");
   const [newParticipant, setNewParticipant] = useState({
     name: "",
     email: "",
@@ -31,7 +34,7 @@ const ManageParticipants = ({ isAdmin }) => {
   // Predefined categories for dropdown selection when adding/editing participants
   const categories = [
     "Poetry",
-    "Folk Songs & Dances",
+    "Folk Songs and Dances",
     "Original Songs",
   ];
 
@@ -42,9 +45,30 @@ const ManageParticipants = ({ isAdmin }) => {
     } else {
       fetchParticipants()
         .then((response) => setParticipants(response.data))
-        .catch((error) => console.error("Error fetching participants:", error));
+        .catch((error) => 
+          console.error("Error fetching participants:", error)
+      );
+
+      fetchSeasons()
+        .then((response) => setSeasons(response.data))
+        .catch((error) => 
+          console.error("Error fetching seasons:", error)
+      );
     }
   }, [isAdmin, navigate]);
+
+  const handleSeasonFilter = (seasonId) => {
+
+    setSelectedSeason(seasonId);
+
+    fetchParticipants(seasonId)
+      .then((response) => {
+        setParticipants(response.data);
+      })
+      .catch((error) => {
+        console.error("Error filtering participants:", error);
+      });
+  };
 
   const handleCreateParticipant = (e) => {
     e.preventDefault();
@@ -110,9 +134,10 @@ const ManageParticipants = ({ isAdmin }) => {
       p.email,
       p.phone,
       p.category,
+      p.season,
     ]);
     autoTable(doc, {
-      head: [["Name", "Email", "Phone", "Category"]],
+      head: [["Name", "Email", "Phone", "Category", "Season"]],
       body: tableData,
     });
     doc.save("Participants_List.pdf");
@@ -123,6 +148,31 @@ const ManageParticipants = ({ isAdmin }) => {
       <h2 className="text-2xl font-semibold text-[#333] mb-4">
         Manage Participants
       </h2>
+
+      {/* Season Filter */}
+      <div className="mb-4">
+        <select
+          value={selectedSeason}
+          onChange={(e) =>
+            handleSeasonFilter(e.target.value)
+          }
+          className="border border-gray-300 p-2 rounded-md"
+        >
+          <option value="">
+            All Seasons
+          </option>
+
+          {seasons.map((season) => (
+            <option
+              key={season.id}
+              value={season.id}
+            >
+              {season.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
 
       {/* Export Buttons */}
       <div className="flex justify-end gap-3 mb-4">
@@ -214,6 +264,7 @@ const ManageParticipants = ({ isAdmin }) => {
               <th className="p-3">Email</th>
               <th className="p-3">Phone</th>
               <th className="p-3">Category</th>
+              <th className="p-3">Season</th>
               <th className="p-3">Actions</th>
             </tr>
           </thead>
@@ -225,6 +276,7 @@ const ManageParticipants = ({ isAdmin }) => {
                   <td className="p-3">{p.email}</td>
                   <td className="p-3">{p.phone}</td>
                   <td className="p-3">{p.category}</td>
+                  <td className="p-3">{p.season}</td>
                   <td className="p-3 flex space-x-2">
                     <button
                       onClick={() => {
@@ -247,7 +299,7 @@ const ManageParticipants = ({ isAdmin }) => {
             ) : (
               <tr>
                 <td
-                  colSpan="5"
+                  colSpan="6"
                   className="p-3 text-center text-gray-600 italic"
                 >
                   No participants registered yet.

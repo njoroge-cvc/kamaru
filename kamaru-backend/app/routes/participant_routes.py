@@ -174,9 +174,13 @@ def get_participants():
     if season_id:
         participants = Participant.query.filter_by(
             season_id=season_id
+        ).order_by(
+            Participant.registered_at.desc()
             ).all()
     else:
-        participants = Participant.query.all()
+        participants = Participant.query.order_by(
+            Participant.registered_at.desc()
+        ).all()
 
     return jsonify([p.to_dict() for p in participants]), 200
 

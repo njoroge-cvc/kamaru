@@ -47,12 +47,15 @@ export const deleteUser = (userId) =>
   });
 
 // Participant API
-export const fetchParticipants = () =>
-  api.get("/participants/", {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
+export const fetchParticipants = (seasonId = "") =>
+  api.get(
+    `/participants/${seasonId ? `?season_id=${seasonId}` : ""}`,
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
+  );
 export const registerParticipant = (participantData) =>
   api.post("/participants/", participantData, {
     headers: {
@@ -77,6 +80,17 @@ export const deleteParticipant = (participantId) =>
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
+
+  // season API
+  export const fetchSeasons = () =>
+  api.get("/seasons/", {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  export const fetchActiveSeason = () =>
+    api.get("/seasons/active");
 
 // Gallery API
 export const fetchGalleryImages = () => api.get("/gallery");

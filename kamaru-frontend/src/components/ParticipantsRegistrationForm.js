@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { registerParticipant } from "../api";
+import { registerParticipant, fetchActiveSeason } from "../api";
 import { useNavigate } from "react-router-dom";
 import { Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import FloatingLabelInput from "./FloatingLabelInput";
@@ -13,6 +13,9 @@ const ParticipantsRegistrationForm = () => {
   });
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState(null);
+
+  const [activeSeason, setActiveSeason] = useState(null);
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -29,6 +32,16 @@ const ParticipantsRegistrationForm = () => {
       navigate("/login");
     }
   }, [navigate]);
+
+  useEffect(() => {
+    fetchActiveSeason()
+      .then((response) => {
+        setActiveSeason(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching active season:", error);
+      });
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -66,7 +79,7 @@ const ParticipantsRegistrationForm = () => {
       >
         <h2 className="text-2xl font-bold text-center text-[#D57500]">Register to Compete</h2>
         <p className="text-center text-sm text-gray-500">
-         Enter your details to compete in Kamaru Challenge Season 3.
+         Enter your details to compete in {activeSeason?.name || "Kamaru Challenge"}.
         </p>
 
         {feedback && (
