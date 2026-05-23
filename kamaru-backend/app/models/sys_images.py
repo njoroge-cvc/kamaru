@@ -14,5 +14,5 @@ class SystemImage(db.Model):
             "id": self.id,
             "section": self.section,
             "image_url": self.image_url,
-            "uploaded_at": self.uploaded_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "uploaded_at": self.uploaded_at.isoformat()  # Return ISO format for datetime
         }

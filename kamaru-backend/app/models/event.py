@@ -20,5 +20,5 @@ class Event(db.Model):
             "date_time": self.date_time.isoformat(),
             "location": self.location,
             "image_url": self.image_url,
-            "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "created_at": self.created_at.isoformat()
         }

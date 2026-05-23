@@ -13,5 +13,5 @@ class Gallery(db.Model):
             "id": self.id,
             "title": self.title,
             "image_url": self.image_url,  # Cloudinary URL
-            "uploaded_at": self.uploaded_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "uploaded_at": self.uploaded_at.isoformat()  # Return ISO format for datetime
         }
