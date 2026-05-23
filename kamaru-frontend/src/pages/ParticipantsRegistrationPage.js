@@ -234,6 +234,8 @@ useEffect(() => {
         className="py-8 px-4 text-center"
         style={{
           backgroundImage: `url(${bannerImage?.cta || "/default-banner.jpg"})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
           backgroundColor: "white",
         }}
       >
