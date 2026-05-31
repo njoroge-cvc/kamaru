@@ -194,6 +194,7 @@ export const fetchStats = () =>
 export const subscribeToNewsletter = (data) =>
   api.post("/newsletter/subscribe", data);
 
+// Newsletter verification API
 export const verifyNewsletter = (token) =>
   api.get(`/newsletter/verify?token=${token}`);
 

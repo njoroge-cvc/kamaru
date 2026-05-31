@@ -15,10 +15,17 @@ function VerifyNewsletter() {
     const token =
       searchParams.get("token");
 
+    if (!token) {
+      setMessage(
+        "Invalid verification link."
+      );
+      return;
+    }
+
     verifyNewsletter(token)
-      .then(data => {
+      .then((response) => {
         setMessage(
-          data.message ||
+          response.data.message ||
           "Verification successful"
         );
       })
@@ -28,7 +35,7 @@ function VerifyNewsletter() {
         );
       });
 
-  }, []);
+  }, [searchParams]);
 
   return (
     <div className="p-10 text-center">
