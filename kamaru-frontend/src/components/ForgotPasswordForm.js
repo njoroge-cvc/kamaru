@@ -23,6 +23,7 @@ const ForgotPasswordForm = () => {
       .catch((err) => console.error("Error fetching banner image:", err));
   }, []);
 
+  // Handle form submission to request a password reset code
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -31,8 +32,11 @@ const ForgotPasswordForm = () => {
 
     try {
       const response = await fetch("/api/users/forgot_password", {
+        // Use POST method to send the email for password reset
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        // Set the content type to JSON in the request headers
+        headers: {"Content-Type": "application/json"},
+        // Send the email in the request body as JSON
         body: JSON.stringify({ email }),
       });
 

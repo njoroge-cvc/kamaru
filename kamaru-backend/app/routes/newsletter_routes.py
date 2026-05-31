@@ -25,7 +25,7 @@ def subscribe_newsletter():
 
     return jsonify({"message": "Subscribed successfully!"}), 201
 
-# 📬 Contact Us Form Handler
+# Contact Us Form Handler
 @bp.route("/contact", methods=["POST"])
 def contact_us():
     data = request.get_json()
@@ -38,7 +38,7 @@ def contact_us():
         return jsonify({"error": "All fields are required"}), 400
 
     # Prepare email
-    subject = f"New Contact Us Message from {name}"
+    subject = f"New Message from {name}"
     content = f"""
     <p><strong>Name:</strong> {name}</p>
     <p><strong>Email:</strong> {email}</p>

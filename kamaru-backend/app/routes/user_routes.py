@@ -79,7 +79,9 @@ def login():
     access_token = create_access_token(identity=str(user.id))
     return jsonify({"message": "Login successful!", "token": access_token, "is_admin": user.is_admin}), 200
 
+
 @bp.route("/forgot_password", methods=["POST"])
+# Route to handle forgot password requests, sending a reset code to the user's email
 def forgot_password():
     data = request.get_json()
     email = data.get("email")
@@ -99,7 +101,11 @@ def forgot_password():
     <p>If you did not request this, please ignore this email.</p>
     """
 
-    if send_email(email, subject, content):
+    if send_email(
+        email, 
+        subject, 
+        content
+    ):
         return jsonify({"message": "Password reset code sent to your email"}), 200
     else:
         return jsonify({"error": "Failed to send reset code"}), 500

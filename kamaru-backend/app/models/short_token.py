@@ -12,7 +12,11 @@ class ShortToken(db.Model):
     @staticmethod
     def generate_token(user_id):
         """Generates a short token and saves it."""
-        token = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+        token = ''.join(
+            random.choices(
+                string.ascii_letters + string.digits, k=6
+            )
+        )
         expires_at = datetime.utcnow() + timedelta(minutes=15)
 
         # Store the token in the database
