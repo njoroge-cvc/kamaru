@@ -94,7 +94,7 @@ jwt = JWTManager(app)
 # Note: In production, you should restrict origins to your frontend domain
 # CORS(app, resources={r"/api/*": {"origins": "*"}})  # Allow all origins for development
 CORS(app, resources={r"/api/*": {
-    "origins": ["http://localhost:3000", "http://172.20.226.189:5000", "https://kamaruchallenge.africa"], 
+    "origins": ["http://localhost:3000", "http://localhost:5000", "https://kamaruchallenge.africa"], 
     "supports_credentials": True
 }})
 

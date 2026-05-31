@@ -14,6 +14,7 @@ import ResetPasswordForm from "./components/ResetPasswordForm";
 import EventPage from "./pages/EventPage";
 import AboutUs from "./pages/AboutUsPage"; 
 import TermsAndConditionsPage from "./pages/TermsAndConditionsPage";
+import VerifyNewsletter from "./pages/VerifyNewsletter"; // Import the newsletter verification page
 import ScrollToTop from "./components/ScrollToTop";
 import "./index.css"; // Import Tailwind CSS
 
@@ -39,6 +40,11 @@ const App = () => {
             <Route path="/reset_password" element={<ResetPasswordForm />} />
             <Route path="/admin/*" element={<AdminDashboard />} /> {/* Admin routes */}
             <Route path="/terms" element={<TermsAndConditionsPage />} />
+            {/* Newsletter verification route */}
+            <Route 
+              path="/verify-newsletter" 
+              element={<VerifyNewsletter />} 
+            />
           </Routes>
         </div>
         <Footer />

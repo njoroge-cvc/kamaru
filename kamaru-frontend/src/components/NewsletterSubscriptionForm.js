@@ -20,13 +20,25 @@ const NewsletterForm = () => {
 
     setLoading(true);
     try {
-      await subscribeToNewsletter({ email });
-      setMessage("Subscribed successfully!");
-      setStatus("success");
-      setEmail("");
+      await subscribeToNewsletter(
+        { email }
+      );
+      setMessage(
+        "Verification email sent! Please check your inbox."
+      );
+      setStatus(
+        "success"
+      );
+      setEmail(
+        ""
+      );
     } catch (error) {
-      setMessage("Failed to subscribe. Please try again.");
-      setStatus("error");
+      setMessage(
+        "Failed to subscribe. Please try again."
+      );
+      setStatus(
+        "error"
+      );
     }
     setLoading(false);
   };
@@ -40,7 +52,7 @@ const NewsletterForm = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full px-4 py-3 border border-[#D57500] rounded-md focus:outline-none focus:ring-2 focus:ring-[#F4A261]"
+          className="w-full px-4 py-3 border border-[#D57500] rounded-md focus:outline-none text-black focus:ring-2 focus:ring-[#F4A261]"
         />
         <button
   type="submit"
