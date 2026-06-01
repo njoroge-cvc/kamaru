@@ -8,7 +8,10 @@ import secrets
 
 bp = Blueprint("newsletter_routes", __name__)
 
-# Subscribe to Newsletter
+# --------------------------------------------------------
+# Newsletter Subscription Route
+# --------------------------------------------------------
+
 @bp.route("/newsletter/subscribe", methods=["POST"])
 def subscribe_newsletter():
 
@@ -64,14 +67,14 @@ def subscribe_newsletter():
         )
 
         content = f"""
-        <h2>Confirm your subscription to the Kamaru Challenge Newsletter!</h2>
+        <h2>Hello,</h2>
 
         <p>
-        We noticed your subscription is not yet verified.
+        We noticed your subscription to our Newsletter is not yet verified.
         </p>
 
         <p>
-        Please confirm your subscription by clicking the link below:
+        Please confirm your subscription by clicking the button below:
         </p>
 
         <p>
@@ -90,8 +93,7 @@ def subscribe_newsletter():
         <p>
         If you did not subscribe to this newsletter, please ignore this email.
         </p>
-        """
-
+        """ 
         email_sent = send_email(
             email,
             subject,
@@ -106,7 +108,7 @@ def subscribe_newsletter():
         db.session.commit()
 
         return jsonify({
-            "message": "A new verification email has been sent to your email address. Please check your inbox and click the verification link to confirm your subscription."
+            "message": "A new verification email has been sent to your email address. Please check your inbox and click the verification button to confirm your subscription."
         }), 200
     
     # --------------------------------------------------- 
@@ -183,10 +185,7 @@ def subscribe_newsletter():
 # Newsletter Verification Route
 # --------------------------------------------------------
 
-@bp.route(
-    "/newsletter/verify",
-    methods=["GET"]
-)
+@bp.route("/newsletter/verify", methods=["GET"])
 def verify_newsletter():
 
     token = request.args.get(
@@ -267,35 +266,3 @@ def verify_newsletter():
         "message": "Subscription verified successfully!"
     }), 200                                     
 
-# Contact Us Form Handler
-@bp.route("/contact", methods=["POST"])
-def contact_us():
-    data = request.get_json()
-    name = data.get("name")
-    email = data.get("email")
-    message = data.get("message")
-
-    # Validation
-    if not name or not email or not message:
-        return jsonify({"error": "All fields are required"}), 400
-
-    # Prepare email
-    subject = f"New Message from {name}"
-    content = f"""
-    <p><strong>Name:</strong> {name}</p>
-    <p><strong>Email:</strong> {email}</p>
-    <p><strong>Message:</strong></p>
-    <p>{message}</p>
-    """
-
-    # Send email to the designated admin
-    if send_email(
-        "info@kamaruchallenge.africa", 
-        subject, 
-        content
-    ):
-        return jsonify({
-            "message": "Message sent successfully!"
-        }), 200
-    else:
-        return jsonify({"error": "Failed to send message"}), 500

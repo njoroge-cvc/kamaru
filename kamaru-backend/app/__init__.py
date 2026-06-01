@@ -118,6 +118,7 @@ from app.routes import (
     video_routes,
     stat_routes,
     newsletter_routes,
+    contact_routes,
     sys_images_routes,
     season_routes,
 )
@@ -126,6 +127,7 @@ app.register_blueprint(user_routes.bp, url_prefix="/api/users")
 app.register_blueprint(event_routes.bp, url_prefix="/api/events", strict_slashes=False)
 app.register_blueprint(stat_routes.bp, url_prefix="/api/stats")
 app.register_blueprint(newsletter_routes.bp, url_prefix="/api")
+app.register_blueprint(contact_routes.bp, url_prefix="/api")
 app.register_blueprint(participant_routes.bp, url_prefix="/api/participants")
 app.register_blueprint(gallery_routes.bp, url_prefix="/api/gallery")
 app.register_blueprint(sys_images_routes.bp, url_prefix="/api/sys_images")
