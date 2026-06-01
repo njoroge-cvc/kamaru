@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchBanners } from "../api"; // Import fetchBanners
+import { fetchBanners, forgotPassword } from "../api"; // Import the API function to fetch banner images and handle forgot password requests
 import FloatingLabelInput from "./FloatingLabelInput"; // Import the reusable component
 import { Loader2 } from "lucide-react"; // Import the loader icon
 
@@ -26,34 +26,33 @@ const ForgotPasswordForm = () => {
   // Handle form submission to request a password reset code
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     setMessage("");
     setError("");
     setLoading(true);
 
-    try {
-      const response = await fetch("/api/users/forgot_password", {
-        // Use POST method to send the email for password reset
-        method: "POST",
-        // Set the content type to JSON in the request headers
-        headers: {"Content-Type": "application/json"},
-        // Send the email in the request body as JSON
-        body: JSON.stringify({ email }),
-      });
+   try {
+    await forgotPassword(email);
 
-      const data = await response.json();
-      if (response.ok) {
-        setMessage("A reset code has been sent to your email.");
-        setTimeout(() => {
-          navigate("/reset_password");
-        }, 2000);
-      } else {
-        setError(data.error || "Failed to send reset code.");
-      }
-    } catch (err) {
-      setError("An error occurred. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    setMessage(
+      "A reset code has been sent to your email."
+    );
+
+    setTimeout(() => {
+      navigate("/reset_password");
+    }, 2000);
+
+   } catch (err) {
+
+      setError(
+        err.response?.data?.error ||
+          "Failed to send reset code. Please try again."
+      );
+
+   } finally {
+    setLoading(false);
+   }
+
   };
 
   return (

@@ -190,6 +190,13 @@ export const fetchStats = () =>
     },
   });
 
+  // Password reset APIs
+export const forgotPassword = (email) =>
+  api.post("/users/forgot_password", { email });
+
+export const resetPassword = (data) =>
+  api.post("/users/reset_password", data);
+
 // Newsletter API
 export const subscribeToNewsletter = (data) =>
   api.post("/newsletter/subscribe", data);
