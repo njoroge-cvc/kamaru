@@ -2,7 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { fetchEvent } from "../api";
 
+import { useNavigate } from "react-router-dom";
+
 const EventPage = () => {
+
+  const navigate = useNavigate();
+
   const { id } = useParams();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -60,6 +65,17 @@ const EventPage = () => {
           className="w-full h-64 object-cover"
         />
         <div className="p-6">
+          <span
+            className={`inline-block px-3 py-1 text-sm font-semibold rounded-full ${
+              event.status === "upcoming"
+                ? "bg-green-100 text-green-800"
+                : event.status === "past"
+                ? "bg-gray-100 text-gray-800"
+                : "bg-red-100 text-red-800"
+            }`}
+          >
+            {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+          </span>
           <h1 className="text-3xl font-bold text-[#333]">{event.title}</h1>
           <p className="text-gray-600 text-sm mb-4">{formattedDate}</p>
 
@@ -72,14 +88,41 @@ const EventPage = () => {
           <p className="text-lg text-gray-700">
             <strong>Location:</strong> {event.location}
           </p>
+          {event.map_link && (
+            <a
+              href={event.map_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#D57500] hover:underline"
+            >
+              View on Map
+            </a>
+          )}
 
+          {event.cost && (
+            <p className="text-lg text-gray-700">
+              <strong>Cost:</strong> {event.cost}
+            </p>
+          )}
+
+          {event.registration_required && event.registration_link && (
+            <a
+              href={event.registration_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block mt-4 bg-[#D57500] text-white py-2 px-4 rounded-md hover:bg-[#333] transition-colors duration-300"
+            >
+              Register Now
+            </a>
+          )}  
+          
           {/* Back to Events Button */}
-          <Link
-            to="/events"
+          <button
+            onClick={() => navigate(-1)}
             className="mt-4 inline-block bg-[#333] text-white py-2 px-4 rounded-md hover:bg-opacity-80 transition"
           >
             ← Back to Events
-          </Link>
+          </button>
         </div>
       </div>
     </div>

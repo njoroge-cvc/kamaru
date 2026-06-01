@@ -18,10 +18,12 @@ def is_admin():
 @bp.route("/", methods=["POST"])
 @jwt_required()
 def create_event():
+
     if not is_admin():
         return jsonify({"error": "Admin access required"}), 403
 
     data = request.form
+
     image = request.files.get("image")
     if not image:
         return jsonify({"error": "Image is required"}), 400
@@ -41,6 +43,11 @@ def create_event():
             details=data.get("details"),
             date_time=date_time,
             location=data.get("location"),
+            status=data.get("status", "upcoming"),
+            registration_required=data.get("registration_required", "false").lower() == "true",
+            registration_link=data.get("registration_link"),
+            cost=data.get("cost"),
+            map_link=data.get("map_link"),
             image_url=image_url,
         )
         db.session.add(event)
@@ -52,7 +59,13 @@ def create_event():
 # Fetch all events (Public)
 @bp.route("/", methods=["GET"])
 def get_events():
-    events = Event.query.order_by(Event.date_time.desc()).all()
+
+    events = Event.query.filter(
+        Event.date_time >= datetime.utcnow()
+    ).order_by(
+        Event.date_time.asc()
+    ).all()
+
     return jsonify([event.to_dict() for event in events]), 200
 
 # Fetch event details (Public)
@@ -95,6 +108,11 @@ def update_event(id):
         event.theme = data.get("theme", event.theme)
         event.details = data.get("details", event.details)
         event.location = data.get("location", event.location)
+        event.status = data.get("status", event.status)
+        event.registration_required = data.get("registration_required", str(event.registration_required)).lower() == "true"
+        event.registration_link = data.get("registration_link", event.registration_link)
+        event.cost = data.get("cost", event.cost)
+        event.map_link = data.get("map_link", event.map_link)
 
         db.session.commit()
         return jsonify(event.to_dict()), 200
