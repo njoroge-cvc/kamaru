@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchBanners } from "../api"; // Import fetchBanners
+import { fetchBanners, resetPassword } from "../api"; // Import fetchBanners
 import FloatingLabelInput from "./FloatingLabelInput"; // Import the reusable component
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import icons for password toggle
 import { Loader2 } from "lucide-react"; // Import the loader icon
@@ -41,26 +41,27 @@ const ResetPasswordForm = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/users/reset_password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ short_token: shortToken, new_password: newPassword }),
-      });
+        await resetPassword({ 
+          short_token: shortToken, 
+          new_password: newPassword 
+        });
 
-      const data = await response.json();
-      if (response.ok) {
-        setMessage("Password reset successfully! You can now log in.");
+        setMessage(
+          "Password reset successfully! You can now log in."
+        );
+
         setTimeout(() => {
           navigate("/login");
         }, 2000);
+
         setShortToken("");
         setNewPassword("");
         setConfirmPassword("");
-      } else {
-        setError(data.error || "Failed to reset password.");
-      }
-    } catch (err) {
-      setError("An error occurred. Please try again.");
+      } catch (err) {
+      setError(
+        err.response?.data?.error ||
+          "Failed to reset password. Please try again."
+      );
     } finally {
       setLoading(false);
     }
