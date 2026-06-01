@@ -61,7 +61,8 @@ def create_event():
 def get_events():
 
     events = Event.query.filter(
-        Event.date_time >= datetime.utcnow()
+        Event.date_time >= datetime.utcnow(),
+        Event.status != "cancelled"
     ).order_by(
         Event.date_time.asc()
     ).all()

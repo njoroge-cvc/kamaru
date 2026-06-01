@@ -19,6 +19,11 @@ const ManageEvent = () => {
     details: "",
     date_time: "",
     location: "",
+    status: "upcoming",
+    registration_required: false,
+    registration_link: "",
+    cost: "Free",
+    map_link: "",
     image: null,
   });
   const [editMode, setEditMode] = useState(false);
@@ -63,8 +68,7 @@ const ManageEvent = () => {
     Object.entries(formData).forEach(([key, value]) => {
       if (
         value !== null &&
-        value !== undefined &&
-        value !== ""
+        value !== undefined
       ){
         data.append(key, value);
       }
@@ -78,8 +82,25 @@ const ManageEvent = () => {
         await createEvent(data);
         toast.success("Event created successfully!");
       }
+
+      // Reset form after successful save
+      setFormData({
+        title: "",
+        theme: "",
+        details: "",
+        date_time: "",
+        location: "",
+        status: "upcoming",
+        registration_required: false,
+        registration_link: "",
+        cost: "Free",
+        map_link: "",
+        image: null,
+      });
+
       setShowForm(false);
       loadEvents();
+
     } catch (error) {
       toast.error("Failed to save event.");
       console.error("Error saving event:", error);
@@ -118,11 +139,16 @@ const ManageEvent = () => {
       details: event.details,
       date_time: formattedDateTime,
       location: event.location,
+      status: event.status || "upcoming", // Default to "upcoming" if status is missing
+      registration_required: event.registration_required || false, // Default to false if missing
+      registration_link: event.registration_link || "",
+      cost: event.cost || "Free", // Default to "Free" if cost is missing
+      map_link: event.map_link || "",
       image: null,
     });
 
 
-    setShowForm(true);
+    setShowForm(true); // Open the form modal after populating it with data
   };
 
   const toggleExpand = (id) => {
@@ -145,6 +171,11 @@ const ManageEvent = () => {
               details: "",
               date_time: "",
               location: "",
+              status: "upcoming",
+              registration_required: false,
+              registration_link: "",
+              cost: "Free",
+              map_link: "",
               image: null,
             });
             setShowForm(true);
@@ -165,6 +196,9 @@ const ManageEvent = () => {
                 <th className="p-2 text-left">Details</th>
                 <th className="p-2 text-left">Date & Time</th>
                 <th className="p-2 text-left">Location</th>
+                <th className="p-2 text-left">Status</th>
+                <th className="p-2 text-left">Cost</th>
+                <th className="p-2 text-left">Registration</th>
                 <th className="p-2 text-left">Image</th>
                 <th className="p-2 text-left">Actions</th>
               </tr>
@@ -207,6 +241,35 @@ const ManageEvent = () => {
                       {new Date(event.date_time).toLocaleString()}
                     </td>
                     <td className="p-2 break-words whitespace-normal text-xs sm:text-sm">{event.location}</td>
+
+                    {/* Event status with color coding */}
+                    <td className="p-2 break-words whitespace-normal text-xs sm:text-sm">
+
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                          event.status === "upcoming"
+                            ? "bg-green-100 text-green-800"
+                            : event.status === "past"
+                            ? "bg-gray-100 text-gray-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+                      </span>
+                    </td>
+
+                    {/* Event Cost */}
+                    <td className="p-2 text-xs sm:text-sm">
+                      {event.cost || "Free"}
+                    </td>
+
+                    {/* Registration Status */}
+                    <td className="p-2 text-xs sm:text-sm">
+                      {event.registration_required
+                        ? "Required"
+                        : "Not Required"}
+                    </td>
+
                     <td className="p-2">
                       <img
                         src={event.image_url}
@@ -238,7 +301,7 @@ const ManageEvent = () => {
 
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white w-[95%] md:w-[500px] p-6 rounded-md shadow-xl">
+          <div className="bg-white w-[95%] md:w-[700px] p-6 rounded-md shadow-xl">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold text-[#8F3B1B]">
                 {editMode ? "Edit Event" : "Create Event"}
@@ -295,6 +358,92 @@ const ManageEvent = () => {
                 required
                 className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-[#D57500]"
               />
+
+              {/* Event Status */}
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Event Status
+                </label>
+
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                  className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-[#D57500]"
+                >
+                  <option value="upcoming">Upcoming</option>
+                  <option value="past">Past</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+
+              {/* Event Cost */}
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Event Cost
+                </label>
+
+                <input
+                  type="text"
+                  name="cost"
+                  value={formData.cost}
+                  onChange={handleChange}
+                  placeholder="Free, KES 500, Donation Based..."
+                  className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-[#D57500]"
+                />
+              </div>
+
+              {/* Registration Required */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  name="registration_required"
+                  checked={formData.registration_required}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      registration_required: e.target.checked,
+                    }))
+                  }
+                />
+                
+                <label className="text-sm font-medium">
+                    Registration Required
+                </label>
+              </div>
+
+              {formData.registration_required && (
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Registration Link
+                  </label>
+                  <input
+                    type="text"
+                    name="registration_link"
+                    value={formData.registration_link}
+                    onChange={handleChange}
+                    placeholder="https://example.com/registration"
+                    className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-[#D57500]"
+                  />
+                </div>
+              )}
+
+              {/* Map Link */}
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Map Link (Google Maps URL)
+                </label>
+
+                <input
+                  type="text"
+                  name="map_link"
+                  value={formData.map_link}
+                  onChange={handleChange}
+                  placeholder="https://maps.google.com/?q=location"
+                  className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-[#D57500]"
+                />
+              </div>
+
               <input
                 type="file"
                 name="image"

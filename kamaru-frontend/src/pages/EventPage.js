@@ -101,28 +101,34 @@ const EventPage = () => {
 
           {event.cost && (
             <p className="text-lg text-gray-700">
-              <strong>Cost:</strong> {event.cost}
+              <strong>Cost:</strong> {event.cost || "Free"}
             </p>
           )}
 
-          {event.registration_required && event.registration_link && (
-            <a
-              href={event.registration_link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block mt-4 bg-[#D57500] text-white py-2 px-4 rounded-md hover:bg-[#333] transition-colors duration-300"
-            >
-              Register Now
-            </a>
-          )}  
+          <div className="mt-6 flex gap-3">
+
+            {event.registration_required && event.registration_link && (
+              <a
+                href={event.registration_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-4 bg-[#D57500] text-white py-2 px-4 rounded-md hover:bg-[#333] transition-colors duration-300"
+              >
+                Register Now
+              </a>
+            )}
+              
           
-          {/* Back to Events Button */}
-          <button
-            onClick={() => navigate(-1)}
-            className="mt-4 inline-block bg-[#333] text-white py-2 px-4 rounded-md hover:bg-opacity-80 transition"
-          >
-            ← Back to Events
-          </button>
+            {/* Back to Events Button */}
+            <button
+              onClick={() => navigate(-1)}
+              className="mt-4 inline-block bg-[#333] text-white py-2 px-4 rounded-md hover:bg-opacity-80 transition"
+            >
+              ← Back to Events
+            </button>
+
+          </div>
+
         </div>
       </div>
     </div>
