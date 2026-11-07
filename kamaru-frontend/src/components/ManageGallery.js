@@ -1,141 +1,308 @@
 import { toast } from "react-toastify";
-import React, { useEffect, useState } from "react";
-import { fetchGalleryImages, uploadImage, deleteImage } from "../api";
-import { FaTrash, FaPlus, FaTimes } from "react-icons/fa";
+import React, { useEffect, useMemo, useState } from "react";
+import { FaTrash, FaPlus, FaCheck, FaImages } from "react-icons/fa";
+import { fetchGalleryImages, uploadImage, deleteImage, updateImage, bulkAssignSeason, fetchSeasons } from "../api";
+import { PageHeader, Modal, Field, EmptyState, Spinner } from "./ui";
+import { cld } from "../utils/cloudinary";
 
-const ManageGallery = () => {
-  const [images, setImages] = useState([]);
-  const [imageFile, setImageFile] = useState(null);
+const NONE = "none";
+
+// "IMG_2041-mumburo-dancers.jpg" -> "Mumburo dancers"-ish fallback title
+const titleFromFile = (name) => {
+  const base = name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").replace(/\b(img|dsc|photo)\s?\d+\b/gi, "").trim();
+  return base ? base.charAt(0).toUpperCase() + base.slice(1) : "Untitled";
+};
+
+const SeasonSelect = ({ seasons, value, onChange, className = "", disabled, includeAll }) => (
+  <select value={value ?? NONE} onChange={(e) => onChange(e.target.value)} disabled={disabled} className={`k-input ${className}`}>
+    {includeAll && <option value="all">All seasons</option>}
+    {seasons.map((s) => (
+      <option key={s.id} value={s.id}>
+        {s.name} ({s.year})
+      </option>
+    ))}
+    <option value={NONE}>Unsorted (no season)</option>
+  </select>
+);
+
+const UploadModal = ({ open, onClose, seasons, onDone }) => {
+  const active = seasons.find((s) => s.is_active);
+  const [files, setFiles] = useState([]);
   const [title, setTitle] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showForm, setShowForm] = useState(false);
+  const [season, setSeason] = useState(active ? String(active.id) : NONE);
+  const [progress, setProgress] = useState(null);
 
   useEffect(() => {
-    fetchGalleryImages()
-      .then((response) => setImages(response.data.images))
-      .catch((error) => console.error("Error fetching gallery images:", error));
-  }, []);
-
-  const handleUploadImage = async (e) => {
-    e.preventDefault();
-    if (!imageFile) return toast.error("Please select an image!");
-
-    setLoading(true);
-    const formData = new FormData();
-    formData.append("image", imageFile);
-    formData.append("title", title);
-
-    try {
-      await uploadImage(formData);
-      toast.success("Image uploaded successfully!");
+    if (open) {
+      setFiles([]);
       setTitle("");
-      setImageFile(null);
-      setShowForm(false);
-
-      const response = await fetchGalleryImages();
-      setImages(response.data.images);
-    } catch (error) {
-      console.error("Error uploading image:", error);
-    } finally {
-      setLoading(false);
+      setSeason(active ? String(active.id) : NONE);
+      setProgress(null);
     }
-  };
+  }, [open, active]);
 
-  const handleDeleteImage = (imageId) => {
-    if (window.confirm("Are you sure you want to delete this image?")) {
-      deleteImage(imageId)
-        .then(() => {
-          toast.success("Image deleted successfully!");
-          setImages(images.filter((image) => image.id !== imageId));
-        })
-        .catch((error) => console.error("Error deleting image:", error));
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!files.length) return toast.error("Choose at least one photo.");
+    let ok = 0;
+    for (let i = 0; i < files.length; i++) {
+      setProgress(`${i + 1} of ${files.length}`);
+      const fd = new FormData();
+      fd.append("image", files[i]);
+      fd.append("title", title.trim() || titleFromFile(files[i].name));
+      if (season !== NONE) fd.append("season_id", season);
+      try {
+        await uploadImage(fd);
+        ok++;
+      } catch (err) {
+        toast.error(`${files[i].name}: ${err.response?.data?.error || "upload failed"}`);
+      }
     }
+    setProgress(null);
+    if (ok) toast.success(`${ok} photo${ok > 1 ? "s" : ""} uploaded.`);
+    onDone();
   };
 
   return (
-    <div >
-      <h2 className="k-h2 mb-6">Manage Gallery</h2>
-
-      {/* Upload Image Button */}
-      <button
-        onClick={() => setShowForm(true)}
-        className="k-btn-primary mb-6"
-      >
-        <FaPlus />
-        <span>Upload Image</span>
-      </button>
-
-      {/* Gallery Display */}
-      {images.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {images.map((image) => (
-            <div
-              key={image.id}
-              className="group relative overflow-hidden rounded-2xl bg-white p-2 shadow-sm ring-1 ring-earth/5 transition hover:shadow-lg"
-            >
-              <img
-                src={image.image_url}
-                alt={image.title}
-                className="w-full h-40 object-cover rounded-lg"
-              />
-              <p className="px-1 pt-2 text-sm font-semibold text-earth line-clamp-1">{image.title}</p>
-              <button
-                onClick={() => handleDeleteImage(image.id)}
-                className="absolute top-3 right-3 grid h-9 w-9 place-items-center rounded-full bg-earth/80 text-cream backdrop-blur hover:bg-bead-red transition"
-              >
-                <FaTrash />
-              </button>
-            </div>
-          ))}
+    <Modal open={open} onClose={progress ? () => {} : onClose} title="Upload photos">
+      <form onSubmit={submit} className="space-y-4">
+        <Field label="Photos" hint="You can choose several at once.">
+          <input type="file" accept="image/*" multiple onChange={(e) => setFiles([...e.target.files])} className="k-input" required />
+        </Field>
+        {files.length > 0 && <p className="text-sm text-earth-600">{files.length} photo{files.length > 1 ? "s" : ""} selected</p>}
+        <Field label="Season" hint="Which edition these photos are from.">
+          <SeasonSelect seasons={seasons} value={season} onChange={setSeason} />
+        </Field>
+        <Field label="Title" hint="Describe what's happening, e.g. “Nyakinyua dancers perform a Kikuyu folk dance”. Leave empty to use each file's name.">
+          <input value={title} onChange={(e) => setTitle(e.target.value)} className="k-input" />
+        </Field>
+        <div className="flex justify-end gap-3 pt-2">
+          <button type="button" className="k-btn-ghost" onClick={onClose} disabled={!!progress}>
+            Cancel
+          </button>
+          <button type="submit" className="k-btn-primary" disabled={!!progress}>
+            {progress ? (
+              <>
+                <Spinner /> Uploading {progress}
+              </>
+            ) : (
+              "Upload"
+            )}
+          </button>
         </div>
-      ) : (
-        <p className="text-center text-earth-600 mt-4">No images available.</p>
-      )}
+      </form>
+    </Modal>
+  );
+};
 
-      {/* Upload Image Modal */}
-      {showForm && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-earth/60 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-3xl bg-cream p-6 shadow-2xl">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-display text-xl font-bold text-earth">Upload New Image</h3>
-              <button onClick={() => setShowForm(false)} className="k-icon-btn">
-                <FaTimes className="text-xl" />
-              </button>
-            </div>
-            <form onSubmit={handleUploadImage} className="space-y-3">
-              <input
-                type="text"
-                placeholder="Image Title"
-                className="k-input"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-              />
-              <input
-                type="file"
-                className="k-input"
-                onChange={(e) => setImageFile(e.target.files[0])}
-                required
-              />
-              <div className="flex justify-end space-x-3 mt-4">
-                <button
-                  type="button"
-                  className="k-btn-ghost"
-                  onClick={() => setShowForm(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="k-btn-primary"
-                >
-                  {loading ? "Uploading..." : "Upload"}
-                </button>
-              </div>
-            </form>
+const ManageGallery = () => {
+  const [images, setImages] = useState(null);
+  const [seasons, setSeasons] = useState([]);
+  const [filter, setFilter] = useState("all");
+  const [selected, setSelected] = useState(() => new Set());
+  const [moveTo, setMoveTo] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const load = () =>
+    fetchGalleryImages()
+      .then((r) => setImages(r.data?.images || []))
+      .catch(() => {
+        setImages([]);
+        toast.error("Could not load the gallery.");
+      });
+
+  useEffect(() => {
+    load();
+    fetchSeasons()
+      .then((r) => setSeasons(Array.isArray(r.data) ? r.data : []))
+      .catch(() => setSeasons([]));
+  }, []);
+
+  const counts = useMemo(() => {
+    const c = { all: images?.length || 0, [NONE]: 0 };
+    (images || []).forEach((i) => {
+      const k = i.season_id || NONE;
+      c[k] = (c[k] || 0) + 1;
+    });
+    return c;
+  }, [images]);
+
+  const shown = useMemo(() => {
+    if (!images) return [];
+    if (filter === "all") return images;
+    if (filter === NONE) return images.filter((i) => !i.season_id);
+    return images.filter((i) => String(i.season_id) === String(filter));
+  }, [images, filter]);
+
+  const toggle = (id) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+
+  const allShownSelected = shown.length > 0 && shown.every((i) => selected.has(i.id));
+  const toggleAll = () =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      shown.forEach((i) => (allShownSelected ? next.delete(i.id) : next.add(i.id)));
+      return next;
+    });
+
+  const seasonName = (id) => seasons.find((s) => String(s.id) === String(id))?.name || "Unsorted";
+
+  const changeOne = async (image, value) => {
+    const seasonId = value === NONE ? null : Number(value);
+    try {
+      const r = await updateImage(image.id, { season_id: seasonId });
+      setImages((list) => list.map((i) => (i.id === image.id ? r.data.image : i)));
+      toast.success(`Moved to ${seasonName(value)}.`);
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Could not update the photo.");
+    }
+  };
+
+  const moveSelected = async () => {
+    if (!moveTo || !selected.size) return;
+    setBusy(true);
+    try {
+      const r = await bulkAssignSeason([...selected], moveTo === NONE ? null : Number(moveTo));
+      toast.success(`${r.data.updated} photo${r.data.updated === 1 ? "" : "s"} moved to ${seasonName(moveTo)}.`);
+      setSelected(new Set());
+      setMoveTo("");
+      await load();
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Could not move the photos.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const remove = async (image) => {
+    if (!window.confirm(`Delete “${image.title}”? It will be removed from the site.`)) return;
+    try {
+      await deleteImage(image.id);
+      toast.success("Photo deleted.");
+      setImages((list) => list.filter((i) => i.id !== image.id));
+      setSelected((prev) => {
+        const next = new Set(prev);
+        next.delete(image.id);
+        return next;
+      });
+    } catch {
+      toast.error("Could not delete the photo.");
+    }
+  };
+
+  const chips = [
+    { key: "all", label: "All" },
+    ...seasons.map((s) => ({ key: String(s.id), label: s.name })),
+    { key: NONE, label: "Unsorted" },
+  ];
+
+  return (
+    <div>
+      <PageHeader
+        eyebrow="Media"
+        title="Gallery"
+        description="Photos are grouped by season on the public Gallery page. Sort each photo into the edition it's from."
+        actions={
+          <button onClick={() => setUploading(true)} className="k-btn-primary">
+            <FaPlus /> Upload photos
+          </button>
+        }
+      />
+
+      {/* Season filter */}
+      <div className="mb-5 flex flex-wrap gap-2">
+        {chips.map((c) => (
+          <button
+            key={c.key}
+            onClick={() => setFilter(c.key)}
+            className={`k-quad px-4 py-2 text-sm font-semibold ${filter === c.key ? "bg-earth text-cream" : "bg-white text-earth hover:bg-cream-dark"}`}
+          >
+            {c.label} <span className="opacity-60">· {counts[c.key] || 0}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Bulk actions */}
+      {images?.length > 0 && (
+        <div className="k-cut sticky top-[4.5rem] z-20 mb-5 flex flex-wrap items-center gap-3 bg-earth p-3 text-cream shadow-lg">
+          <button onClick={toggleAll} className="k-quad bg-cream/10 px-3 py-2 text-sm font-semibold hover:bg-cream/20">
+            {allShownSelected ? "Clear selection" : `Select all ${shown.length}`}
+          </button>
+          <span className="text-sm text-cream/80">{selected.size} selected</span>
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <SeasonSelect
+              seasons={seasons}
+              value={moveTo || ""}
+              onChange={setMoveTo}
+              className="!w-auto !py-2 text-earth"
+              disabled={!selected.size || busy}
+            />
+            <button onClick={moveSelected} disabled={!selected.size || !moveTo || busy} className="k-btn-primary !py-2">
+              {busy && <Spinner />} Move to season
+            </button>
           </div>
         </div>
       )}
+
+      {images === null ? (
+        <div className="flex justify-center py-16">
+          <Spinner className="h-8 w-8" />
+        </div>
+      ) : shown.length === 0 ? (
+        <EmptyState icon={<FaImages />} title={images.length ? "No photos here" : "No photos yet"}>
+          {images.length ? "Pick another season, or move photos into this one." : "Upload the first photos from a Kamaru Challenge."}
+        </EmptyState>
+      ) : (
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
+          {shown.map((image) => {
+            const isSel = selected.has(image.id);
+            return (
+              <div key={image.id} className={`k-card relative flex flex-col p-2 transition ${isSel ? "!bg-kamaru/15 ring-2 ring-kamaru" : ""}`}>
+                <button
+                  type="button"
+                  onClick={() => toggle(image.id)}
+                  className="relative block overflow-hidden"
+                  aria-pressed={isSel}
+                  aria-label={`${isSel ? "Unselect" : "Select"} ${image.title}`}
+                >
+                  <img src={cld(image.image_url, 400)} alt={image.title} loading="lazy" className="k-quad-shape h-40 w-full object-cover" />
+                  <span
+                    className={`absolute left-2 top-2 grid h-7 w-7 place-items-center k-quad-shape text-sm ${
+                      isSel ? "bg-kamaru text-earth" : "bg-cream/85 text-transparent"
+                    }`}
+                  >
+                    <FaCheck />
+                  </span>
+                </button>
+                <p className="mt-2 px-1 text-sm font-semibold text-earth line-clamp-1" title={image.title}>
+                  {image.title}
+                </p>
+                <div className="mt-2 flex items-center gap-2 px-1 pb-1">
+                  <SeasonSelect seasons={seasons} value={image.season_id ? String(image.season_id) : NONE} onChange={(v) => changeOne(image, v)} className="!py-1.5 text-xs" />
+                  <button onClick={() => remove(image)} className="k-icon-btn shrink-0 hover:!text-bead-red" aria-label={`Delete ${image.title}`}>
+                    <FaTrash />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <UploadModal
+        open={uploading}
+        onClose={() => setUploading(false)}
+        seasons={seasons}
+        onDone={() => {
+          setUploading(false);
+          load();
+        }}
+      />
     </div>
   );
 };

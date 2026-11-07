@@ -10,7 +10,7 @@ const PAGE = 30;
 const Gallery = () => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [year, setYear] = useState("all");
+  const [tab, setTab] = useState("all"); // "all" | season id | "none"
   const [shown, setShown] = useState(PAGE);
   const [open, setOpen] = useState(null);
 
@@ -24,19 +24,34 @@ const Gallery = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const years = useMemo(() => {
-    const ys = new Set(images.map((i) => new Date(i.uploaded_at).getFullYear()).filter(Boolean));
-    return [...ys].sort((a, b) => b - a);
+  // Season tabs, built from the photos themselves (newest season first); unsorted photos last
+  const tabs = useMemo(() => {
+    const seasons = new Map();
+    let unsorted = 0;
+    images.forEach((i) => {
+      if (!i.season_id) return void unsorted++;
+      const t = seasons.get(i.season_id) || { key: i.season_id, label: i.season, year: i.season_year || 0, count: 0 };
+      t.count++;
+      seasons.set(i.season_id, t);
+    });
+    const list = [...seasons.values()].sort((a, b) => b.year - a.year || String(b.label).localeCompare(String(a.label)));
+    if (!list.length) return [];
+    return [
+      { key: "all", label: "All", count: images.length },
+      ...list,
+      ...(unsorted ? [{ key: "none", label: "More moments", count: unsorted }] : []),
+    ];
   }, [images]);
 
-  const filtered = useMemo(
-    () => (year === "all" ? images : images.filter((i) => new Date(i.uploaded_at).getFullYear() === year)),
-    [images, year]
-  );
+  const filtered = useMemo(() => {
+    if (tab === "all") return images;
+    if (tab === "none") return images.filter((i) => !i.season_id);
+    return images.filter((i) => i.season_id === tab);
+  }, [images, tab]);
   const visible = filtered.slice(0, shown);
 
-  const pickYear = (y) => {
-    setYear(y);
+  const pickTab = (key) => {
+    setTab(key);
     setShown(PAGE);
   };
 
@@ -60,28 +75,32 @@ const Gallery = () => {
 
   return (
     <div>
-      {years.length > 1 && (
+      {tabs.length > 1 && (
         <LayoutGroup>
-          <div className="mb-10 flex flex-wrap justify-center gap-2">
-            {["all", ...years].map((y) => (
+          <div className="mb-10 flex flex-wrap justify-center gap-2" role="tablist" aria-label="Filter photos by season">
+            {tabs.map((t) => (
               <button
-                key={y}
-                onClick={() => pickYear(y)}
+                key={t.key}
+                role="tab"
+                aria-selected={tab === t.key}
+                onClick={() => pickTab(t.key)}
                 className={`relative rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
-                  year === y ? "text-cream" : "text-earth hover:text-ochre"
+                  tab === t.key ? "text-cream" : "text-earth hover:text-ochre"
                 }`}
               >
-                {year === y && (
-                  <motion.span layoutId="year-pill" className="absolute inset-0 k-quad-shape bg-earth" />
+                {tab === t.key && (
+                  <motion.span layoutId="season-pill" className="absolute inset-0 k-quad-shape bg-earth" />
                 )}
-                <span className="relative">{y === "all" ? `All · ${images.length}` : y}</span>
+                <span className="relative">
+                  {t.label} <span className="opacity-60">· {t.count}</span>
+                </span>
               </button>
             ))}
           </div>
         </LayoutGroup>
       )}
 
-      <div key={year} className="columns-2 sm:columns-3 lg:columns-4 gap-4">
+      <div key={tab} className="columns-2 sm:columns-3 lg:columns-4 gap-4">
           {visible.map((image, index) => (
             <motion.button
               key={image.id}
@@ -103,6 +122,7 @@ const Gallery = () => {
               <span className="absolute inset-0 flex items-end justify-between gap-2 bg-gradient-to-t from-earth/80 via-transparent to-transparent p-4 text-left text-cream opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                 <span className="text-sm font-semibold line-clamp-2">
                   {image.title !== "Untitled" ? image.title : ""}
+                  {image.season && tab === "all" && <span className="block text-xs font-medium text-cream/70">{image.season}</span>}
                 </span>
                 <FaExpand className="shrink-0" />
               </span>

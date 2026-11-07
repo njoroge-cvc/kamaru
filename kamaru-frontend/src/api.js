@@ -149,6 +149,13 @@ export const uploadImage = (formData) =>
       "Content-Type": "multipart/form-data",
     },
   });
+// Edit a photo's title and/or season: { title?, season_id? } (season_id null = unassigned)
+export const updateImage = (imageId, data) => api.patch(`/gallery/${imageId}`, data, { headers: authHeader() });
+// Move several photos to one season (or null to unassign)
+export const bulkAssignSeason = (ids, seasonId) =>
+  api.patch("/gallery/bulk-season", { ids, season_id: seasonId }, { headers: authHeader() });
+// Seasons list for public pages (no login needed)
+export const fetchPublicSeasons = () => api.get("/seasons/");
 export const deleteImage = (imageId) =>
   api.delete(`/gallery/${imageId}`, {
     headers: {
