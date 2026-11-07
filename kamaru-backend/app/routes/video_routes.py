@@ -3,6 +3,7 @@ from app import db
 from app.models.video import Video
 from app.utils import rbac
 from app.utils.rbac import permission_required
+from app.utils.youtube import extract_youtube_id, watch_url
 
 bp = Blueprint("video_routes", __name__)
 
@@ -11,26 +12,35 @@ bp = Blueprint("video_routes", __name__)
 @permission_required(rbac.VIDEOS)
 def add_video():
     data = request.get_json(silent=True) or {}
-    title = data.get("title")
-    youtube_url = data.get("youtube_url")
+    title = (data.get("title") or "").strip()
+    youtube_url = (data.get("youtube_url") or "").strip()
 
     # Validate input
     if not title or not youtube_url:
         return jsonify({"error": "Title and YouTube URL are required"}), 400
 
-    # Check if video already exists
-    if Video.query.filter_by(youtube_url=youtube_url).first():
-        return jsonify({"error": "This video is already added"}), 409
+    # Accept any common YouTube link, but only if it points at a single video
+    video_id = extract_youtube_id(youtube_url)
+    if not video_id:
+        return jsonify({
+            "error": "That doesn't look like a YouTube video link. Use the video's Share link "
+                     "(e.g. https://youtu.be/…) rather than a channel or playlist link."
+        }), 400
 
-    # Save video to database
-    video = Video(title=title, youtube_url=youtube_url)
+    # Same video under a different link format (youtu.be, ?si=…, &t=…) is still a duplicate
+    for existing in Video.query.all():
+        if extract_youtube_id(existing.youtube_url) == video_id:
+            return jsonify({"error": f"This video is already added as “{existing.title}”"}), 409
+
+    # Store one canonical link so every page builds the same player
+    video = Video(title=title, youtube_url=watch_url(video_id))
     db.session.add(video)
     db.session.commit()
 
     return jsonify({"message": "Video added successfully!", "video": video.to_dict()}), 201
 
 # Get all videos (Public)
-@bp.route("/", methods=["GET"])
+@bp.route("/", methods=["GET"], strict_slashes=False)
 def get_videos():
     videos = Video.query.order_by(Video.uploaded_at.desc()).all()
     return jsonify({"videos": [video.to_dict() for video in videos]}), 200

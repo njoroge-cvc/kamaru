@@ -1,89 +1,127 @@
 import { toast } from "react-toastify";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { fetchVideos, addVideo, deleteVideo } from "../api";
-import { FaTrash, FaPlay, FaPlus, FaTimes } from "react-icons/fa";
-import { extractYouTubeID } from "../utils/youtube";
+import { FaTrash, FaPlay, FaPlus, FaExclamationTriangle, FaYoutube, FaCheckCircle } from "react-icons/fa";
+import { extractYouTubeID, youTubeThumb } from "../utils/youtube";
+import { PageHeader, Modal, Field, EmptyState, Spinner } from "./ui";
+import VideoPlayer from "./VideoPlayer";
+
+const EMPTY = { title: "", youtube_url: "" };
 
 const ManageVideos = () => {
-  const [videos, setVideos] = useState([]);
-  const [newVideo, setNewVideo] = useState({ title: "", youtube_url: "" });
+  const [videos, setVideos] = useState(null);
+  const [form, setForm] = useState(EMPTY);
   const [showForm, setShowForm] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  const load = () =>
+    fetchVideos()
+      .then((r) => setVideos((r.data?.videos || []).map((v) => ({ ...v, youtube_id: extractYouTubeID(v.youtube_url) }))))
+      .catch(() => {
+        setVideos([]);
+        toast.error("Could not load videos.");
+      });
 
   useEffect(() => {
-    fetchVideos()
-      .then((response) => setVideos(response.data.videos))
-      .catch((error) => console.error("Error fetching videos:", error));
+    load();
   }, []);
 
-  const handleAddVideo = (e) => {
-    e.preventDefault();
-    addVideo(newVideo)
-      .then(() => {
-        toast.success("Video added successfully!");
-        setNewVideo({ title: "", youtube_url: "" });
-        setShowForm(false);
-        fetchVideos().then((response) => setVideos(response.data.videos));
-      })
-      .catch((error) => console.error("Error adding video:", error));
+  // Live check of the pasted link
+  const previewId = useMemo(() => extractYouTubeID(form.youtube_url), [form.youtube_url]);
+  const linkTyped = form.youtube_url.trim().length > 0;
+  const duplicate = previewId && videos?.find((v) => v.youtube_id === previewId);
+
+  const close = () => {
+    setShowForm(false);
+    setForm(EMPTY);
+    setError("");
   };
 
-  const handleDeleteVideo = (videoId) => {
-    if (window.confirm("Are you sure you want to delete this video?")) {
-      deleteVideo(videoId)
-        .then(() => {
-          toast.success("Video deleted successfully!");
-          setVideos(videos.filter((video) => video.id !== videoId));
-        })
-        .catch((error) => console.error("Error deleting video:", error));
+  const handleAdd = async (e) => {
+    e.preventDefault();
+    setError("");
+    if (!previewId) return setError("That isn't a YouTube video link. Open the video on YouTube, tap Share and copy the link.");
+    if (duplicate) return setError(`This video is already added as “${duplicate.title}”.`);
+    setSaving(true);
+    try {
+      await addVideo({ title: form.title.trim(), youtube_url: form.youtube_url.trim() });
+      toast.success("Video added. It's now on the homepage and Videos page.");
+      close();
+      load();
+    } catch (err) {
+      setError(err.response?.data?.error || "Could not add the video. Please try again.");
+    } finally {
+      setSaving(false);
     }
   };
 
+  const handleDelete = async (video) => {
+    if (!window.confirm(`Delete “${video.title}”? It will disappear from the site.`)) return;
+    try {
+      await deleteVideo(video.id);
+      toast.success("Video deleted.");
+      setVideos((list) => list.filter((v) => v.id !== video.id));
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Could not delete the video.");
+    }
+  };
+
+  const broken = (videos || []).filter((v) => !v.youtube_id);
+
   return (
-    <div >
-      <h2 className="k-h2 mb-6">Manage Videos</h2>
+    <div>
+      <PageHeader
+        eyebrow="Media"
+        title="Videos"
+        description="YouTube performances shown on the homepage and the Videos page, newest first."
+        actions={
+          <button onClick={() => setShowForm(true)} className="k-btn-primary">
+            <FaPlus /> Add video
+          </button>
+        }
+      />
 
-      {/* Add Video Button */}
-      <button
-        onClick={() => setShowForm(true)}
-        className="k-btn-primary mb-6"
-      >
-        <FaPlus />
-        <span>Add Video</span>
-      </button>
+      {broken.length > 0 && (
+        <div className="k-cut mb-6 flex items-start gap-3 bg-bead-red/10 p-4 text-sm text-earth">
+          <FaExclamationTriangle className="mt-0.5 shrink-0 text-bead-red" />
+          <p>
+            {broken.length === 1 ? "One video has" : `${broken.length} videos have`} a link that isn't a playable YouTube video, so{" "}
+            {broken.length === 1 ? "it is" : "they are"} hidden on the site. Delete and add again with the video's Share link.
+          </p>
+        </div>
+      )}
 
-      {/* Video List */}
-      <h3 className="font-display text-xl font-bold text-earth mb-3">Existing Videos</h3>
-      {videos.length === 0 ? (
-        <p className="text-earth-600">No videos added yet.</p>
+      {videos === null ? (
+        <div className="flex justify-center py-16">
+          <Spinner className="h-8 w-8" />
+        </div>
+      ) : videos.length === 0 ? (
+        <EmptyState icon={<FaYoutube />} title="No videos yet">
+          Add the first performance from YouTube.
+        </EmptyState>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
           {videos.map((video) => (
-            <div key={video.id} className="k-card p-4">
-              <h4 className="font-semibold text-earth mb-2">{video.title}</h4>
-              <div className="aspect-w-16 aspect-h-9 mb-3">
-                <iframe
-                  src={`https://www.youtube.com/embed/${extractYouTubeID(video.youtube_url)}`}
-                  title={video.title}
-                  className="w-full h-40 rounded-md"
-                  allowFullScreen
-                ></iframe>
-              </div>
-              <div className="flex justify-between items-center">
-                <a
-                  href={video.youtube_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="k-btn-ghost k-btn-sm"
-                >
-                  <FaPlay />
-                  <span>Watch</span>
+            <div key={video.id} className="k-card flex flex-col p-4">
+              {video.youtube_id ? (
+                <VideoPlayer video={video} />
+              ) : (
+                <div className="k-cut grid aspect-video place-items-center bg-bead-red/10 p-4 text-center text-sm text-earth">
+                  <span>
+                    <FaExclamationTriangle className="mx-auto mb-2 text-2xl text-bead-red" />
+                    Not a playable YouTube link
+                    <span className="mt-1 block break-all text-xs text-earth-600">{video.youtube_url}</span>
+                  </span>
+                </div>
+              )}
+              <h4 className="mt-3 font-semibold leading-snug text-earth">{video.title}</h4>
+              <div className="mt-auto flex items-center justify-between pt-3">
+                <a href={video.youtube_url} target="_blank" rel="noopener noreferrer" className="k-btn-ghost k-btn-sm">
+                  <FaPlay /> YouTube
                 </a>
-                <button
-                  onClick={() => handleDeleteVideo(video.id)}
-                  className="k-btn-ghost k-btn-sm hover:!text-bead-red"
-                >
-                  <FaTrash />
-                  <span>Delete</span>
+                <button onClick={() => handleDelete(video)} className="k-btn-ghost k-btn-sm hover:!text-bead-red">
+                  <FaTrash /> Delete
                 </button>
               </div>
             </div>
@@ -91,56 +129,56 @@ const ManageVideos = () => {
         </div>
       )}
 
-      {/* Add Video Modal */}
-      {showForm && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-earth/60 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-3xl bg-cream p-6 shadow-2xl">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-display text-xl font-bold text-earth">Add New Video</h3>
-              <button onClick={() => setShowForm(false)} className="k-icon-btn">
-                <FaTimes className="text-xl" />
-              </button>
+      <Modal open={showForm} onClose={close} title="Add a video">
+        <form onSubmit={handleAdd} className="space-y-4">
+          <Field label="YouTube link" hint="On YouTube: Share → Copy link. Channel and playlist links won't work.">
+            <input
+              value={form.youtube_url}
+              onChange={(e) => {
+                setForm({ ...form, youtube_url: e.target.value });
+                setError("");
+              }}
+              placeholder="https://youtu.be/…"
+              className="k-input"
+              autoFocus
+              required
+            />
+          </Field>
+
+          {linkTyped && (
+            <div className="k-cut bg-white p-3">
+              {previewId ? (
+                <div className="flex items-center gap-3">
+                  <img src={youTubeThumb(previewId)} alt="" className="k-quad-shape aspect-video w-28 shrink-0 object-cover" />
+                  <p className={`flex items-center gap-2 text-sm font-semibold ${duplicate ? "text-bead-red" : "text-bead-green"}`}>
+                    {duplicate ? <FaExclamationTriangle /> : <FaCheckCircle />}
+                    {duplicate ? `Already added as “${duplicate.title}”` : "Video found"}
+                  </p>
+                </div>
+              ) : (
+                <p className="flex items-center gap-2 text-sm font-semibold text-bead-red">
+                  <FaExclamationTriangle /> Not a YouTube video link yet
+                </p>
+              )}
             </div>
-            <form onSubmit={handleAddVideo} className="space-y-3">
-              <input
-                type="text"
-                placeholder="Video Title"
-                value={newVideo.title}
-                onChange={(e) =>
-                  setNewVideo({ ...newVideo, title: e.target.value })
-                }
-                className="k-input"
-                required
-              />
-              <input
-                type="text"
-                placeholder="YouTube URL"
-                value={newVideo.youtube_url}
-                onChange={(e) =>
-                  setNewVideo({ ...newVideo, youtube_url: e.target.value })
-                }
-                className="k-input"
-                required
-              />
-              <div className="flex justify-end space-x-3 mt-4">
-                <button
-                  type="button"
-                  className="k-btn-ghost"
-                  onClick={() => setShowForm(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="k-btn-primary"
-                >
-                  Add Video
-                </button>
-              </div>
-            </form>
+          )}
+
+          <Field label="Title" hint="Shown under the video, e.g. “Mumburo Dancers | Folk song | 2024”.">
+            <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="k-input" required />
+          </Field>
+
+          {error && <p className="k-cut bg-bead-red/10 p-3 text-sm font-semibold text-bead-red">{error}</p>}
+
+          <div className="flex justify-end gap-3 pt-2">
+            <button type="button" className="k-btn-ghost" onClick={close}>
+              Cancel
+            </button>
+            <button type="submit" disabled={saving || !previewId || !!duplicate} className="k-btn-primary">
+              {saving && <Spinner />} Add video
+            </button>
           </div>
-        </div>
-      )}
+        </form>
+      </Modal>
     </div>
   );
 };
