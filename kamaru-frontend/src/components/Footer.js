@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaArrowUp, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 import BrandBadge from "./BrandBadge";
+import cvcLove from "../assets/cvc-love.svg";
 import SocialIcons from "./SocialIcons";
 import NewsletterForm from "./NewsletterSubscriptionForm";
 import { TAGLINE_KIKUYU, CONTACT, EDITION } from "../content/story";
@@ -113,7 +114,9 @@ const Footer = () => {
             </Link>
             {/* Developer credit: a normal (followed) link, so it also counts for the studio's SEO */}
             <p>
-              Crafted with <span className="text-bead-red" aria-label="love">♥</span> by{" "}
+              Crafted with{" "}
+              <img src={cvcLove} alt="love" className="mx-0.5 inline-block h-[1.25em] w-auto -translate-y-[0.1em] align-middle" />{" "}
+              by{" "}
               {/* Referrer kept on purpose so the studio's analytics can see visits from this site */}
               {/* eslint-disable-next-line react/jsx-no-target-blank */}
               <a
