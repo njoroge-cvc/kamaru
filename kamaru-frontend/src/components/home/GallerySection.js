@@ -46,7 +46,7 @@ const GallerySection = ({ gallery = [] }) => {
           <Reveal>
             <Link
               to="/gallery"
-              className="group inline-flex items-center gap-2 rounded-full border-2 border-earth px-6 py-3 font-semibold text-earth transition hover:bg-earth hover:text-cream"
+              className="group inline-flex items-center gap-2 rounded-full bg-earth/10 px-6 py-3 font-semibold text-earth transition hover:bg-earth hover:text-cream"
             >
               Full gallery
               <FaArrowRight className="transition-transform group-hover:translate-x-1" />

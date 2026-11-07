@@ -74,8 +74,8 @@ const SupportForm = ({ selected, onSelect }) => {
                 key={w.key}
                 onClick={() => onSelect(w.key)}
                 aria-pressed={on}
-                className={`inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 text-sm font-semibold transition ${
-                  on ? "border-kamaru bg-kamaru text-earth" : "border-earth/15 text-earth-700 hover:border-kamaru/60"
+                className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
+                  on ? "bg-kamaru text-earth" : "bg-earth/5 text-earth-700 hover:bg-kamaru/20"
                 }`}
               >
                 {on && <FaCheck className="text-xs" />}

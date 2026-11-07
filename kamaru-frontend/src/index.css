@@ -8,18 +8,18 @@
 @layer components {
   /* Buttons */
   .k-btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold transition
       focus:outline-none focus-visible:ring-2 focus-visible:ring-kamaru focus-visible:ring-offset-2
       disabled:cursor-not-allowed disabled:opacity-50;
   }
   .k-btn-primary { @apply k-btn bg-kamaru text-earth shadow-sm hover:bg-kamaru-light; }
   .k-btn-dark { @apply k-btn bg-earth text-cream hover:bg-earth-700; }
-  .k-btn-outline { @apply k-btn border-2 border-earth/80 text-earth hover:bg-earth hover:text-cream; }
+  .k-btn-outline { @apply k-btn bg-earth/10 text-earth hover:bg-earth hover:text-cream; }
   .k-btn-ghost { @apply k-btn text-earth hover:bg-cream-dark; }
   .k-btn-danger { @apply k-btn bg-bead-red text-cream hover:bg-ochre-dark; }
   .k-btn-sm { @apply px-3.5 py-1.5 text-xs; }
   .k-icon-btn {
-    @apply inline-grid h-9 w-9 place-items-center rounded-full text-earth-600 transition hover:bg-cream-dark hover:text-earth
+    @apply inline-grid h-9 w-9 place-items-center text-earth-600 transition hover:bg-cream-dark hover:text-earth
       disabled:opacity-40;
   }
 
@@ -54,6 +54,67 @@
 
   /* Headings inside the dashboard */
   .k-h2 { @apply font-display text-2xl md:text-3xl font-bold text-earth; }
+}
+
+/* ------------------------------------------------------------------
+   Headings: Slackey (display). It has no ī/ū, so Outfit supplies those.
+   Slackey ships one weight — never let the browser fake bold/italic.
+   ------------------------------------------------------------------ */
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Slackey", "Outfit", system-ui, sans-serif;
+    font-synthesis: none;
+    letter-spacing: 0.01em;
+  }
+}
+.font-display { font-synthesis: none; letter-spacing: 0.01em; }
+
+/* ------------------------------------------------------------------
+   Hand-cut quadrilateral buttons
+   Applies to the shared button classes AND to every clickable pill
+   (<a>/<button> that would otherwise be rounded-full), so new buttons
+   pick up the shape automatically. Neighbours get slightly different
+   cuts and the shape shifts on hover, like the Support Us tab.
+   Opt out with .no-quad (e.g. the registration on/off switch).
+   ------------------------------------------------------------------ */
+:root {
+  --quad-a: polygon(1.5% 10%, 98.5% 0%, 100% 88%, 0% 100%);
+  --quad-a-hover: polygon(0% 0%, 100% 9%, 98% 100%, 2% 90%);
+  --quad-b: polygon(0% 3%, 99% 11%, 98% 100%, 1.5% 93%);
+  --quad-b-hover: polygon(2% 10%, 100% 0%, 99.5% 92%, 0% 100%);
+  --quad-c: polygon(2% 0%, 100% 4%, 98.5% 96%, 0% 100%);
+  --quad-c-hover: polygon(0% 8%, 98% 0%, 100% 100%, 1.5% 94%);
+}
+.k-quad,
+.k-btn,
+.k-icon-btn,
+:is(a, button)[class~="rounded-full"]:not(.no-quad):not([role="switch"]) {
+  border-radius: 0 !important;
+  clip-path: var(--quad-a);
+  transition-property: clip-path, color, background-color, opacity, transform !important;
+  transition-duration: 0.35s !important;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+.k-quad:hover, .k-btn:hover, .k-icon-btn:hover,
+:is(a, button)[class~="rounded-full"]:not(.no-quad):not([role="switch"]):hover {
+  clip-path: var(--quad-a-hover);
+}
+:is(.k-quad, .k-btn, .k-icon-btn, :is(a, button)[class~="rounded-full"]):not(.no-quad):nth-child(3n + 2) { clip-path: var(--quad-b); }
+:is(.k-quad, .k-btn, .k-icon-btn, :is(a, button)[class~="rounded-full"]):not(.no-quad):nth-child(3n + 2):hover { clip-path: var(--quad-b-hover); }
+:is(.k-quad, .k-btn, .k-icon-btn, :is(a, button)[class~="rounded-full"]):not(.no-quad):nth-child(3n) { clip-path: var(--quad-c); }
+:is(.k-quad, .k-btn, .k-icon-btn, :is(a, button)[class~="rounded-full"]):not(.no-quad):nth-child(3n):hover { clip-path: var(--quad-c-hover); }
+
+/* Clip-path hides outer focus rings, so draw the keyboard focus inside the shape */
+.k-quad:focus-visible, .k-btn:focus-visible, .k-icon-btn:focus-visible,
+:is(a, button)[class~="rounded-full"]:not(.no-quad):focus-visible {
+  outline: 2px dashed currentColor;
+  outline-offset: -6px;
+  box-shadow: none;
+}
+/* Shape-only helper for highlight pills inside quad buttons (tabs, filters) */
+.k-quad-shape { border-radius: 0 !important; clip-path: var(--quad-a); }
+@media (prefers-reduced-motion: reduce) {
+  .k-quad, .k-btn, .k-icon-btn, :is(a, button)[class~="rounded-full"] { transition-property: color, background-color !important; }
 }
 @tailwind utilities;
 

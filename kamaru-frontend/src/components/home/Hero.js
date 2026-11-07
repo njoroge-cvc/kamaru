@@ -149,7 +149,7 @@ const Hero = ({ gallery = [], upcoming = [], season = null }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.9, duration: 1 }}
-            className="mt-6 font-display italic text-2xl md:text-3xl text-cream/90 text-balance"
+            className="mt-6 font-sans font-semibold text-2xl md:text-3xl text-cream/90 text-balance"
           >
             {TAGLINE_KIKUYU}
           </motion.p>
@@ -178,7 +178,7 @@ const Hero = ({ gallery = [], upcoming = [], season = null }) => {
             <HashLink
               smooth
               to="/#videos"
-              className="group inline-flex items-center gap-3 rounded-full border border-cream/30 px-6 py-3.5 font-semibold transition hover:bg-cream hover:text-earth"
+              className="group inline-flex items-center gap-3 rounded-full bg-cream/10 px-6 py-3.5 font-semibold transition hover:bg-cream hover:text-earth"
             >
               <span className="grid place-items-center h-7 w-7 rounded-full bg-bead-red text-cream text-[10px]">
                 <FaPlay className="ml-0.5" />

@@ -107,7 +107,7 @@ const SideRails = () => {
             <SocialIcons
               vertical
               className="flex flex-col gap-2"
-              itemClassName="h-9 w-9 border border-kamaru/60 bg-cream/80 text-kamaru backdrop-blur hover:bg-kamaru hover:text-cream"
+              itemClassName="h-9 w-9 bg-cream/90 text-kamaru backdrop-blur hover:bg-kamaru hover:text-cream"
             />
           </motion.aside>
         )}

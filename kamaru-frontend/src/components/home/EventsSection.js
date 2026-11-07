@@ -14,7 +14,7 @@ const Tab = ({ active, onClick, children, count }) => (
     }`}
   >
     {active && (
-      <motion.span layoutId="event-tab" className="absolute inset-0 rounded-full bg-earth" transition={{ type: "spring", duration: 0.5 }} />
+      <motion.span layoutId="event-tab" className="absolute inset-0 k-quad-shape bg-earth" transition={{ type: "spring", duration: 0.5 }} />
     )}
     <span className="relative">
       {children}
@@ -39,7 +39,7 @@ const EventsSection = ({ upcoming = [], past = [] }) => {
             title="Come sit by the fire"
             intro="Competitions, camps, retreats and healing days — open to the whole community."
           />
-          <Reveal className="flex gap-1 rounded-full bg-cream p-1.5 shadow-inner self-start lg:self-end">
+          <Reveal className="flex gap-1 k-quad-shape bg-cream p-1.5 self-start lg:self-end">
             <Tab active={tab === "upcoming"} onClick={() => setTab("upcoming")} count={upcoming.length}>
               Upcoming
             </Tab>

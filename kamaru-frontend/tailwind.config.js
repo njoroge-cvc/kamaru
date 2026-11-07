@@ -41,7 +41,8 @@ module.exports = {
         night: "#262C45",
       },
       fontFamily: {
-        display: ['"Playfair Display"', "Georgia", "serif"], // Fraunces mis-positions ī/ū macrons; Playfair renders Kikuyu correctly
+        // Slackey has no ī/ū — Outfit (heavy) supplies those glyphs so Kikuyu headings stay intact
+        display: ['"Slackey"', '"Outfit"', "system-ui", "sans-serif"],
         sans: ['"Outfit"', "Helvetica", "Arial", "sans-serif"],
       },
       keyframes: {

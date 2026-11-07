@@ -72,7 +72,7 @@ const Gallery = () => {
                 }`}
               >
                 {year === y && (
-                  <motion.span layoutId="year-pill" className="absolute inset-0 rounded-full bg-earth" />
+                  <motion.span layoutId="year-pill" className="absolute inset-0 k-quad-shape bg-earth" />
                 )}
                 <span className="relative">{y === "all" ? `All · ${images.length}` : y}</span>
               </button>
@@ -114,7 +114,7 @@ const Gallery = () => {
         <div className="mt-10 text-center">
           <button
             onClick={() => setShown((s) => s + PAGE)}
-            className="rounded-full border-2 border-earth px-8 py-3 font-semibold text-earth transition hover:bg-earth hover:text-cream"
+            className="rounded-full bg-earth/10 px-8 py-3 font-semibold text-earth transition hover:bg-earth hover:text-cream"
           >
             Load more ({filtered.length - shown} left)
           </button>

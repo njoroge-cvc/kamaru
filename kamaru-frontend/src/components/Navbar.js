@@ -151,7 +151,7 @@ const FullMenu = ({ open, onClose, logo, token, isAdmin, onLogout }) => {
               <motion.div variants={item} className="mt-10 flex flex-wrap justify-center gap-3">
                 {!token ? (
                   <>
-                    <Link to="/login" onClick={onClose} className="rounded-full border-2 border-earth px-7 py-3 font-bold hover:bg-earth hover:text-kamaru transition">
+                    <Link to="/login" onClick={onClose} className="rounded-full bg-earth/15 px-7 py-3 font-bold hover:bg-earth hover:text-kamaru transition">
                       Login
                     </Link>
                     <Link to="/join" onClick={onClose} className="rounded-full bg-earth px-7 py-3 font-bold text-kamaru hover:bg-earth-700 transition">
@@ -159,7 +159,7 @@ const FullMenu = ({ open, onClose, logo, token, isAdmin, onLogout }) => {
                     </Link>
                   </>
                 ) : (
-                  <button onClick={onLogout} className="rounded-full border-2 border-earth px-7 py-3 font-bold hover:bg-earth hover:text-kamaru transition">
+                  <button onClick={onLogout} className="rounded-full bg-earth/15 px-7 py-3 font-bold hover:bg-earth hover:text-kamaru transition">
                     Logout
                   </button>
                 )}
@@ -171,7 +171,7 @@ const FullMenu = ({ open, onClose, logo, token, isAdmin, onLogout }) => {
               animate={{ opacity: 1, transition: { delay: 0.6 } }}
               className="flex flex-col items-center gap-4 border-t border-earth/15 pt-5 pb-8 text-sm md:flex-row md:justify-between"
             >
-              <p className="font-display italic text-base">{TAGLINE_KIKUYU}</p>
+              <p className="font-sans font-semibold text-base">{TAGLINE_KIKUYU}</p>
               <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 font-semibold">
                 <a href={`tel:${CONTACT.phones[0].replace(/\s/g, "")}`} className="flex items-center gap-2 hover:text-cream">
                   <FaPhoneAlt /> {CONTACT.phones[0]}

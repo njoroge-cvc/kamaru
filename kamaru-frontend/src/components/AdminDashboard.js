@@ -45,7 +45,7 @@ const SidebarLinks = ({ sections, onNavigate }) => (
         end
         onClick={onNavigate}
         className={({ isActive }) =>
-          `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
+          `k-quad flex items-center gap-3 px-3 py-2.5 text-sm font-semibold transition ${
             isActive ? "bg-kamaru text-earth" : "text-cream/80 hover:bg-cream/10 hover:text-cream"
           }`
         }
@@ -59,7 +59,7 @@ const SidebarLinks = ({ sections, onNavigate }) => (
           to={`/admin/${path}`}
           onClick={onNavigate}
           className={({ isActive }) =>
-            `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
+            `k-quad flex items-center gap-3 px-3 py-2.5 text-sm font-semibold transition ${
               isActive ? "bg-kamaru text-earth" : "text-cream/80 hover:bg-cream/10 hover:text-cream"
             }`
           }

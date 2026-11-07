@@ -89,7 +89,7 @@ const Footer = () => {
             <Link to="/register/participant" className="k-btn-primary px-6 py-3">
               Join the Challenge
             </Link>
-            <Link to="/support" className="k-btn border-2 border-cream/30 px-6 py-3 text-cream hover:bg-cream hover:text-earth">
+            <Link to="/support" className="k-btn bg-cream/10 px-6 py-3 text-cream hover:bg-cream hover:text-earth">
               Support us
             </Link>
           </div>
@@ -112,7 +112,7 @@ const Footer = () => {
               </motion.div>
               {logo && <img src={cld(logo, 400)} alt="Kamaru Challenge" className="h-14 w-auto sm:hidden xl:block" />}
             </div>
-            <p className="mt-6 font-display text-lg italic text-kamaru-light">{TAGLINE_KIKUYU}</p>
+            <p className="mt-6 font-sans text-lg font-semibold text-kamaru-light">{TAGLINE_KIKUYU}</p>
             <p className="mt-2 max-w-xs text-sm text-cream/60">Fanning the flame of values through music & culture.</p>
           </div>
 
