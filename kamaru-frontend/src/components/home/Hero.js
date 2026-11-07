@@ -130,7 +130,7 @@ const Hero = ({ gallery = [], upcoming = [], season = null }) => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: EASE }}
-            className="inline-flex items-center gap-3 rounded-full border border-cream/20 bg-cream/5 px-4 py-1.5 text-xs md:text-sm tracking-[0.2em] uppercase text-kamaru-light"
+            className="k-quad inline-flex items-center gap-3 bg-cream/10 px-5 py-2 text-xs md:text-sm tracking-[0.2em] uppercase text-kamaru-light"
           >
             <span className="h-2 w-2 rounded-full bg-bead-red animate-pulse" />
             Ndeiya Edition · Since 2024
@@ -192,7 +192,7 @@ const Hero = ({ gallery = [], upcoming = [], season = null }) => {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.45, duration: 0.8, ease: EASE }}
-            className="mt-10 max-w-lg rounded-2xl border border-cream/10 bg-cream/5 backdrop-blur-sm p-4 md:p-5"
+            className="k-cut mt-10 max-w-lg bg-cream/10 backdrop-blur-sm p-5 md:p-6"
           >
             {registrationOpen ? (
               <div className="flex items-center gap-4">
@@ -229,7 +229,7 @@ const Hero = ({ gallery = [], upcoming = [], season = null }) => {
                 </p>
                 <div className="mt-3 grid grid-cols-4 gap-2 text-center">
                   {Object.entries(countdown).map(([k, v]) => (
-                    <div key={k} className="rounded-xl bg-earth-800/80 py-2">
+                    <div key={k} className="k-quad bg-earth-800/80 py-2">
                       <AnimatePresence mode="popLayout" initial={false}>
                         <motion.span
                           key={v}
@@ -292,7 +292,7 @@ const Hero = ({ gallery = [], upcoming = [], season = null }) => {
             animate={{ scaleX: 1 }}
             transition={{ delay: 1.6, duration: 1, ease: EASE }}
           />
-          <HashLink smooth to="/#story" className="group flex flex-col items-center text-xs font-semibold uppercase tracking-[0.25em] text-cream/70 hover:text-kamaru-light">
+          <HashLink smooth to="/#story" className="group flex flex-col items-center font-display text-sm tracking-[0.15em] text-cream/80 hover:text-kamaru-light">
             Scroll down
             <motion.span
               className="mt-1 block h-5 w-px bg-kamaru"
