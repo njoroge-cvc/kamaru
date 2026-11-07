@@ -171,8 +171,7 @@ const SupportPage = () => {
       </section>
 
       {/* Non-negotiables */}
-      <section className="relative overflow-hidden bg-earth text-cream grain weave">
-        <div className="bead-band h-2" aria-hidden="true" />
+      <section className="relative overflow-hidden bg-earth text-cream grain swirl-bg">
         <SunSpiral className="pointer-events-none absolute -right-20 bottom-0 w-80 opacity-15" />
         <div className="container relative mx-auto grid gap-12 px-5 py-20 md:px-8 md:py-28 lg:grid-cols-[1fr_1.3fr]">
           <div>
@@ -230,7 +229,6 @@ const SupportPage = () => {
         </div>
 
         <Reveal className="overflow-hidden rounded-[2rem] bg-white shadow-xl ring-1 ring-earth/5">
-          <div className="bead-band h-2" aria-hidden="true" />
           <div className="p-6 md:p-8">
             <h2 className="font-display text-3xl font-bold text-earth">Offer your support</h2>
             <p className="mb-6 mt-1 text-earth-600">Every offer is read by the team.</p>

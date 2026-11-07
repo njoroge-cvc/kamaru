@@ -57,25 +57,7 @@ const Footer = () => {
   }, []);
 
   return (
-    <footer className="relative overflow-hidden bg-earth text-cream">
-      {/* Brand swirl pattern (from the Kamaru artwork), tinted orange */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-kamaru opacity-[0.12]"
-        style={{
-          WebkitMaskImage: "url(/brand/swirl-pattern.svg)",
-          maskImage: "url(/brand/swirl-pattern.svg)",
-          // One stretched copy: the artwork isn't designed to tile, so repeating shows seams
-          WebkitMaskSize: "cover",
-          maskSize: "cover",
-          WebkitMaskRepeat: "no-repeat",
-          maskRepeat: "no-repeat",
-          WebkitMaskPosition: "center",
-          maskPosition: "center",
-        }}
-      />
-      <div className="bead-band relative h-2.5" aria-hidden="true" />
-
+    <footer className="relative overflow-hidden bg-earth text-cream swirl-bg">
       {/* Call-to-action band */}
       <div className="relative border-b border-cream/10">
         <div className="container mx-auto flex flex-col items-start gap-6 px-5 py-12 md:flex-row md:items-center md:justify-between md:px-8">

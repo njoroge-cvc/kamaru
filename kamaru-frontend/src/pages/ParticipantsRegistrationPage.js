@@ -128,7 +128,7 @@ const ParticipantsRegistrationPage = () => {
             </ul>
           </StaggerItem>
 
-          <StaggerItem className="rounded-3xl bg-earth p-8 text-cream weave">
+          <StaggerItem className="relative rounded-3xl bg-earth p-8 text-cream swirl-bg">
             <FaTrophy className="text-4xl text-bead-gold" />
             <h2 className="mt-4 font-display text-2xl font-bold">Prizes per category</h2>
             <ul className="mt-4 space-y-3">

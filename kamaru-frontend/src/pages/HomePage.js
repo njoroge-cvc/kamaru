@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useSpring } from "framer-motion";
+import { motion } from "framer-motion";
 import useHomeData from "../components/home/useHomeData";
 import Hero from "../components/home/Hero";
 import StoryOrigin from "../components/home/StoryOrigin";
@@ -18,18 +18,9 @@ import { PartnerSection, ContactSection } from "../components/home/PartnerContac
 const HomePage = () => {
   const { gallery, upcoming, past, videos, aboutImage, contactImage, stats, season, loading } = useHomeData();
 
-  const { scrollYProgress } = useScroll();
-  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
 
   return (
     <div className="bg-cream">
-      {/* Reading progress */}
-      <motion.div
-        style={{ scaleX: progress }}
-        className="fixed left-0 right-0 top-0 z-[60] h-1 origin-left bead-band"
-        aria-hidden="true"
-      />
-
       <Hero gallery={gallery} upcoming={upcoming} season={season} />
       <StoryOrigin />
       <StoryValues />

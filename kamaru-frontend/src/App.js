@@ -8,6 +8,7 @@ import Footer from "./components/Footer";
 import HomePage from "./pages/HomePage";
 import ScrollToTop from "./components/ScrollToTop";
 import SideRails from "./components/SideRails";
+import ScrollProgress from "./components/ScrollProgress";
 import { SessionSync } from "./components/useSession";
 import "./index.css"; // Import Tailwind CSS
 
@@ -29,7 +30,7 @@ const VerifyNewsletter = lazy(() => import("./pages/VerifyNewsletter"));
 
 const RouteFallback = () => (
   <div className="flex min-h-[60vh] items-center justify-center" aria-busy="true" aria-label="Loading">
-    <div className="bead-band h-1.5 w-40 animate-pulse rounded-full" />
+    <div className="h-1 w-40 animate-pulse bg-kamaru" />
   </div>
 );
 
@@ -89,6 +90,7 @@ const App = () => {
         </Main>
         <AppFooter />
         <SideRails />
+        <ScrollProgress />
       </div>
       <ToastContainer position="top-right" autoClose={3500} theme="colored" />
       </MotionConfig>

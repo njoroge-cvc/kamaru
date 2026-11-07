@@ -2,11 +2,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { SplitWords, Reveal } from "./motion";
-import { SunSpiral, BeadBand } from "./home/Ornaments";
+import { SunSpiral } from "./home/Ornaments";
 
 // Dark, patterned page header shared by Gallery, Videos and About pages
 const PageHero = ({ crumb, eyebrow, title, intro }) => (
-  <header className="relative overflow-hidden bg-earth text-cream grain weave">
+  <header className="relative overflow-hidden bg-earth text-cream grain swirl-bg">
     <SunSpiral className="pointer-events-none absolute -right-16 -top-16 w-64 md:w-80 opacity-25" />
     <div className="relative container mx-auto px-5 md:px-8 pt-10 pb-16 md:pt-14 md:pb-20">
       <nav className="text-sm text-cream/60">
@@ -34,7 +34,6 @@ const PageHero = ({ crumb, eyebrow, title, intro }) => (
         </Reveal>
       )}
     </div>
-    <BeadBand className="h-2.5" />
   </header>
 );
 

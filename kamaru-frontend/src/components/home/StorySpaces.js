@@ -43,7 +43,7 @@ const StorySpaces = ({ aboutImage }) => {
                 <p className="text-sm text-cream/70">Patron, Kamaru Challenge</p>
               </div>
             </div>
-            <div className="absolute -z-0 -bottom-6 -left-2 md:left-6 h-24 w-24 rounded-full bead-band opacity-90" />
+            <div className="absolute -z-0 -bottom-6 -left-2 md:left-6 h-24 w-24 rounded-full bg-kamaru opacity-90" />
           </Reveal>
 
           <div>

@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { SectionHeading, Stagger, StaggerItem } from "../motion";
 import { VALUES } from "../../content/story";
-import { BeadBand } from "./Ornaments";
 
 const ValueCard = ({ value, index }) => (
   <motion.article
@@ -46,8 +45,7 @@ const StoryValues = () => {
   const x = useTransform(scrollYProgress, [0.05, 0.95], [0, -distance]);
 
   return (
-    <section className="relative bg-earth text-cream grain weave">
-      <BeadBand className="h-2" />
+    <section className="relative bg-earth text-cream grain swirl-bg">
 
       {/* Desktop: sticky horizontal ride */}
       <div ref={ref} className="relative hidden lg:block h-[260vh]">

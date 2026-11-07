@@ -13,7 +13,7 @@ import {
 import { FaPlay, FaArrowRight, FaEnvelope } from "react-icons/fa";
 import SocialIcons from "../SocialIcons";
 import { SplitWords, EASE } from "../motion";
-import { SunSpiral, SoundBars, BeadBand } from "./Ornaments";
+import { SunSpiral, SoundBars } from "./Ornaments";
 import { TAGLINE_KIKUYU, TAGLINE_ENGLISH, EDITION, CONTACT } from "../../content/story";
 
 const useCountdown = (target) => {
@@ -117,7 +117,7 @@ const Hero = ({ gallery = [], upcoming = [], season = null }) => {
   return (
     <section
       onMouseMove={onMove}
-      className="relative overflow-hidden bg-earth text-cream grain weave min-h-[92vh] flex flex-col"
+      className="relative overflow-hidden bg-earth text-cream grain swirl-bg min-h-[92vh] flex flex-col"
     >
       {/* Glows */}
       <div className="pointer-events-none absolute -top-40 -left-40 w-[36rem] h-[36rem] rounded-full bg-kamaru/30 blur-3xl" />
@@ -312,7 +312,6 @@ const Hero = ({ gallery = [], upcoming = [], season = null }) => {
         </div>
       </div>
 
-      <BeadBand className="h-2.5 absolute bottom-0" />
     </section>
   );
 };

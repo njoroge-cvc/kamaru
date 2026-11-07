@@ -73,4 +73,3 @@ export const WaveEdge = ({ className = "", fill = "#FBF3E8", flip = false }) => 
   </svg>
 );
 
-export const BeadBand = ({ className = "h-2" }) => <div className={`bead-band w-full ${className}`} aria-hidden="true" />;

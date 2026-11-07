@@ -94,7 +94,7 @@ const StoryChallenge = ({ stats }) => {
                   <p className={`text-xs uppercase tracking-[0.2em] ${i === 0 ? "text-earth/70" : "text-cream/60"}`}>
                     {p.place}
                   </p>
-                  <p className="mt-2 font-display text-3xl md:text-4xl font-black">
+                  <p className="mt-2 whitespace-nowrap font-display text-2xl lg:text-3xl font-black">
                     <CountUp to={p.amount} prefix="Ksh " />
                   </p>
                 </StaggerItem>

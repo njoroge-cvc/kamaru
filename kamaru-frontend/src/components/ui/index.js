@@ -65,7 +65,6 @@ export const Modal = ({ open, onClose, title, children, size = "md" }) => {
                 <FaTimes />
               </button>
             </div>
-            <div className="bead-band h-1.5" aria-hidden="true" />
             <div className="p-6">{children}</div>
           </motion.div>
         </motion.div>
@@ -89,7 +88,7 @@ export const Spinner = ({ className = "h-5 w-5" }) => (
 /** Centered card layout for login / register / password screens. */
 export const AuthShell = ({ title, subtitle, children, footer, banner }) => (
   <div className="relative flex min-h-[80vh] items-center justify-center overflow-hidden px-4 py-14">
-    <div className="absolute inset-0 bg-earth weave" aria-hidden="true" />
+    <div className="absolute inset-0 bg-earth swirl-bg" aria-hidden="true" />
     {banner && (
       <div
         className="absolute inset-0 bg-cover bg-center opacity-25"
@@ -103,7 +102,6 @@ export const AuthShell = ({ title, subtitle, children, footer, banner }) => (
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       className="relative w-full max-w-md overflow-hidden rounded-[2rem] bg-cream shadow-2xl"
     >
-      <div className="bead-band h-2" aria-hidden="true" />
       <div className="p-8">
         <h1 className="font-display text-3xl font-black text-earth">{title}</h1>
         {subtitle && <p className="mt-2 text-earth-600">{subtitle}</p>}

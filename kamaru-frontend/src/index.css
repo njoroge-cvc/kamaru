@@ -111,6 +111,26 @@
   outline-offset: -6px;
   box-shadow: none;
 }
+/* ------------------------------------------------------------------
+   Hand-cut cards & tiles — same idea as the buttons, gentler cut so
+   card content never gets clipped. Applies to the shared card classes
+   and to every rounded card/tile/panel, keeping each card's colour.
+   ------------------------------------------------------------------ */
+:root {
+  --cut-a: polygon(0.8% 2.5%, 99.4% 0%, 100% 97.5%, 0% 100%);
+  --cut-b: polygon(0% 0.5%, 99.2% 2.8%, 100% 100%, 0.6% 97.2%);
+  --cut-c: polygon(0.5% 0%, 100% 1.6%, 99.3% 98.6%, 0% 100%);
+}
+.k-card, .k-panel, .k-cut,
+:is(div, article, section, a, button, li, form, figure, aside)[class*="rounded-[2rem]"]:not(.no-cut),
+:is(div, article, section, a, button, li, form, figure, aside)[class*="rounded-[2.5rem]"]:not(.no-cut),
+:is(div, article, section, a, button, li, form, figure, aside)[class*="rounded-3xl"]:not(.no-cut) {
+  border-radius: 0 !important;
+  clip-path: var(--cut-a);
+}
+:is(.k-card, .k-panel, .k-cut, [class*="rounded-[2rem]"], [class*="rounded-[2.5rem]"], [class*="rounded-3xl"]):not(.no-cut):nth-child(3n + 2) { clip-path: var(--cut-b); }
+:is(.k-card, .k-panel, .k-cut, [class*="rounded-[2rem]"], [class*="rounded-[2.5rem]"], [class*="rounded-3xl"]):not(.no-cut):nth-child(3n) { clip-path: var(--cut-c); }
+
 /* Shape-only helper for highlight pills inside quad buttons (tabs, filters) */
 .k-quad-shape { border-radius: 0 !important; clip-path: var(--quad-a); }
 @media (prefers-reduced-motion: reduce) {
@@ -152,20 +172,7 @@ body {
    Kikuyu-inspired decorative patterns (pure CSS, no image requests)
    ------------------------------------------------------------------ */
 
-/* Beadwork band: repeating red / white / blue / green / gold blocks */
-.bead-band {
-  background-image: repeating-linear-gradient(
-    90deg,
-    #D7262E 0 14px,
-    #FFFDF8 14px 20px,
-    #2588C9 20px 34px,
-    #FFFDF8 34px 40px,
-    #3E9B4F 40px 54px,
-    #FFFDF8 54px 60px,
-    #E8B21E 60px 74px,
-    #2B1A10 74px 80px
-  );
-}
+
 
 /* Shield chevrons (zig-zag) used as section dividers */
 .chevron-band {
@@ -179,11 +186,22 @@ body {
   background-size: 24px 24px;
 }
 
-/* Subtle woven texture for dark earth sections */
-.weave {
-  background-image:
-    repeating-linear-gradient(45deg, rgba(255, 253, 248, 0.035) 0 2px, transparent 2px 12px),
-    repeating-linear-gradient(-45deg, rgba(255, 253, 248, 0.035) 0 2px, transparent 2px 12px);
+
+
+/* Curvy brand swirl (from the Kamaru artwork), kept faint.
+   Sits behind content via ::before; the element must be positioned
+   (relative/sticky/fixed/absolute) — every current user already is. */
+.swirl-bg { isolation: isolate; }
+.swirl-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: #D57500;
+  opacity: 0.07;
+  -webkit-mask: url(./assets/swirl-pattern.svg) center / cover no-repeat;
+  mask: url(./assets/swirl-pattern.svg) center / cover no-repeat;
 }
 
 /* Grain overlay to warm up flat colour fields */

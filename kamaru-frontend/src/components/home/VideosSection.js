@@ -5,7 +5,7 @@ import { FaArrowRight, FaPlay } from "react-icons/fa";
 import { Reveal, SectionHeading } from "../motion";
 import VideoPlayer from "../VideoPlayer";
 import { youTubeThumb } from "../../utils/youtube";
-import { BeadBand, SoundBars } from "./Ornaments";
+import { SoundBars } from "./Ornaments";
 
 const VideosSection = ({ videos = [] }) => {
   const [active, setActive] = useState(0);
@@ -13,8 +13,7 @@ const VideosSection = ({ videos = [] }) => {
   const current = playlist[active];
 
   return (
-    <section id="videos" className="relative bg-earth text-cream grain weave overflow-hidden">
-      <BeadBand className="h-2" />
+    <section id="videos" className="relative bg-earth text-cream grain swirl-bg overflow-hidden">
       <div className="container mx-auto px-5 md:px-8 py-24 md:py-32">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <SectionHeading
@@ -57,7 +56,7 @@ const VideosSection = ({ videos = [] }) => {
               ))}
               <Link
                 to="/videos"
-                className="group flex w-48 lg:w-auto shrink-0 items-center justify-center gap-2 rounded-2xl border border-cream/20 p-4 font-semibold text-kamaru-light hover:bg-cream hover:text-earth transition"
+                className="k-quad group flex w-48 lg:w-auto shrink-0 items-center justify-center gap-2 bg-cream/10 p-4 font-semibold text-kamaru-light hover:bg-cream hover:text-earth"
               >
                 All videos
                 <FaArrowRight className="transition-transform group-hover:translate-x-1" />

@@ -118,8 +118,7 @@ const ManageSeasons = () => {
         <div className="space-y-4">
           {/* Active season hero card */}
           {active && (
-            <div className="overflow-hidden rounded-3xl bg-earth text-cream weave">
-              <div className="bead-band h-1.5" />
+            <div className="relative overflow-hidden rounded-3xl bg-earth text-cream swirl-bg">
               <div className="grid gap-6 p-6 md:grid-cols-[1fr_auto] md:items-center md:p-8">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.25em] text-kamaru-light">Active season</p>

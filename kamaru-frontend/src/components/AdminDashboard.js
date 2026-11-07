@@ -125,14 +125,13 @@ const AdminDashboard = () => {
           <FiLogOut /> Log out
         </button>
       </div>
-      <div className="bead-band h-2" aria-hidden="true" />
     </div>
   );
 
   return (
     <div className="flex min-h-[calc(100vh-5rem)] bg-cream">
       {/* Desktop sidebar */}
-      <aside className="sticky top-20 hidden h-[calc(100vh-5rem)] w-64 shrink-0 bg-earth weave lg:block">{sidebar}</aside>
+      <aside className="sticky top-20 hidden h-[calc(100vh-5rem)] w-64 shrink-0 bg-earth swirl-bg lg:block">{sidebar}</aside>
 
       {/* Mobile drawer */}
       <AnimatePresence>
@@ -146,7 +145,7 @@ const AdminDashboard = () => {
               onClick={() => setDrawer(false)}
             />
             <motion.aside
-              className="fixed inset-y-0 left-0 z-[75] w-72 bg-earth weave lg:hidden"
+              className="fixed inset-y-0 left-0 z-[75] w-72 bg-earth swirl-bg lg:hidden"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}

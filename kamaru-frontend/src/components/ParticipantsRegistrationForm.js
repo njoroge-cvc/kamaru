@@ -62,7 +62,6 @@ const ParticipantsRegistrationForm = ({ season, onRegistered }) => {
 
   return (
     <form onSubmit={handleSubmit} className="overflow-hidden rounded-3xl bg-white shadow-xl ring-1 ring-earth/5">
-      <div className="bead-band h-2" aria-hidden="true" />
       <div className="space-y-5 p-8">
         <div>
           <h2 className="font-display text-3xl font-bold text-earth">Register to compete</h2>
