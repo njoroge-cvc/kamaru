@@ -5,6 +5,7 @@ import { fetchEvent } from "../api";
 
 import { useNavigate } from "react-router-dom";
 import ReadMore from "../components/ReadMore";
+import { useSeo, SITE } from "../utils/seo";
 
 const EventPage = () => {
 
@@ -25,6 +26,26 @@ const EventPage = () => {
         setLoading(false);
       });
   }, [id]);
+
+  useSeo({
+    title: event?.title,
+    description: event ? `${event.theme ? event.theme + ". " : ""}${event.location}, ${new Date(event.date_time).toLocaleDateString("en-KE", { day: "numeric", month: "long", year: "numeric" })}. ${String(event.details || "").slice(0, 110)}` : undefined,
+    path: `/events/${id}`,
+    image: event?.image_url,
+    jsonLd: event && {
+      "@context": "https://schema.org",
+      "@type": "Event",
+      name: event.title,
+      description: event.theme || event.details,
+      startDate: event.date_time,
+      eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+      eventStatus: "https://schema.org/EventScheduled",
+      image: event.image_url,
+      location: { "@type": "Place", name: event.location, address: { "@type": "PostalAddress", addressLocality: event.location, addressCountry: "KE" } },
+      organizer: { "@id": `${SITE}/#organization` },
+      isAccessibleForFree: /free/i.test(event.cost || "Free"),
+    },
+  });
 
   if (loading) {
     return (

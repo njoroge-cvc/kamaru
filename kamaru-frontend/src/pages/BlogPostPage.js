@@ -7,6 +7,7 @@ import { Reveal } from "../components/motion";
 import { fetchBlogPost } from "../api";
 import { cld } from "../utils/cloudinary";
 import { formatDate } from "./BlogPage";
+import { useSeo, SITE } from "../utils/seo";
 
 const BlogPostPage = () => {
   const { slug } = useParams();
@@ -19,9 +20,28 @@ const BlogPostPage = () => {
       .catch(() => setPost(null));
   }, [slug]);
 
-  useEffect(() => {
-    if (post?.title) document.title = `${post.title} | Kamaru Challenge`;
-  }, [post]);
+  // Per-article title, description, canonical and Article structured data
+  const image = post?.cover_image_url ? cld(post.cover_image_url, 1200) : undefined;
+  useSeo({
+    title: post?.title,
+    description: post?.excerpt || (post?.content || "").replace(/[#>*[\]()-]/g, "").slice(0, 155),
+    path: `/blog/${slug}`,
+    image,
+    noindex: post === null,
+    jsonLd: post && {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: post.title,
+      description: post.excerpt || undefined,
+      image: image || `${SITE}/og-image.jpg`,
+      datePublished: post.published_at,
+      dateModified: post.updated_at || post.published_at,
+      inLanguage: "en",
+      mainEntityOfPage: `${SITE}/blog/${slug}`,
+      author: { "@type": "Organization", name: "Kamaru Challenge", url: SITE },
+      publisher: { "@id": `${SITE}/#organization` },
+    },
+  });
 
   if (post === null) {
     return (

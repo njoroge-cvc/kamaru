@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { forgotPassword } from "../api";
 import { AuthShell, Field, Alert, Spinner, useBanner } from "./ui";
+import { useSeo } from "../utils/seo";
 
 const ForgotPasswordForm = () => {
+  useSeo({ title: "Forgot password", path: "/forgot_password", noindex: true });
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");

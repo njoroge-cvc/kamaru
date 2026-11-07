@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { registerUser } from "../api";
 import { AuthShell, Field, PasswordInput, Alert, Spinner, useBanner } from "./ui";
+import { useSeo } from "../utils/seo";
 
 const UserRegistrationForm = () => {
+  useSeo({ title: "Join us", path: "/join", noindex: true });
   const [formData, setFormData] = useState({ username: "", email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);

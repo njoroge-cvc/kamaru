@@ -8,6 +8,7 @@ import { Reveal, Stagger, StaggerItem } from "../components/motion";
 import { fetchGalleryImages, fetchSystemImage } from "../api";
 import { VALUES, SPACES, ACTIVITIES, QUOTE } from "../content/story";
 import ReadMore from "../components/ReadMore";
+import { useSeo } from "../utils/seo";
 
 const Chapter = ({ eyebrow, title, lead, children, image, reverse = false }) => {
   const ref = useRef(null);
@@ -48,6 +49,7 @@ const Chapter = ({ eyebrow, title, lead, children, image, reverse = false }) => 
 };
 
 const AboutUs = () => {
+  useSeo({ title: "About Us: Fanning the Flame of Values", description: "The story behind the Kamaru Challenge: reconnecting Ndeiya with its Kikuyu identity through music, at Irīma-inī kwa Wanjiku and the Rediscovery Garden, guided by seven timeless values (mītugo).", path: "/about_us" });
   const [photos, setPhotos] = useState([]);
 
   useEffect(() => {

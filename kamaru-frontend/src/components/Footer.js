@@ -63,7 +63,7 @@ const Footer = () => {
                 <BrandBadge className="h-full w-full drop-shadow-xl" ringColor="#D57500" textColor="#FBF3E8" emblemColor="#D57500" />
               </motion.div>
             </div>
-            <p className="mt-6 font-sans text-lg font-semibold text-kamaru-light">{TAGLINE_KIKUYU}</p>
+            <p lang="ki" className="mt-6 font-sans text-lg font-semibold text-kamaru-light">{TAGLINE_KIKUYU}</p>
             <p className="mx-auto mt-2 max-w-xs text-sm text-cream/60 sm:mx-0">Fanning the flame of values through music & culture.</p>
           </div>
 
@@ -111,6 +111,20 @@ const Footer = () => {
             <Link to="/terms" className="hover:text-kamaru-light">
               Terms & Conditions
             </Link>
+            {/* Developer credit: a normal (followed) link, so it also counts for the studio's SEO */}
+            <p>
+              Crafted with <span className="text-bead-red" aria-label="love">♥</span> by{" "}
+              {/* Referrer kept on purpose so the studio's analytics can see visits from this site */}
+              {/* eslint-disable-next-line react/jsx-no-target-blank */}
+              <a
+                href="https://colourfulvisualcommunication.com/"
+                target="_blank"
+                rel="noopener"
+                className="font-semibold text-cream/70 underline-offset-4 hover:text-kamaru-light hover:underline"
+              >
+                Colourful Visual Communication
+              </a>
+            </p>
           </div>
         </div>
       </div>

@@ -12,6 +12,7 @@ import { fetchActiveSeason } from "../api";
 import { useSession } from "../components/useSession";
 import { EDITION, CATEGORIES, PRIZES, OBJECTIVES } from "../content/story";
 import { CATEGORY_ICONS } from "../components/home/StoryChallenge";
+import { useSeo } from "../utils/seo";
 
 const useCountdown = (target) => {
   const [left, setLeft] = useState(null);
@@ -35,6 +36,7 @@ const useCountdown = (target) => {
 };
 
 const ParticipantsRegistrationPage = () => {
+  useSeo({ title: "The Challenge: Categories, Prizes & Registration", description: "Enter the Kamaru Challenge: Marebeta (poetry), Nyīmbo cīa Gūītungira (original songs) and Nyīmbo cīa Ūndūire cīa Mūgīkūyū (Kikuyu folk songs and dances). Free to enter, three winners per category.", path: "/register/participant" });
   const { token } = useSession();
   const [season, setSeason] = useState(undefined); // undefined = loading, null = none
   const [entriesKey, setEntriesKey] = useState(0);
@@ -119,7 +121,7 @@ const ParticipantsRegistrationPage = () => {
                   <span className="grid h-14 w-14 place-items-center k-quad-shape bg-cream/15 text-2xl">
                     <Icon />
                   </span>
-                  <h3 className="mt-8 font-display text-[1.7rem] leading-[1.15] md:text-3xl">{kk(c.kikuyu)}</h3>
+                  <h3 lang="ki" className="mt-8 font-display text-[1.7rem] leading-[1.15] md:text-3xl">{kk(c.kikuyu)}</h3>
                   <p className="mt-3 text-xs font-semibold uppercase tracking-[0.22em] text-cream/70">{c.name}</p>
                   <p className="mt-6 text-lg leading-relaxed text-cream/90">{c.desc}</p>
                   <ul className="mt-6 space-y-3 border-t border-cream/15 pt-6 text-[15px]">

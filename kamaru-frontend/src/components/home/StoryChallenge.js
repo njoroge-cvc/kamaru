@@ -43,7 +43,7 @@ const StoryChallenge = () => (
                   <Icon />
                 </span>
                 {/* 1. Kikuyu name  2. English name  3. description  4. prizes */}
-                <h3 className="mt-8 font-display text-[1.7rem] leading-[1.15] md:text-3xl">{kk(c.kikuyu)}</h3>
+                <h3 lang="ki" className="mt-8 font-display text-[1.7rem] leading-[1.15] md:text-3xl">{kk(c.kikuyu)}</h3>
                 <p className="mt-3 text-xs font-semibold uppercase tracking-[0.22em] text-cream/70">{c.name}</p>
                 <p className="relative mt-6 text-lg leading-relaxed text-cream/90">{c.desc}</p>
                 <p className="relative mt-auto pt-8">

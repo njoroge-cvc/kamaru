@@ -64,7 +64,7 @@ const StorySpaces = ({ aboutImage }) => {
                   <span className="grid h-12 w-12 place-items-center k-quad-shape bg-cream/15 text-xl">
                     {i === 0 ? <FaFire /> : <FaLeaf />}
                   </span>
-                  <h3 className="mt-6 font-display text-2xl leading-snug">{kk(s.name)}</h3>
+                  <h3 lang="ki" className="mt-6 font-display text-2xl leading-snug">{kk(s.name)}</h3>
                   <p className="mt-3 leading-relaxed text-cream/85">{s.blurb}</p>
                 </StaggerItem>
               ))}

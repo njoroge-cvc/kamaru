@@ -27,6 +27,7 @@ import ManageBlog from "./ManageBlog";
 import AdminOverview from "./AdminOverview";
 import { useSession } from "./useSession";
 import { clearSession, PERMS, ROLE_LABELS } from "../auth";
+import { useSeo } from "../utils/seo";
 
 // Each section declares the permission it needs; the sidebar and routes only show what the role allows.
 export const ADMIN_SECTIONS = [
@@ -75,6 +76,7 @@ const SidebarLinks = ({ sections, onNavigate }) => (
 );
 
 const AdminDashboard = () => {
+  useSeo({ title: "Dashboard", path: "/admin", noindex: true });
   const navigate = useNavigate();
   const { token, role, permissions } = useSession();
   const [drawer, setDrawer] = useState(false);

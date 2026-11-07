@@ -1,6 +1,8 @@
 import React from "react";
+import { useSeo } from "../utils/seo";
 
 const TermsAndConditionsPage = () => {
+  useSeo({ title: "Terms & Conditions", description: "Terms and conditions for taking part in and attending the Kamaru Challenge.", path: "/terms" });
   return (
     <div className="container mx-auto px-4 py-12 text-earth">
       <h1 className="font-display text-4xl md:text-5xl font-black text-earth mb-6">Terms & Conditions</h1>

@@ -5,8 +5,10 @@ import PageHero from "../components/PageHero";
 import { Reveal } from "../components/motion";
 import { fetchVideos } from "../api";
 import { extractYouTubeID } from "../utils/youtube";
+import { useSeo } from "../utils/seo";
 
 const VideosPage = () => {
+  useSeo({ title: "Videos: Kikuyu Folk Songs, Dances & Performances", description: "Watch Kikuyu folk songs, traditional dances, poetry and original music performed in Gĩkũyũ at the Kamaru Challenge in Ndeiya, Kiambu.", path: "/videos" });
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
 

@@ -149,6 +149,7 @@ const Hero = ({ gallery = [], upcoming = [], season }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.9, duration: 1 }}
+            lang="ki"
             className="mt-6 font-sans font-semibold text-2xl md:text-3xl text-cream/90 text-balance"
           >
             {TAGLINE_KIKUYU}

@@ -4,8 +4,10 @@ import { toast } from "react-toastify";
 import { loginUser } from "../api";
 import { saveSession, PERMS } from "../auth";
 import { AuthShell, Field, PasswordInput, Alert, Spinner, useBanner } from "./ui";
+import { useSeo } from "../utils/seo";
 
 const LoginForm = () => {
+  useSeo({ title: "Log in", path: "/login", noindex: true });
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);

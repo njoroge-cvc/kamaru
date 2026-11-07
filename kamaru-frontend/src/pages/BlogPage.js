@@ -6,6 +6,7 @@ import PageHero from "../components/PageHero";
 import { Stagger, StaggerItem } from "../components/motion";
 import { fetchBlogPosts } from "../api";
 import { cld } from "../utils/cloudinary";
+import { useSeo } from "../utils/seo";
 
 export const formatDate = (iso) =>
   iso ? new Date(iso).toLocaleDateString("en-KE", { day: "numeric", month: "long", year: "numeric" }) : "";
@@ -43,6 +44,7 @@ const PostCard = ({ post, i, featured }) => (
 );
 
 const BlogPage = () => {
+  useSeo({ title: "Blog: Stories of Kikuyu Culture", description: "Writing on Kikuyu (Gĩkũyũ) culture: songs, sayings, values (mītugo), history and the wisdom of our elders, from the Kamaru Challenge in Ndeiya.", path: "/blog" });
   const [posts, setPosts] = useState(null);
 
   useEffect(() => {

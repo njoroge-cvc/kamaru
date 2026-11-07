@@ -1,8 +1,11 @@
 import React from "react";
 import Gallery from "../components/Gallery";
 import PageHero from "../components/PageHero";
+import { useSeo } from "../utils/seo";
 
-const GalleryPage = () => (
+const GalleryPage = () => {
+  useSeo({ title: "Gallery: Nī Rūgendo Rwega, Our Journey", description: "Photos from the Kamaru Challenge in Ndeiya: Kikuyu folk dancers, poets, singers, families and the whole community celebrating Gĩkũyũ culture.", path: "/gallery" });
+  return (
   <div className="min-h-screen bg-cream">
     <PageHero
       crumb="Gallery"
@@ -15,5 +18,6 @@ const GalleryPage = () => (
     </div>
   </div>
 );
+};
 
 export default GalleryPage;

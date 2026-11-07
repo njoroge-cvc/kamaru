@@ -17,6 +17,7 @@ import { Field, Alert, Spinner } from "../components/ui";
 import { SunSpiral } from "../components/home/Ornaments";
 import { sendContactMessage } from "../api";
 import { SUPPORT_WAYS, NON_NEGOTIABLES, SUPPORT_STEPS, CONTACT, VALUES } from "../content/story";
+import { useSeo } from "../utils/seo";
 
 const ICONS = { mic: FaMicrophone, trophy: FaTrophy, gift: FaGift, camera: FaCameraRetro, book: FaBookOpen, seed: FaSeedling };
 
@@ -121,6 +122,7 @@ const SupportForm = ({ selected, onSelect }) => {
 };
 
 const SupportPage = () => {
+  useSeo({ title: "Support Us: Walk With Us", description: "Nītūnyitanire: sponsor prizes, lend your voice as an MC or judge, give in kind, tell the story or start a Kamaru Challenge edition in your community.", path: "/support" });
   const [selected, setSelected] = useState([]);
   const toggle = (key) => setSelected((s) => (s.includes(key) ? s.filter((k) => k !== key) : [...s, key]));
 

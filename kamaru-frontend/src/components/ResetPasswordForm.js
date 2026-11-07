@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { resetPassword } from "../api";
 import { AuthShell, Field, PasswordInput, Alert, Spinner, useBanner } from "./ui";
+import { useSeo } from "../utils/seo";
 
 const ResetPasswordForm = () => {
+  useSeo({ title: "Reset password", path: "/reset_password", noindex: true });
   const [shortToken, setShortToken] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
