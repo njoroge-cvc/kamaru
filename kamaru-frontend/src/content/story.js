@@ -57,12 +57,12 @@ export const OUR_PART = [
 ];
 export const SEASONS_HELD = 3;
 
+// Yearly camps and days held in our spaces (homepage "Other activities" and About page)
 export const ACTIVITIES = [
-  "Re-thinking 2023 resolutions bootcamp",
-  "Africa Traditional Medicine Day: the art & word of healing camp",
-  "Healing the indigenous African people retreat",
-  "Father and Son camp",
-  "Tree planting, nature conservation and protection",
+  { month: "March", name: "The Woman Across Generations Camp" },
+  { month: "April", name: "The Father and Son Camp" },
+  { month: "August", name: "The African Medicine Day Camp" },
+  { month: "October", name: "Mazingira Day by KCERA" },
 ];
 
 // `value` is what entries store (and the backend validates); the labels are free to change.

@@ -1,4 +1,5 @@
 import React from "react";
+import { kk } from "./Kikuyu";
 
 /**
  * Renders blog text with light formatting, building React elements (never raw HTML):
@@ -8,7 +9,7 @@ import React from "react";
  */
 const INLINE = /(\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\(https?:\/\/[^\s)]+\))/g;
 
-export const renderInline = (text) =>
+export const renderInline = (text, display = false) =>
   text.split(INLINE).map((part, i) => {
     if (/^\*\*[^*]+\*\*$/.test(part)) return <strong key={i}>{part.slice(2, -2)}</strong>;
     if (/^\*[^*]+\*$/.test(part)) return <em key={i}>{part.slice(1, -1)}</em>;
@@ -19,7 +20,7 @@ export const renderInline = (text) =>
           {link[1]}
         </a>
       );
-    return part;
+    return display ? <React.Fragment key={i}>{kk(part)}</React.Fragment> : part;
   });
 
 const toBlocks = (text = "") => {
@@ -53,8 +54,8 @@ const toBlocks = (text = "") => {
 const BlogContent = ({ text, className = "" }) => (
   <div className={`space-y-5 text-lg leading-relaxed text-earth-700 ${className}`}>
     {toBlocks(text).map((b, i) => {
-      if (b.type === "h2") return <h2 key={i} className="pt-4 font-display text-3xl text-earth">{renderInline(b.text)}</h2>;
-      if (b.type === "h3") return <h3 key={i} className="pt-2 font-display text-2xl text-earth">{renderInline(b.text)}</h3>;
+      if (b.type === "h2") return <h2 key={i} className="pt-4 font-display text-3xl text-earth">{renderInline(b.text, true)}</h2>;
+      if (b.type === "h3") return <h3 key={i} className="pt-2 font-display text-2xl text-earth">{renderInline(b.text, true)}</h3>;
       if (b.type === "quote")
         return (
           <blockquote key={i} className="k-cut-strong bg-kamaru/15 px-6 py-5 font-sans text-xl font-semibold italic text-earth">

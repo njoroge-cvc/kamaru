@@ -6,6 +6,8 @@ import { FaLeaf, FaFire, FaArrowRight } from "react-icons/fa";
 import { CountUp, Reveal, SectionHeading, Stagger, StaggerItem } from "../motion";
 import { SPACES, OUR_PART, SEASONS_HELD } from "../../content/story";
 import { SunSpiral } from "./Ornaments";
+import { kk } from "../Kikuyu";
+import ReadMore from "../ReadMore";
 
 // "Itemi Riitū, Our Part": what we do each August, where, and why
 const StorySpaces = ({ aboutImage }) => {
@@ -42,32 +44,34 @@ const StorySpaces = ({ aboutImage }) => {
           </Reveal>
 
           <div>
-            <Stagger className="space-y-5" stagger={0.1}>
+            <ReadMore collapsedHeight={260}>
+            <Stagger className="space-y-5 text-center md:text-left" stagger={0.1}>
               {OUR_PART.map((para, i) => (
                 <StaggerItem key={i}>
                   <p className={`leading-relaxed text-earth ${i === 0 ? "text-xl md:text-2xl" : "text-lg md:text-xl text-earth-700"}`}>{para}</p>
                 </StaggerItem>
               ))}
             </Stagger>
+            </ReadMore>
 
             {/* Our spaces */}
             <Reveal delay={0.1}>
-              <p className="mt-12 font-display text-2xl text-ochre">Our spaces</p>
+              <p className="mt-12 text-center font-display text-2xl text-ochre md:text-left">Our spaces</p>
             </Reveal>
             <Stagger className="mt-5 grid sm:grid-cols-2 gap-5">
               {SPACES.map((s, i) => (
-                <StaggerItem key={s.name} className={`k-cut-strong p-6 text-cream ${i === 0 ? "bg-ochre" : "bg-forest"}`}>
+                <StaggerItem key={s.name} className={`k-cut-strong flex flex-col items-center p-6 text-center text-cream md:items-start md:text-left ${i === 0 ? "bg-ochre" : "bg-forest"}`}>
                   <span className="grid h-12 w-12 place-items-center k-quad-shape bg-cream/15 text-xl">
                     {i === 0 ? <FaFire /> : <FaLeaf />}
                   </span>
-                  <h3 className="mt-4 font-display text-2xl font-bold">{s.name}</h3>
-                  <p className="mt-2 text-cream/85">{s.blurb}</p>
+                  <h3 className="mt-6 font-display text-2xl leading-snug">{kk(s.name)}</h3>
+                  <p className="mt-3 leading-relaxed text-cream/85">{s.blurb}</p>
                 </StaggerItem>
               ))}
             </Stagger>
 
             {/* Seasons so far */}
-            <Reveal delay={0.1} className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-6">
+            <Reveal delay={0.1} className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-6 md:justify-start">
               <div className="k-cut-strong flex items-center gap-4 bg-earth px-6 py-4 text-cream">
                 <span className="font-display text-6xl text-kamaru leading-none">
                   <CountUp to={SEASONS_HELD} />

@@ -39,7 +39,7 @@ const EventsSection = ({ upcoming = [], past = [] }) => {
             title="The More, Come sit by the Fire"
             intro="Competitions, camps, retreats and healing days, open to the whole community."
           />
-          <Reveal className="flex gap-1 k-quad-shape bg-cream p-1.5 self-start lg:self-end">
+          <Reveal className="flex gap-1 k-quad-shape bg-cream p-1.5 self-center lg:self-end">
             <Tab active={tab === "upcoming"} onClick={() => setTab("upcoming")} count={upcoming.length}>
               Upcoming
             </Tab>
@@ -92,18 +92,20 @@ const EventsSection = ({ upcoming = [], past = [] }) => {
           </motion.div>
         </AnimatePresence>
 
-        {/* Activities held in our spaces */}
-        <Reveal className="mt-16">
-          <p className="font-display text-2xl text-ochre">Held in our spaces since 2022, all free of charge</p>
+        {/* Yearly calendar of camps and days */}
+        <Reveal className="mt-20 text-center md:text-left">
+          <p className="k-eyebrow text-ochre">Every year, free of charge</p>
+          <h3 className="mt-3 font-display text-3xl text-earth md:text-4xl">Camps & days in our spaces</h3>
         </Reveal>
-        <Stagger className="mt-5 flex flex-wrap gap-3" stagger={0.06}>
+        <Stagger className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" stagger={0.08}>
           {ACTIVITIES.map((a, i) => (
             <StaggerItem
-              key={a}
-              className="k-quad-shape px-5 py-3 font-semibold text-cream"
-              style={{ backgroundColor: ["#B5441B", "#3F6A5E", "#262C45", "#62293B", "#3E9B4F"][i % 5] }}
+              key={a.name}
+              className="k-cut-strong flex flex-col items-center p-7 text-center text-cream md:items-start md:text-left"
+              style={{ backgroundColor: ["#B5441B", "#3F6A5E", "#262C45", "#62293B"][i % 4] }}
             >
-              {a}
+              <span className="k-quad-shape bg-cream/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em]">{a.month}</span>
+              <p className="mt-6 font-display text-2xl leading-snug">{a.name}</p>
             </StaggerItem>
           ))}
         </Stagger>

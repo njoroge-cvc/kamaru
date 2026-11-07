@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { SectionHeading, Stagger, StaggerItem } from "../motion";
+import { SectionHeading } from "../motion";
 import { VALUES } from "../../content/story";
+import useAutoScroll from "../../hooks/useAutoScroll";
 
 const ValueCard = ({ value, index }) => (
   <motion.article
@@ -78,15 +79,45 @@ const StoryValues = () => {
             intro="The values that once made us a dignified, happy community, carried forward by every performance."
           />
         </div>
-        <Stagger className="mt-10 flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-5 md:scroll-px-8 px-5 md:px-8 pb-4 [scrollbar-width:none]">
-          {VALUES.map((v, i) => (
-            <StaggerItem key={v.name} className="snap-start">
-              <ValueCard value={v} index={i} />
-            </StaggerItem>
-          ))}
-        </Stagger>
+        <MobileValuesRow />
       </div>
     </section>
+  );
+};
+
+/** Phones/tablets: a centred, auto-advancing row of value cards with progress dots. */
+const MobileValuesRow = () => {
+  const rowRef = useRef(null);
+  const active = useAutoScroll(rowRef, { interval: 3500 });
+  return (
+    <>
+      <div
+        ref={rowRef}
+        className="mt-10 flex gap-4 overflow-x-auto snap-x snap-mandatory px-[11vw] pb-4 sm:px-8 [scrollbar-width:none]"
+      >
+        {VALUES.map((v, i) => (
+          <motion.div
+            key={v.name}
+            className="snap-center"
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: Math.min(i, 3) * 0.08 }}
+          >
+            <ValueCard value={v} index={i} />
+          </motion.div>
+        ))}
+      </div>
+      <div className="mt-4 flex justify-center gap-2" aria-hidden="true">
+        {VALUES.map((v, i) => (
+          <span
+            key={v.name}
+            className="h-2 rounded-full transition-all duration-300"
+            style={{ width: i === active ? 22 : 8, backgroundColor: i === active ? v.color : "rgba(251,243,232,0.3)" }}
+          />
+        ))}
+      </div>
+    </>
   );
 };
 

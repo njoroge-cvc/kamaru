@@ -6,6 +6,7 @@ import BrandBadge from "./BrandBadge";
 import SocialIcons from "./SocialIcons";
 import NewsletterForm from "./NewsletterSubscriptionForm";
 import { TAGLINE_KIKUYU, CONTACT, EDITION } from "../content/story";
+import { kk } from "./Kikuyu";
 
 const EXPLORE = [
   ["/", "Home"],
@@ -28,7 +29,7 @@ const LinkList = ({ title, items }) => (
       {items.map(([to, label]) => (
         <li key={to}>
           <Link to={to} className="group inline-flex items-center gap-2 text-cream/80 transition-colors hover:text-cream">
-            <span className="h-px w-0 bg-kamaru transition-all duration-300 group-hover:w-4" />
+            <span className="hidden h-px w-0 bg-kamaru transition-all duration-300 group-hover:w-4 sm:inline-block" />
             {label}
           </Link>
         </li>
@@ -49,10 +50,10 @@ const Footer = () => {
   return (
     <footer className="relative overflow-hidden bg-earth text-cream swirl-bg">
       <div className="container relative mx-auto px-5 py-14 md:px-8">
-        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1.4fr]">
+        <div className="grid gap-12 text-center sm:grid-cols-2 sm:text-left lg:grid-cols-[1.3fr_1fr_1fr_1.4fr]">
           {/* Brand */}
           <div>
-            <div className="flex items-center gap-5">
+            <div className="flex items-center justify-center gap-5 sm:justify-start">
               <motion.div
                 className="w-28 shrink-0 md:w-32"
                 initial={{ rotate: -40, scale: 0.6, opacity: 0 }}
@@ -63,8 +64,8 @@ const Footer = () => {
                 <BrandBadge className="h-full w-full drop-shadow-xl" ringColor="#D57500" textColor="#FBF3E8" emblemColor="#D57500" />
               </motion.div>
             </div>
-            <p className="mt-6 font-sans text-lg font-semibold text-kamaru-light">{TAGLINE_KIKUYU}</p>
-            <p className="mt-2 max-w-xs text-sm text-cream/60">Fanning the flame of values through music & culture.</p>
+            <p className="mt-6 font-display text-lg leading-snug text-kamaru-light">{kk(TAGLINE_KIKUYU)}</p>
+            <p className="mx-auto mt-2 max-w-xs text-sm text-cream/60 sm:mx-0">Fanning the flame of values through music & culture.</p>
           </div>
 
           <LinkList title="Explore" items={EXPLORE} />
@@ -78,11 +79,11 @@ const Footer = () => {
               <NewsletterForm />
             </div>
             <ul className="mt-6 space-y-2.5 text-sm text-cream/80">
-              <li className="flex items-start gap-3">
+              <li className="flex items-start justify-center gap-3 sm:justify-start">
                 <FaMapMarkerAlt className="mt-0.5 shrink-0 text-kamaru" />
                 {EDITION.venue}
               </li>
-              <li className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <li className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 sm:justify-start">
                 <FaPhoneAlt className="text-kamaru" />
                 {CONTACT.phones.map((ph, i) => (
                   <React.Fragment key={ph}>
@@ -94,7 +95,7 @@ const Footer = () => {
                 ))}
               </li>
               <li>
-                <a href={`mailto:${CONTACT.email}`} className="flex items-center gap-3 hover:text-kamaru-light">
+                <a href={`mailto:${CONTACT.email}`} className="flex items-center justify-center gap-3 hover:text-kamaru-light sm:justify-start">
                   <FaEnvelope className="text-kamaru" />
                   {CONTACT.email}
                 </a>
@@ -103,7 +104,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col gap-1 border-t border-cream/10 pt-6 text-sm text-cream/50 md:flex-row md:items-center md:justify-between">
+        <div className="mt-14 flex flex-col items-center gap-1 border-t border-cream/10 pb-20 pt-6 text-center text-sm text-cream/50 md:flex-row md:items-center md:justify-between md:pb-0 md:text-left">
           {/* Social links for screens without the vertical "Follow us on" rail */}
           <SocialIcons className="mb-4 flex gap-2 md:mb-0 xl:hidden" itemClassName="h-10 w-10 bg-cream/10 text-lg text-cream hover:bg-kamaru hover:text-earth" />
           <div className="flex flex-col gap-1 text-sm text-cream/50 md:flex-row md:gap-6">

@@ -7,6 +7,7 @@ import PageHero from "../components/PageHero";
 import { Reveal, Stagger, StaggerItem } from "../components/motion";
 import { fetchGalleryImages, fetchSystemImage } from "../api";
 import { VALUES, SPACES, ACTIVITIES, QUOTE } from "../content/story";
+import ReadMore from "../components/ReadMore";
 
 const Chapter = ({ eyebrow, title, lead, children, image, reverse = false }) => {
   const ref = useRef(null);
@@ -15,14 +16,16 @@ const Chapter = ({ eyebrow, title, lead, children, image, reverse = false }) => 
 
   return (
     <section ref={ref} className="grid items-center gap-10 md:grid-cols-2 lg:gap-20">
-      <div className={reverse ? "md:order-2" : ""}>
+      <div className={`text-center md:text-left ${reverse ? "md:order-2" : ""}`}>
         <Reveal>
           <p className="k-eyebrow text-ochre">{eyebrow}</p>
           <h2 className="mt-3 font-display text-4xl md:text-5xl font-bold text-earth">{title}</h2>
           <p className="mt-4 text-lg font-semibold text-earth-700">{lead}</p>
         </Reveal>
         <Reveal delay={0.1}>
-          <div className="mt-4 space-y-4 text-lg leading-relaxed text-earth-700">{children}</div>
+          <ReadMore className="mt-4" collapsedHeight={190}>
+            <div className="space-y-4 text-lg leading-relaxed text-earth-700">{children}</div>
+          </ReadMore>
         </Reveal>
       </div>
       <Reveal className={reverse ? "md:order-1" : ""}>
@@ -135,12 +138,12 @@ const AboutUs = () => {
           </Stagger>
 
           <Reveal className="mt-12 rounded-[2rem] bg-white p-8 md:p-10 shadow-sm">
-            <h3 className="font-display text-2xl font-bold text-earth">Held in these spaces since 2022</h3>
+            <h3 className="font-display text-2xl font-bold text-earth">Held in these spaces every year</h3>
             <ul className="mt-5 grid gap-3 md:grid-cols-2">
               {ACTIVITIES.map((a) => (
-                <li key={a} className="flex gap-3 text-earth-700">
-                  <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-kamaru" />
-                  {a}
+                <li key={a.name} className="flex items-center gap-3 text-earth-700">
+                  <span className="k-quad-shape shrink-0 bg-kamaru px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-earth">{a.month}</span>
+                  {a.name}
                 </li>
               ))}
             </ul>

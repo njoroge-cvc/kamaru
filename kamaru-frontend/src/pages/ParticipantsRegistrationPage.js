@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import { motion } from "framer-motion";
-import { FaBullseye, FaMicrophoneAlt, FaTrophy, FaLock, FaDoorOpen, FaRegBell } from "react-icons/fa";
+import { FaBullseye, FaTrophy, FaLock, FaDoorOpen, FaRegBell } from "react-icons/fa";
 import PageHero from "../components/PageHero";
 import ParticipantsRegistrationForm from "../components/ParticipantsRegistrationForm";
 import MyEntries from "../components/MyEntries";
-import { Reveal, Stagger, StaggerItem, CountUp } from "../components/motion";
+import { Reveal, Stagger, StaggerItem, CountUp, SectionHeading } from "../components/motion";
+import { kk } from "../components/Kikuyu";
 import { fetchActiveSeason } from "../api";
 import { useSession } from "../components/useSession";
 import { EDITION, CATEGORIES, PRIZES, OBJECTIVES } from "../content/story";
@@ -100,66 +101,39 @@ const ParticipantsRegistrationPage = () => {
         )}
       </div>
 
-      {/* Objectives / categories / prizes */}
-      <section className="container mx-auto px-5 md:px-8 py-20">
-        <Stagger className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-          <StaggerItem className="k-cut-strong bg-white p-8 shadow-sm">
-            <FaBullseye className="text-4xl text-ochre" />
-            <h2 className="mt-4 font-display text-2xl font-bold text-earth">Your piece must…</h2>
-            <ul className="mt-5 space-y-3">
-              {OBJECTIVES.map((o, i) => (
-                <li key={o} className="flex items-center gap-3 text-earth-700">
-                  <span className="grid h-9 w-9 shrink-0 place-items-center k-quad-shape bg-kamaru font-display text-sm text-earth">{i + 1}</span>
-                  {o}
-                </li>
-              ))}
-            </ul>
-          </StaggerItem>
-
-          <StaggerItem className="k-cut-strong relative bg-earth p-8 text-cream swirl-bg">
-            <FaTrophy className="relative text-4xl text-bead-gold" />
-            <h2 className="relative mt-4 font-display text-2xl font-bold">Prizes per category</h2>
-            <ul className="relative mt-5 space-y-3">
-              {PRIZES.map((p, i) => (
-                <li key={p.place} className={`k-quad-shape flex items-center justify-between px-5 py-3.5 ${i === 0 ? "bg-bead-gold text-earth" : "bg-cream/10"}`}>
-                  <span className="text-sm font-semibold">{p.place}</span>
-                  <span className="font-display text-xl font-black">
-                    <CountUp to={p.amount} prefix="Ksh " />
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <p className="relative mt-5 text-sm text-cream/70">Three winners in every category. Taking part is free.</p>
-          </StaggerItem>
-        </Stagger>
-
-        {/* Categories, in full */}
-        <div className="mt-14">
-          <div className="flex items-center gap-3">
-            <FaMicrophoneAlt className="text-3xl text-ochre" />
-            <h2 className="font-display text-3xl font-bold text-earth">Categories</h2>
-          </div>
-          <Stagger className="mt-6 grid gap-5 md:grid-cols-3">
+      {/* Categories, requirements, prizes */}
+      <section className="container mx-auto space-y-28 px-5 py-24 md:px-8 md:py-28">
+        {/* 1. Categories */}
+        <div>
+          <SectionHeading
+            align="left"
+            eyebrow="Nyīmbo Ciitū"
+            title="Three categories"
+            intro="Choose the category that fits your piece. Every category is performed in Kikuyu and has three winners."
+          />
+          <Stagger className="mt-14 grid gap-6 md:grid-cols-3">
             {CATEGORIES.map((c, i) => {
               const Icon = CATEGORY_ICONS[c.icon];
               return (
-                <StaggerItem key={c.value} className={`k-cut-strong p-7 text-cream ${["bg-ochre", "bg-forest", "bg-night"][i]}`}>
-                  <span className="grid h-12 w-12 place-items-center k-quad-shape bg-cream/15 text-xl">
+                <StaggerItem key={c.value} className={`k-cut-strong flex flex-col p-8 md:p-10 text-cream ${["bg-ochre", "bg-forest", "bg-night"][i]}`}>
+                  <span className="grid h-14 w-14 place-items-center k-quad-shape bg-cream/15 text-2xl">
                     <Icon />
                   </span>
-                  <h3 className="mt-5 font-sans text-2xl font-bold leading-tight">{c.kikuyu}</h3>
-                  <p className="font-display text-base text-cream/80">{c.name}</p>
-                  <p className="mt-3 text-cream/85">{c.desc}</p>
-                  <ul className="mt-4 space-y-2 text-sm">
+                  <h3 className="mt-8 font-display text-[1.7rem] leading-[1.15] md:text-3xl">{kk(c.kikuyu)}</h3>
+                  <p className="mt-3 text-xs font-semibold uppercase tracking-[0.22em] text-cream/70">{c.name}</p>
+                  <p className="mt-6 text-lg leading-relaxed text-cream/90">{c.desc}</p>
+                  <ul className="mt-6 space-y-3 border-t border-cream/15 pt-6 text-[15px]">
                     {[...c.details, "Performed in the Kikuyu language", "Calls out vice, praises good morals, or both"].map((d) => (
-                      <li key={d} className="flex gap-2">
-                        <span className="mt-1.5 h-2 w-2 shrink-0 k-quad-shape bg-bead-gold" />
+                      <li key={d} className="flex gap-3">
+                        <span className="mt-2 h-2 w-2 shrink-0 k-quad-shape bg-bead-gold" />
                         {d}
                       </li>
                     ))}
                   </ul>
-                  <p className="mt-5 inline-block k-quad-shape bg-cream/15 px-3 py-1.5 text-sm font-semibold">
-                    3 winners · Ksh {PRIZES.map((p) => p.amount.toLocaleString()).join(" / ")}
+                  <p className="mt-auto pt-8">
+                    <span className="inline-block k-quad-shape bg-cream/15 px-4 py-2 text-sm font-semibold">
+                      3 winners · Ksh {PRIZES.map((p) => p.amount.toLocaleString()).join(" / ")}
+                    </span>
                   </p>
                 </StaggerItem>
               );
@@ -167,15 +141,50 @@ const ParticipantsRegistrationPage = () => {
           </Stagger>
         </div>
 
-        <Reveal className="k-cut-strong mx-auto mt-12 max-w-3xl bg-bead-gold/25 p-7 text-earth-700">
-          <p className="font-display text-lg text-earth">Please note</p>
-          <ul className="mt-3 space-y-2">
+        {/* 2. Requirements and prizes */}
+        <Stagger className="grid gap-6 lg:grid-cols-2">
+          <StaggerItem className="k-cut-strong bg-white p-8 shadow-sm md:p-12">
+            <FaBullseye className="text-4xl text-ochre" />
+            <p className="k-eyebrow mt-6 text-ochre">Before you enter</p>
+            <h2 className="mt-3 font-display text-3xl text-earth md:text-4xl">Your piece must…</h2>
+            <ul className="mt-8 space-y-5">
+              {OBJECTIVES.map((o, i) => (
+                <li key={o} className="flex items-center gap-4 text-lg text-earth-700">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center k-quad-shape bg-kamaru font-display text-earth">{i + 1}</span>
+                  {o}
+                </li>
+              ))}
+            </ul>
+          </StaggerItem>
+
+          <StaggerItem className="k-cut-strong relative bg-earth p-8 text-cream swirl-bg md:p-12">
+            <FaTrophy className="relative text-4xl text-bead-gold" />
+            <p className="k-eyebrow relative mt-6 text-bead-gold">In every category</p>
+            <h2 className="relative mt-3 font-display text-3xl md:text-4xl">Prizes</h2>
+            <ul className="relative mt-8 space-y-4">
+              {PRIZES.map((p, i) => (
+                <li key={p.place} className={`k-quad-shape flex items-center justify-between px-6 py-4 ${i === 0 ? "bg-bead-gold text-earth" : "bg-cream/10"}`}>
+                  <span className="text-sm font-semibold uppercase tracking-[0.15em]">{p.place}</span>
+                  <span className="font-display text-2xl">
+                    <CountUp to={p.amount} prefix="Ksh " />
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="relative mt-8 text-cream/70">Three winners in every category. Taking part is free.</p>
+          </StaggerItem>
+        </Stagger>
+
+        {/* 3. Please note */}
+        <Reveal className="k-cut-strong mx-auto max-w-3xl bg-bead-gold/25 p-8 text-earth-700 md:p-10">
+          <h2 className="font-display text-2xl text-earth">Please note</h2>
+          <ul className="mt-6 space-y-4">
             {[
               "Categories with fewer than 4 entrants are grouped together and judged irrespective of category.",
               "An item that previously won any Kamaru Challenge cannot win again when performed by the same participant(s).",
             ].map((n, i) => (
-              <li key={n} className="flex gap-3">
-                <span className="grid h-7 w-7 shrink-0 place-items-center k-quad-shape bg-earth font-display text-xs text-cream">{i + 1}</span>
+              <li key={n} className="flex gap-4 text-lg">
+                <span className="grid h-8 w-8 shrink-0 place-items-center k-quad-shape bg-earth font-display text-sm text-cream">{i + 1}</span>
                 {n}
               </li>
             ))}

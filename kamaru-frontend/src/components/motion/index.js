@@ -1,6 +1,7 @@
 // Reusable Framer Motion primitives for the public site.
 // All of them respect the user's reduced-motion setting via <MotionConfig reducedMotion="user"> in App.js.
 import React, { useEffect, useRef, useState } from "react";
+import { kk } from "../Kikuyu";
 import {
   motion,
   useInView,
@@ -85,7 +86,7 @@ export const SplitWords = ({ text, className = "", wordClassName = "", delay = 0
               show: { y: "0%", rotate: 0, transition: { duration: 0.9, ease: EASE } },
             }}
           >
-            {w}
+            {kk(w)}
             {i < words.length - 1 ? " " : ""}
           </motion.span>
         </span>
@@ -140,14 +141,14 @@ export const Marquee = ({ children, reverse = false, className = "", trackClassN
 
 /** Section eyebrow + heading combo used across the story. */
 export const SectionHeading = ({ eyebrow, title, intro, light = false, align = "center", className = "" }) => (
-  <div className={`${align === "center" ? "text-center mx-auto" : ""} max-w-3xl ${className}`}>
+  <div className={`${align === "center" ? "text-center mx-auto" : "text-center mx-auto md:text-left md:mx-0"} max-w-3xl ${className}`}>
     {eyebrow && (
       <Reveal>
-        <p className={`k-eyebrow ${light ? "text-kamaru-light" : "text-ochre"}`}>{eyebrow}</p>
+        <p className={`k-eyebrow ${light ? "text-kamaru-light" : "text-ochre"}`}>{kk(eyebrow)}</p>
       </Reveal>
     )}
     <h2
-      className={`font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.05] mt-4 text-balance ${
+      className={`font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.08] mt-5 md:mt-6 text-balance ${
         light ? "text-cream" : "text-earth"
       }`}
     >
@@ -155,7 +156,7 @@ export const SectionHeading = ({ eyebrow, title, intro, light = false, align = "
     </h2>
     {intro && (
       <Reveal delay={0.15}>
-        <p className={`mt-5 text-lg md:text-xl leading-relaxed ${light ? "text-cream/75" : "text-earth-700"}`}>
+        <p className={`mt-6 md:mt-8 max-w-2xl text-lg md:text-xl leading-relaxed ${align === "center" ? "mx-auto" : "mx-auto md:mx-0"} ${light ? "text-cream/75" : "text-earth-700"}`}>
           {intro}
         </p>
       </Reveal>

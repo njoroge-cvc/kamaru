@@ -4,6 +4,7 @@ import { FaFeatherAlt, FaDrum, FaMicrophoneAlt, FaCheckCircle } from "react-icon
 import { registerParticipant } from "../api";
 import { CATEGORIES } from "../content/story";
 import { Field, Alert, Spinner } from "./ui";
+import { kk } from "./Kikuyu";
 
 const ICONS = { feather: FaFeatherAlt, drum: FaDrum, mic: FaMicrophoneAlt };
 
@@ -99,7 +100,7 @@ const ParticipantsRegistrationForm = ({ season, onRegistered }) => {
                   }`}
                 >
                   <Icon className={`text-2xl ${active ? "text-earth" : "text-earth-600"}`} />
-                  <span className="font-bold leading-tight">{c.kikuyu}</span>
+                  <span className="font-display text-base leading-tight">{kk(c.kikuyu)}</span>
                   <span className="text-xs font-medium opacity-80">{c.name}</span>
                 </button>
               );

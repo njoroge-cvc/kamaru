@@ -10,6 +10,7 @@ import { useSession } from "./useSession";
 import { useBackdropTone } from "../utils/backdropTone";
 import { clearSession, PERMS } from "../auth";
 import { CONTACT, TAGLINE_KIKUYU } from "../content/story";
+import { kk } from "./Kikuyu";
 
 // Visible in the brush-stroke band on desktop
 const QUICK_LINKS = [
@@ -46,7 +47,7 @@ const AnyLink = ({ item, className, onClick, children, ...rest }) =>
 
 /** Three bead dots — the "MORE ●●●" affordance. */
 const Beads = ({ open }) => (
-  <span className="flex gap-1.5" aria-hidden="true">
+  <span className="flex flex-col gap-1 sm:flex-row sm:gap-1.5" aria-hidden="true">
     {["#D7262E", "#E8B21E", "#2588C9"].map((c, i) => (
       <motion.span
         key={c}
@@ -160,7 +161,7 @@ const FullMenu = ({ open, onClose, logo, token, isAdmin, onLogout }) => {
               animate={{ opacity: 1, transition: { delay: 0.6 } }}
               className="flex flex-col items-center gap-4 border-t border-earth/15 pt-5 pb-8 text-sm md:flex-row md:justify-between"
             >
-              <p className="font-sans font-semibold text-base">{TAGLINE_KIKUYU}</p>
+              <p className="font-display text-base">{kk(TAGLINE_KIKUYU)}</p>
               <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 font-semibold">
                 <a href={`tel:${CONTACT.phones[0].replace(/\s/g, "")}`} className="flex items-center gap-2 hover:text-cream">
                   <FaPhoneAlt /> {CONTACT.phones[0]}
@@ -309,11 +310,12 @@ const Navbar = () => {
             )}
             <button
               onClick={() => setMenuOpen(true)}
-              className={`k-quad group flex items-center gap-3 py-2 pl-3 pr-2 text-sm font-bold uppercase tracking-[0.2em] ${T.more}`}
+              className={`k-quad group flex shrink-0 items-center gap-3 px-3 py-2 text-sm font-bold uppercase tracking-[0.2em] sm:pl-3 sm:pr-2 ${T.more}`}
               aria-label="Open menu"
               aria-expanded={menuOpen}
             >
-              More
+              {/* Phones: just three vertical bead dots */}
+              <span className="hidden sm:inline">More</span>
               <Beads open={menuOpen} />
             </button>
           </div>

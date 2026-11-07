@@ -5,6 +5,7 @@ import { FaFeatherAlt, FaDrum, FaMicrophoneAlt, FaArrowRight, FaTrophy } from "r
 import { CountUp, Reveal, SectionHeading, Stagger, StaggerItem } from "../motion";
 import { CATEGORIES, PRIZES } from "../../content/story";
 import { SoundBars } from "./Ornaments";
+import { kk } from "../Kikuyu";
 
 export const CATEGORY_ICONS = { feather: FaFeatherAlt, drum: FaDrum, mic: FaMicrophoneAlt };
 const CARD_BG = ["bg-ochre", "bg-forest", "bg-night"];
@@ -12,7 +13,7 @@ const CARD_BG = ["bg-ochre", "bg-forest", "bg-night"];
 const StoryChallenge = () => (
   <section id="challenge" className="relative bg-kamaru overflow-hidden">
     <div className="container mx-auto px-5 md:px-8 py-24 md:py-32">
-      <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
+      <div>
         <SectionHeading
           align="left"
           eyebrow="Nyīmbo Ciitū"
@@ -20,27 +21,17 @@ const StoryChallenge = () => (
           intro="An annual competition where Ndeiya discovers and showcases its talent, creatively, in the Kikuyu language, and always in service of the timeless values."
           className="[&_p]:!text-earth"
         />
-        <Reveal className="flex shrink-0 flex-col items-start gap-3 lg:items-end">
-          <p className="font-display text-xl text-earth">How to enter the competition</p>
-          <Link
-            to="/register/participant"
-            className="k-btn group bg-earth px-8 py-4 text-base text-cream shadow-xl hover:bg-earth-700"
-          >
-            Rules, dates & registration
-            <FaArrowRight className="transition-transform group-hover:translate-x-1" />
-          </Link>
-        </Reveal>
       </div>
 
       {/* Categories */}
-      <Stagger className="mt-16 grid md:grid-cols-3 gap-5">
+      <Stagger className="mt-20 grid md:grid-cols-3 gap-6">
         {CATEGORIES.map((c, i) => {
           const Icon = CATEGORY_ICONS[c.icon];
           return (
             <StaggerItem key={c.value} className="h-full">
               <motion.div
                 whileHover={{ y: -8 }}
-                className={`k-cut-strong group relative h-full overflow-hidden ${CARD_BG[i]} p-8 text-cream shadow-xl`}
+                className={`k-cut-strong group relative flex h-full flex-col items-center overflow-hidden text-center md:items-start md:text-left ${CARD_BG[i]} p-8 md:p-10 text-cream shadow-xl`}
               >
                 <motion.span
                   className="absolute -right-6 -bottom-6 text-[8rem] text-cream/10"
@@ -51,11 +42,14 @@ const StoryChallenge = () => (
                 <span className="grid h-14 w-14 place-items-center k-quad-shape bg-cream/15 text-2xl">
                   <Icon />
                 </span>
-                <h3 className="mt-6 font-sans text-3xl font-bold leading-tight">{c.kikuyu}</h3>
-                <p className="mt-1 font-display text-lg text-cream/80">{c.name}</p>
-                <p className="relative mt-4 text-cream/85 text-lg">{c.desc}</p>
-                <p className="relative mt-5 k-quad-shape inline-block bg-cream/15 px-3 py-1.5 text-sm font-semibold">
-                  3 winners · Ksh {PRIZES.reduce((t, p) => t + p.amount, 0).toLocaleString()} in prizes
+                {/* 1. Kikuyu name  2. English name  3. description  4. prizes */}
+                <h3 className="mt-8 font-display text-[1.7rem] leading-[1.15] md:text-3xl">{kk(c.kikuyu)}</h3>
+                <p className="mt-3 text-xs font-semibold uppercase tracking-[0.22em] text-cream/70">{c.name}</p>
+                <p className="relative mt-6 text-lg leading-relaxed text-cream/90">{c.desc}</p>
+                <p className="relative mt-auto pt-8">
+                  <span className="k-quad-shape inline-block bg-cream/15 px-4 py-2 text-sm font-semibold">
+                    3 winners · Ksh {PRIZES.reduce((t, p) => t + p.amount, 0).toLocaleString()} in prizes
+                  </span>
                 </p>
               </motion.div>
             </StaggerItem>
@@ -64,11 +58,11 @@ const StoryChallenge = () => (
       </Stagger>
 
       {/* Prizes */}
-      <div className="k-cut-strong mt-16 bg-earth p-8 md:p-12 text-cream grain relative overflow-hidden">
+      <div className="k-cut-strong mt-20 bg-earth p-8 md:p-14 text-cream grain relative overflow-hidden">
         <SoundBars bars={40} className="absolute right-6 bottom-0 h-24 opacity-20" color="#E8B21E" />
         <div className="relative grid lg:grid-cols-[1fr_2fr] gap-10 items-center">
-          <Reveal>
-            <FaTrophy className="text-4xl text-bead-gold" />
+          <Reveal className="text-center lg:text-left">
+            <FaTrophy className="mx-auto text-4xl text-bead-gold lg:mx-0" />
             <h3 className="mt-4 font-display text-3xl md:text-4xl font-bold">Prizes in every category</h3>
             <p className="mt-3 text-cream/70">
               Categories with fewer than 4 entrants are grouped together and judged irrespective of category.
@@ -89,6 +83,18 @@ const StoryChallenge = () => (
           </Stagger>
         </div>
       </div>
+
+      {/* How to enter: bottom right, after categories and prizes */}
+      <Reveal className="mt-20 flex flex-col items-center gap-4 text-center md:items-end md:text-right">
+        <p className="font-display text-xl text-earth">How to enter the competition</p>
+        <Link
+          to="/register/participant"
+          className="k-btn group bg-earth px-8 py-4 text-base text-cream shadow-xl hover:bg-earth-700"
+        >
+          Rules, dates & registration
+          <FaArrowRight className="transition-transform group-hover:translate-x-1" />
+        </Link>
+      </Reveal>
     </div>
   </section>
 );

@@ -15,6 +15,7 @@ import SocialIcons from "../SocialIcons";
 import { SplitWords, EASE } from "../motion";
 import { SunSpiral, SoundBars } from "./Ornaments";
 import { TAGLINE_KIKUYU, TAGLINE_ENGLISH, EDITION, CONTACT } from "../../content/story";
+import { kk } from "../Kikuyu";
 
 const useCountdown = (target) => {
   const [left, setLeft] = useState(null);
@@ -149,9 +150,9 @@ const Hero = ({ gallery = [], upcoming = [], season = null }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.9, duration: 1 }}
-            className="mt-6 font-sans font-semibold text-2xl md:text-3xl text-cream/90 text-balance"
+            className="mt-6 font-display text-2xl md:text-3xl leading-snug text-cream/90 text-balance"
           >
-            {TAGLINE_KIKUYU}
+            {kk(TAGLINE_KIKUYU)}
           </motion.p>
           <motion.p
             initial={{ opacity: 0 }}

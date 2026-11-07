@@ -43,15 +43,6 @@ const GallerySection = ({ gallery = [] }) => {
             title="Captured moments, a thousand words each"
             intro="Since 2024, the faces, the costumes, the dancing feet and the proud families of Ndeiya."
           />
-          <Reveal>
-            <Link
-              to="/gallery"
-              className="group inline-flex items-center gap-2 rounded-full bg-earth/10 px-6 py-3 font-semibold text-earth transition hover:bg-earth hover:text-cream"
-            >
-              Full gallery
-              <FaArrowRight className="transition-transform group-hover:translate-x-1" />
-            </Link>
-          </Reveal>
         </div>
       </div>
 
@@ -78,6 +69,18 @@ const GallerySection = ({ gallery = [] }) => {
         </div>
       )}
 
+      {/* Full gallery: bottom right (centred on phones) */}
+      <div className="container mx-auto mt-12 flex justify-center px-5 md:justify-end md:px-8">
+        <Reveal>
+          <Link
+            to="/gallery"
+            className="k-btn group bg-earth px-7 py-3.5 text-base text-cream hover:bg-earth-700"
+          >
+            Full gallery
+            <FaArrowRight className="transition-transform group-hover:translate-x-1" />
+          </Link>
+        </Reveal>
+      </div>
       <Lightbox images={images} index={open} onChange={setOpen} />
     </section>
   );

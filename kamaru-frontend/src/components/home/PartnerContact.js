@@ -27,7 +27,7 @@ export const PartnerSection = () => (
               <MotionLink
                 to="/support"
                 whileHover={{ y: -8 }}
-                className="group relative block h-full overflow-hidden rounded-[2rem] bg-white p-8 shadow-sm ring-1 ring-earth/5 hover:shadow-xl transition-shadow"
+                className="group relative block h-full overflow-hidden rounded-[2rem] bg-white p-8 text-center shadow-sm ring-1 ring-earth/5 hover:shadow-xl transition-shadow md:text-left"
               >
                 <motion.span
                   className="absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-15"
@@ -35,7 +35,7 @@ export const PartnerSection = () => (
                   whileHover={{ scale: 1.6 }}
                 />
                 <span
-                  className="relative grid h-14 w-14 place-items-center k-quad-shape text-2xl text-cream"
+                  className="relative mx-auto grid h-14 w-14 place-items-center k-quad-shape text-2xl text-cream md:mx-0"
                   style={{ backgroundColor: P_COLORS[i] }}
                 >
                   <Icon />

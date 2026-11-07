@@ -2,6 +2,8 @@ import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { QUOTE } from "../../content/story";
 import flame from "../../assets/flame.svg";
+import { kk } from "../Kikuyu";
+import ReadMore from "../ReadMore";
 
 // One word whose opacity/colour is driven by scroll progress
 const Word = ({ children, progress, range, dim, bright, strong }) => {
@@ -62,7 +64,7 @@ const StoryOrigin = () => (
   <section id="story" className="relative overflow-hidden bg-cream">
     <div className="container mx-auto flex max-w-4xl flex-col items-center px-5 py-24 text-center md:px-8 md:py-36">
       <ScrollFade offset={["start 0.95", "start 0.75"]}>
-        <p className="k-eyebrow text-ochre">Kūhurutira Mwaki na Nyīmbo. Fanning the Flame with music</p>
+        <p className="k-eyebrow text-ochre">{kk("Kūhurutira Mwaki na Nyīmbo. Fanning the Flame with music")}</p>
       </ScrollFade>
 
       {/* The quote */}
@@ -87,21 +89,23 @@ const StoryOrigin = () => (
         <img src={flame} alt="" aria-hidden="true" className="mx-auto w-40 md:w-56" />
       </ScrollFade>
 
-      {/* The two paragraphs, one after the other */}
-      <ScrollLit
-        className="mt-12 text-xl leading-relaxed md:text-2xl"
-        parts={[
-          "We believe Africans have grown",
-          { text: "indifferent", strong: true },
-          "towards the unique values that established them as a dignified and happy community, an indifference hastened by colonial ideologies that taught many to see their own culture as something to be ashamed of.",
-        ]}
-      />
-      <ScrollLit
-        className="mt-10 text-xl leading-relaxed md:text-2xl"
-        parts={[
-          "After independence, material wealth and borrowed education became the marks of a good leader, rather than the timeless values our communities had always taught. The cost is visible in the fault lines around us:",
-        ]}
-      />
+      {/* The two paragraphs, one after the other (Read more on phones) */}
+      <ReadMore className="w-full" collapsedHeight={230}>
+        <ScrollLit
+          className="mt-12 text-xl leading-relaxed md:text-2xl"
+          parts={[
+            "We believe Africans have grown",
+            { text: "indifferent", strong: true },
+            "towards the unique values that established them as a dignified and happy community, an indifference hastened by colonial ideologies that taught many to see their own culture as something to be ashamed of.",
+          ]}
+        />
+        <ScrollLit
+          className="mt-10 text-xl leading-relaxed md:text-2xl"
+          parts={[
+            "After independence, material wealth and borrowed education became the marks of a good leader, rather than the timeless values our communities had always taught. The cost is visible in the fault lines around us:",
+          ]}
+        />
+      </ReadMore>
 
       {/* Fault lines, revealed one by one in a single column */}
       <div className="mt-12 flex w-full flex-col items-center gap-4">

@@ -4,6 +4,7 @@ import { useParams, Link } from "react-router-dom";
 import { fetchEvent } from "../api";
 
 import { useNavigate } from "react-router-dom";
+import ReadMore from "../components/ReadMore";
 
 const EventPage = () => {
 
@@ -134,9 +135,11 @@ return (
               About This Event
             </h2>
 
-            <p className="text-earth-700 leading-8 whitespace-pre-line">
-              {event.details}
-            </p>
+            <ReadMore collapsedHeight={220}>
+              <p className="text-earth-700 leading-8 whitespace-pre-line">
+                {event.details}
+              </p>
+            </ReadMore>
           </div>
 
         </div>
