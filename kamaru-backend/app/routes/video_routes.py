@@ -1,17 +1,16 @@
 from flask import Blueprint, request, jsonify
-from app import db, jwt
+from app import db
 from app.models.video import Video
-from app.utils.decorators import admin_required
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from app.utils import rbac
+from app.utils.rbac import permission_required
 
 bp = Blueprint("video_routes", __name__)
 
 # Add a new video (Admin only)
 @bp.route("/add", methods=["POST"])
-@jwt_required()
-@admin_required
+@permission_required(rbac.VIDEOS)
 def add_video():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     title = data.get("title")
     youtube_url = data.get("youtube_url")
 
@@ -38,8 +37,7 @@ def get_videos():
 
 # Delete a video (Admin only)
 @bp.route("/delete/<int:video_id>", methods=["DELETE"])
-@jwt_required()
-@admin_required
+@permission_required(rbac.VIDEOS)
 def delete_video(video_id):
     video = Video.query.get(video_id)
 

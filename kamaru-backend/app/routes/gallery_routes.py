@@ -1,24 +1,18 @@
 from flask import Blueprint, request, jsonify
 from app import db
 from app.models.gallery import Gallery
-from app.models.user import User
+from app.utils import rbac
+from app.utils.rbac import permission_required
 import cloudinary.uploader
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from app.utils.media import destroy_quietly
 
 bp = Blueprint("gallery_routes", __name__)
 
-# Helper function to check if the user is an admin
-def is_admin():
-    user_id = get_jwt_identity()
-    user = User.query.get(user_id)
-    return user and user.is_admin
 
 # Admin: Upload Image
 @bp.route("/upload", methods=["POST"])
-@jwt_required()
+@permission_required(rbac.GALLERY)
 def upload_image():
-    if not is_admin():
-        return jsonify({"error": "Admin access required"}), 403
 
     if "image" not in request.files:
         return jsonify({"error": "No image file provided"}), 400
@@ -41,9 +35,8 @@ def upload_image():
 @bp.route("/", methods=["GET"])
 def get_gallery():
     images = Gallery.query.order_by(Gallery.uploaded_at.desc()).all()
-    if images:
-        return jsonify({"images": [image.to_dict() for image in images]}), 200
-    return jsonify({"message": "No images found"}), 404
+    # Always 200: an empty gallery is a valid state, not a missing resource
+    return jsonify({"images": [image.to_dict() for image in images]}), 200
 
 
 @bp.route("/about-image", methods=["GET"]) # Public: Get About Image
@@ -56,18 +49,15 @@ def get_about_image():
 
 # Admin: Delete Image
 @bp.route("/<int:image_id>", methods=["DELETE"])
-@jwt_required()
+@permission_required(rbac.GALLERY)
 def delete_image(image_id):
-    if not is_admin():
-        return jsonify({"error": "Admin access required"}), 403
 
     image = Gallery.query.get(image_id)
     if not image:
         return jsonify({"error": "Image not found"}), 404
 
-    # Delete from Cloudinary
-    public_id = image.image_url.split("/")[-1].split(".")[0]  # Extract public ID
-    cloudinary.uploader.destroy(public_id)
+    # Delete from Cloudinary (folder-aware; never blocks the DB delete)
+    destroy_quietly(image.image_url)
 
     # Delete from DB
     db.session.delete(image)

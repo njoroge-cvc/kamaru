@@ -17,6 +17,15 @@ class Participant(db.Model):
         index=True
     )
 
+    # Account that submitted the entry (null for staff-added or legacy entries).
+    # SET NULL keeps the entry if the account is later deleted.
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True
+    )
+
     registered_at = db.Column(
         db.DateTime, 
         default=db.func.current_timestamp()
@@ -46,6 +55,7 @@ class Participant(db.Model):
             "phone": self.phone,
             "category": self.category,
             "season_id": self.season_id,
+            "user_id": self.user_id,
             "season": self.season.name if self.season else None,
             "registered_at": self.registered_at.isoformat()
         }

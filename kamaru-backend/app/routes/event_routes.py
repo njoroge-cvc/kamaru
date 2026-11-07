@@ -1,26 +1,19 @@
 from flask import Blueprint, request, jsonify
 from app import db
 from app.models.event import Event
-from app.models.user import User  # Import the User model
+from app.utils import rbac
+from app.utils.rbac import permission_required
 import cloudinary.uploader
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from app.utils.media import destroy_quietly
 from datetime import datetime
 
 bp = Blueprint("event_routes", __name__)
 
-# Helper function to check if the user is an admin
-def is_admin():
-    user_id = get_jwt_identity()
-    user = User.query.get(user_id)
-    return user and user.is_admin
 
 # Create an event (Admin-only)
 @bp.route("/", methods=["POST"])
-@jwt_required()
+@permission_required(rbac.EVENTS)
 def create_event():
-
-    if not is_admin():
-        return jsonify({"error": "Admin access required"}), 403
 
     data = request.form
 
@@ -59,13 +52,26 @@ def create_event():
 # Fetch all events (Public)
 @bp.route("/", methods=["GET"])
 def get_events():
+    # ?scope=all  -> every event (admin management, newest first)
+    # ?scope=past -> completed events (newest first) for the public story/timeline
+    # default     -> upcoming, non-cancelled events (soonest first)
+    scope = request.args.get("scope", "upcoming")
+    now = datetime.utcnow()
 
-    events = Event.query.filter(
-        Event.date_time >= datetime.utcnow(),
-        Event.status != "cancelled"
-    ).order_by(
-        Event.date_time.asc()
-    ).all()
+    if scope == "all":
+        events = Event.query.order_by(Event.date_time.desc()).all()
+    elif scope == "past":
+        events = Event.query.filter(
+            Event.date_time < now,
+            Event.status != "cancelled"
+        ).order_by(Event.date_time.desc()).all()
+    else:
+        events = Event.query.filter(
+            Event.date_time >= now,
+            Event.status != "cancelled"
+        ).order_by(
+            Event.date_time.asc()
+        ).all()
 
     return jsonify([event.to_dict() for event in events]), 200
 
@@ -79,10 +85,8 @@ def get_event(id):
 
 # Update an event (Admin-only)
 @bp.route("/<int:id>", methods=["PUT"])
-@jwt_required()
+@permission_required(rbac.EVENTS)
 def update_event(id):
-    if not is_admin():
-        return jsonify({"error": "Admin access required"}), 403
 
     event = Event.query.get(id)
     if not event:
@@ -96,7 +100,9 @@ def update_event(id):
     # If a new image is uploaded, upload it to Cloudinary and update the event's image URL
     if image and image.filename:
         upload_result = cloudinary.uploader.upload(image)
+        old_url = event.image_url
         event.image_url = upload_result.get("secure_url")
+        destroy_quietly(old_url)  # remove the replaced image
 
     try:
         # Parse datetime-local format if provided and update the event fields
@@ -127,15 +133,15 @@ def update_event(id):
 
 # Delete an event (Admin-only)
 @bp.route("/<int:id>", methods=["DELETE"])
-@jwt_required()
+@permission_required(rbac.EVENTS)
 def delete_event(id):
-    if not is_admin():
-        return jsonify({"error": "Admin access required"}), 403
 
     event = Event.query.get(id)
     if not event:
         return jsonify({"error": "Event not found"}), 404
 
+    image_url = event.image_url
     db.session.delete(event)
     db.session.commit()
+    destroy_quietly(image_url)
     return jsonify({"message": "Event deleted successfully"}), 200

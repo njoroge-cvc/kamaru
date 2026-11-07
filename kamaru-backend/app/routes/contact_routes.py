@@ -1,5 +1,7 @@
+from html import escape
 from flask import Blueprint, request, jsonify
 from app.utils.email_service import send_email
+from app import limiter
 
 bp = Blueprint("contact_routes", __name__)
 
@@ -8,6 +10,7 @@ bp = Blueprint("contact_routes", __name__)
 # --------------------------------------------------------
 
 @bp.route("/contact", methods=["POST"])
+@limiter.limit("5 per hour")
 def contact_us():
 
     data = request.get_json(silent=True)
@@ -30,6 +33,12 @@ def contact_us():
     # Validation
     if not name or not email or not message:
         return jsonify({"error": "All fields are required"}), 400
+
+    # Escape user input before embedding it in the HTML email so a visitor
+    # cannot inject markup/links into the message the team receives.
+    name = escape(str(name).strip())
+    email = escape(str(email).strip())
+    message = escape(str(message).strip()).replace("\n", "<br>")
 
     # Prepare email
     subject = "New Contact Form Submission | Kamaru Challenge"

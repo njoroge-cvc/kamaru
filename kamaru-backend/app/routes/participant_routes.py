@@ -1,17 +1,15 @@
 from flask import Blueprint, request, jsonify
-from app import db
+from app import db, limiter
+from sqlalchemy.exc import IntegrityError
 from app.models.participant import Participant
 from app.models.season import Season
 from app.models.user import User
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from app.utils import rbac
+from app.utils.rbac import permission_required
 
 bp = Blueprint("participant_routes", __name__)
 
-# Helper function to check if the user is an admin
-def is_admin():
-    user_id = get_jwt_identity()
-    user = User.query.get(user_id)
-    return user and user.is_admin
 
 # Allowed categories for participants - this can be expanded as needed or moved to a config file
 ALLOWED_CATEGORIES = ["Poetry", "Folk Songs and Dances", "Original Songs"]
@@ -20,6 +18,7 @@ ALLOWED_CATEGORIES = ["Poetry", "Folk Songs and Dances", "Original Songs"]
 
 # Logged-in User Register Participant
 @bp.route("/", methods=["POST"])
+@limiter.limit("20 per hour")
 @jwt_required()
 def user_register_participant():
 
@@ -59,6 +58,12 @@ def user_register_participant():
         return jsonify({
             "error": "No active season available"
             }), 400
+
+    # Participation window is controlled by coordinators/admins
+    if not active_season.is_registration_open():
+        return jsonify({
+            "error": f"Registration for {active_season.name} is currently closed."
+            }), 403
     
     # Check if email or phone already exists for the active season
     existing_participant = Participant.query.filter(
@@ -80,7 +85,8 @@ def user_register_participant():
         name=name, email=email, 
         phone=phone, 
         category=category,
-        season_id=active_season.id
+        season_id=active_season.id,
+        user_id=current_user.id,  # link the entry to the account that submitted it
         )
     
     db.session.add(participant)
@@ -91,17 +97,42 @@ def user_register_participant():
         "participant": participant.to_dict()
         }), 201
 
+# The logged-in user's own entries (all seasons, newest first)
+@bp.route("/mine", methods=["GET"])
+@jwt_required()
+def my_entries():
+    user = rbac.current_user()
+    if not user:
+        return jsonify({"error": "Unauthorized. Please log in."}), 401
+    entries = (
+        Participant.query.filter_by(user_id=user.id)
+        .order_by(Participant.registered_at.desc())
+        .all()
+    )
+    return jsonify([p.to_dict() for p in entries]), 200
+
+
+# Withdraw one of your own entries — only while that season's registration is still open
+@bp.route("/mine/<int:id>", methods=["DELETE"])
+@jwt_required()
+def withdraw_entry(id):
+    user = rbac.current_user()
+    participant = Participant.query.get(id)
+    if not user or not participant or participant.user_id != user.id:
+        return jsonify({"error": "Entry not found"}), 404
+    season = participant.season
+    if not season or not season.is_active or not season.is_registration_open():
+        return jsonify({"error": "Entries can only be withdrawn while registration is open. Please contact us."}), 403
+    db.session.delete(participant)
+    db.session.commit()
+    return jsonify({"message": "Your entry has been withdrawn."}), 200
+
 # -------------------- Admin Routes --------------------
 
 # Admin: Register Participant
 @bp.route("/admin", methods=["POST"])
-@jwt_required()
+@permission_required(rbac.PARTICIPANTS)
 def admin_register_participant():
-
-    if not is_admin():
-        return jsonify({
-            "error": "Admin access required"
-            }), 403
 
     data = request.get_json()
 
@@ -163,11 +194,8 @@ def admin_register_participant():
 
 # Admin: Get All Participants
 @bp.route("/", methods=["GET"])
-@jwt_required()
-
+@permission_required(rbac.PARTICIPANTS)
 def get_participants():
-    if not is_admin():
-        return jsonify({"error": "Admin access required"}), 403
 
     season_id = request.args.get("season_id", type=int)
 
@@ -186,10 +214,8 @@ def get_participants():
 
 # Admin: Update a Participant
 @bp.route("/<int:id>", methods=["PUT"])
-@jwt_required()
+@permission_required(rbac.PARTICIPANTS)
 def update_participant(id):
-    if not is_admin():
-        return jsonify({"error": "Admin access required"}), 403
 
     participant = Participant.query.get(id)
     if not participant:
@@ -203,17 +229,20 @@ def update_participant(id):
 
     # Validate category if updated
     if participant.category not in ALLOWED_CATEGORIES:
+        db.session.rollback()
         return jsonify({"error": f"Invalid category. Choose from {ALLOWED_CATEGORIES}"}), 400
 
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({"error": "Another participant this season already uses that email or phone."}), 409
     return jsonify({"message": "Participant updated successfully!", "participant": participant.to_dict()}), 200
 
 # Admin: Delete a Participant
 @bp.route("/<int:id>", methods=["DELETE"])
-@jwt_required()
+@permission_required(rbac.PARTICIPANTS)
 def delete_participant(id):
-    if not is_admin():
-        return jsonify({"error": "Admin access required"}), 403
 
     participant = Participant.query.get(id)
     if not participant:

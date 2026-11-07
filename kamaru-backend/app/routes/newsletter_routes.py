@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app import db
+from app import db, limiter
 from app.models.newsletter import NewsletterSubscriber
 from app.utils.email_service import send_email
 
@@ -13,6 +13,7 @@ bp = Blueprint("newsletter_routes", __name__)
 # --------------------------------------------------------
 
 @bp.route("/newsletter/subscribe", methods=["POST"])
+@limiter.limit("5 per hour")
 def subscribe_newsletter():
 
     data = request.get_json()
@@ -157,7 +158,7 @@ def subscribe_newsletter():
     </p>
     """
 
-    send_email(
+    email_sent = send_email(
         email,
         subject,
         content

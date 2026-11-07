@@ -1,40 +1,18 @@
-import random
-import string
 from flask import Blueprint, request, jsonify
-from app import db
+from app import db, limiter
 from app.models.user import User
-from app.utils.decorators import admin_required
+from app.utils import rbac
+from app.utils.rbac import permission_required
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from functools import wraps
 from datetime import datetime
 from app.utils.email_service import send_email
 from app.models.short_token import ShortToken
 
 bp = Blueprint("user_routes", __name__) # Create a new blueprint for user routes
 
-# Decorator to check if user is an admin before accessing a route (admin-only)
-def admin_required(fn): # Decorator function that takes a function as an argument and returns a new function
-    @wraps(fn) # Preserve the original function's metadata (name, docstring, etc.)
-    def wrapper(*args, **kwargs): # New function that takes any number of positional and keyword arguments
-        current_user_id = get_jwt_identity() # Get the current user's ID from the JWT token
-        user = User.query.get(current_user_id) # Get the user object from the database
-        if not user or not user.is_admin:
-            return jsonify({"error": "Admin access required"}), 403
-        return fn(*args, **kwargs) # Call the original function with the arguments and keyword arguments
-    return wrapper # Return the new function
-
-# Function to generate a random 6-character alphanumeric token
-def generate_short_token():
-    """Generate a secure 6-character alphanumeric token."""
-    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-
-
-# Store reset tokens in-memory or create a model for persistence
-password_reset_tokens = {}
-
-
 # User Registration
 @bp.route("/register", methods=["POST"])
+@limiter.limit("10 per hour")
 @jwt_required(optional=True) # Allow both authenticated and unauthenticated users to access this route
 def register():
     current_user_id = get_jwt_identity()
@@ -65,6 +43,7 @@ def register():
 
 # User Login
 @bp.route("/login", methods=["POST"])
+@limiter.limit("10 per minute;60 per hour")
 def login():
     data = request.get_json() # Get data from request
     email = data.get("email")
@@ -77,18 +56,49 @@ def login():
 
     # Generate JWT token
     access_token = create_access_token(identity=str(user.id))
-    return jsonify({"message": "Login successful!", "token": access_token, "is_admin": user.is_admin}), 200
+    profile = user.to_dict()
+    return jsonify({
+        "message": "Login successful!",
+        "token": access_token,
+        "user": profile,
+        "role": profile["role"],
+        "permissions": profile["permissions"],
+        "is_admin": profile["is_admin"],  # legacy field for older clients
+    }), 200
+
+
+# Current user's profile, role and permissions (lets the UI refresh after role changes)
+@bp.route("/me", methods=["GET"])
+@jwt_required()
+def me():
+    user = rbac.current_user()
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    return jsonify(user.to_dict()), 200
+
+
+# Role catalogue for the admin UI
+@bp.route("/roles", methods=["GET"])
+@permission_required(rbac.USERS)
+def roles():
+    return jsonify([
+        {"role": r, "label": rbac.ROLE_LABELS[r], "permissions": rbac.ROLE_PERMISSIONS[r]}
+        for r in rbac.ROLES
+    ]), 200
 
 
 @bp.route("/forgot_password", methods=["POST"])
+@limiter.limit("5 per 15 minutes")
 # Route to handle forgot password requests, sending a reset code to the user's email
 def forgot_password():
     data = request.get_json()
     email = data.get("email")
 
+    generic = {"message": "If that email is registered, a reset code has been sent to it."}
     user = User.query.filter_by(email=email).first()
     if not user:
-        return jsonify({"error": "User not found"}), 404
+        # Same response either way, so the form can't be used to discover accounts
+        return jsonify(generic), 200
 
     short_token = ShortToken.generate_token(user.id)
 
@@ -106,12 +116,13 @@ def forgot_password():
         subject, 
         content
     ):
-        return jsonify({"message": "Password reset code sent to your email"}), 200
+        return jsonify(generic), 200
     else:
         return jsonify({"error": "Failed to send reset code"}), 500
 
 
 @bp.route("/reset_password", methods=["POST"])
+@limiter.limit("10 per 15 minutes")
 def reset_password():
     data = request.get_json()
     short_token = data.get("short_token")
@@ -134,16 +145,14 @@ def reset_password():
 
 # Get all users (admin-only)
 @bp.route("/admin/users", methods=["GET"])
-@jwt_required()
-@admin_required
+@permission_required(rbac.USERS)
 def get_all_users():
     users = User.query.all()
     return jsonify([user.to_dict() for user in users]), 200
 
 # Get a single user by ID (admin-only)
 @bp.route("/admin/users/<int:user_id>", methods=["GET"])
-@jwt_required()
-@admin_required
+@permission_required(rbac.USERS)
 def get_user(user_id):
     user = User.query.get(user_id)
     if not user:
@@ -152,29 +161,41 @@ def get_user(user_id):
 
 # Update a user (admin-only)
 @bp.route("/admin/users/<int:user_id>", methods=["PUT"])
-@jwt_required()
-@admin_required
+@permission_required(rbac.USERS)
 def update_user(user_id):
     user = User.query.get(user_id)
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     user.username = data.get("username", user.username)
     user.email = data.get("email", user.email)
-    user.is_admin = data.get("is_admin", user.is_admin)
+
+    # Role changes. `is_admin` is still accepted from older clients.
+    new_role = data.get("role")
+    if new_role is None and "is_admin" in data:
+        new_role = "admin" if data["is_admin"] else "member"
+    if new_role is not None and new_role != user.role:
+        if new_role not in rbac.ROLES:
+            return jsonify({"error": f"Unknown role. Choose from {rbac.ROLES}"}), 400
+        if user.role == "admin" and User.query.filter_by(role="admin").count() <= 1:
+            return jsonify({"error": "You can't remove the last administrator."}), 400
+        user.set_role(new_role)
 
     db.session.commit()
     return jsonify({"message": "User updated successfully", "user": user.to_dict()}), 200
 
 # Delete a user (admin-only)
 @bp.route("/admin/users/<int:user_id>", methods=["DELETE"])
-@jwt_required()
-@admin_required
+@permission_required(rbac.USERS)
 def delete_user(user_id):
     user = User.query.get(user_id)
     if not user:
         return jsonify({"error": "User not found"}), 404
+    if str(user.id) == str(get_jwt_identity()):
+        return jsonify({"error": "You can't delete your own account here."}), 400
+    if user.role == "admin" and User.query.filter_by(role="admin").count() <= 1:
+        return jsonify({"error": "You can't delete the last administrator."}), 400
 
     db.session.delete(user)
     db.session.commit()
@@ -183,7 +204,6 @@ def delete_user(user_id):
 
 # Admin Dashboard Route
 @bp.route("/admin/dashboard", methods=["GET"])
-@jwt_required()
-@admin_required
+@permission_required(rbac.DASHBOARD)
 def admin_dashboard():
     return jsonify({"message": "Welcome to the admin dashboard!"}), 200

@@ -1,4 +1,4 @@
-import random
+import secrets
 import string
 from app import db
 from datetime import datetime, timedelta
@@ -12,11 +12,9 @@ class ShortToken(db.Model):
     @staticmethod
     def generate_token(user_id):
         """Generates a short token and saves it."""
-        token = ''.join(
-            random.choices(
-                string.ascii_letters + string.digits, k=6
-            )
-        )
+        # Cryptographically secure code (was `random`, which is predictable)
+        alphabet = string.ascii_uppercase + string.digits
+        token = ''.join(secrets.choice(alphabet) for _ in range(6))
         expires_at = datetime.utcnow() + timedelta(minutes=15)
 
         # Store the token in the database
