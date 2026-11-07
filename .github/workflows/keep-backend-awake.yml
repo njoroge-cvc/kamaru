@@ -1,4 +1,5 @@
 # Keeps the Render backend awake by visiting it every 10 minutes.
+# Schedule re-registered after the billing lock was cleared.
 name: Keep backend awake
 
 on:
