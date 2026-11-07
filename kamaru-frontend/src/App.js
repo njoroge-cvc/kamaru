@@ -14,19 +14,40 @@ import "./index.css"; // Import Tailwind CSS
 
 // Code-split every route except the landing page: visitors only download what they open,
 // and the admin bundle (Excel/PDF export, rich-text editor) never loads for the public.
-const GalleryPage = lazy(() => import("./pages/GalleryPage"));
-const VideosPage = lazy(() => import("./pages/VideosPage"));
-const UserRegistrationForm = lazy(() => import("./components/UserRegistrationForm"));
-const ParticipantsRegistrationPage = lazy(() => import("./pages/ParticipantsRegistrationPage"));
-const LoginForm = lazy(() => import("./components/LoginForm"));
-const AdminDashboard = lazy(() => import("./components/AdminDashboard"));
-const ForgotPasswordForm = lazy(() => import("./components/ForgotPasswordForm"));
-const ResetPasswordForm = lazy(() => import("./components/ResetPasswordForm"));
-const EventPage = lazy(() => import("./pages/EventPage"));
-const AboutUs = lazy(() => import("./pages/AboutUsPage"));
-const TermsAndConditionsPage = lazy(() => import("./pages/TermsAndConditionsPage"));
-const SupportPage = lazy(() => import("./pages/SupportPage"));
-const VerifyNewsletter = lazy(() => import("./pages/VerifyNewsletter"));
+// After a deploy, an open tab may still reference chunk files that no longer exist.
+// Reload once to pick up the new build instead of rendering a blank page.
+const lazyRetry = (load) =>
+  lazy(() =>
+    load()
+      .then((m) => {
+        try { sessionStorage.removeItem("chunk-reloaded"); } catch {}
+        return m;
+      })
+      .catch((err) => {
+        let reloaded = false;
+        try { reloaded = sessionStorage.getItem("chunk-reloaded") === "1"; } catch {}
+        if (!reloaded) {
+          try { sessionStorage.setItem("chunk-reloaded", "1"); } catch {}
+          window.location.reload();
+          return new Promise(() => {}); // wait for the reload
+        }
+        throw err;
+      })
+  );
+
+const GalleryPage = lazyRetry(() => import("./pages/GalleryPage"));
+const VideosPage = lazyRetry(() => import("./pages/VideosPage"));
+const UserRegistrationForm = lazyRetry(() => import("./components/UserRegistrationForm"));
+const ParticipantsRegistrationPage = lazyRetry(() => import("./pages/ParticipantsRegistrationPage"));
+const LoginForm = lazyRetry(() => import("./components/LoginForm"));
+const AdminDashboard = lazyRetry(() => import("./components/AdminDashboard"));
+const ForgotPasswordForm = lazyRetry(() => import("./components/ForgotPasswordForm"));
+const ResetPasswordForm = lazyRetry(() => import("./components/ResetPasswordForm"));
+const EventPage = lazyRetry(() => import("./pages/EventPage"));
+const AboutUs = lazyRetry(() => import("./pages/AboutUsPage"));
+const TermsAndConditionsPage = lazyRetry(() => import("./pages/TermsAndConditionsPage"));
+const SupportPage = lazyRetry(() => import("./pages/SupportPage"));
+const VerifyNewsletter = lazyRetry(() => import("./pages/VerifyNewsletter"));
 
 const RouteFallback = () => (
   <div className="flex min-h-[60vh] items-center justify-center" aria-busy="true" aria-label="Loading">

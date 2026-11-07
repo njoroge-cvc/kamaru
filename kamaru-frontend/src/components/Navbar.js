@@ -189,14 +189,18 @@ const NAV_TONES = {
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [logo, setLogo] = useState(null);
-  const [scrolled, setScrolled] = useState(false);
+  const [scrolledRaw, setScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
+  const isDashboard = location.pathname.startsWith("/admin");
+  // The dashboard keeps a fixed, compact white bar (it has its own dark sidebar)
+  const scrolled = isDashboard || scrolledRaw;
+
   const navRef = useRef(null);
   // Sample just below the bar, across the middle of the page
-  const tone = useBackdropTone(navRef, true, (r) => [window.innerWidth / 2, r.bottom + 12]);
-  const T = NAV_TONES[scrolled ? tone : "top"];
+  const tone = useBackdropTone(navRef, !isDashboard, (r) => [window.innerWidth / 2, r.bottom + 12]);
+  const T = NAV_TONES[isDashboard || !scrolled ? "top" : tone];
 
   const { token, permissions } = useSession();
   const isAdmin = permissions.includes(PERMS.DASHBOARD); // any staff role sees the dashboard link
@@ -210,7 +214,7 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const onScroll = () => setScrolled((prev) => (prev ? window.scrollY > 8 : window.scrollY > 80));
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -227,7 +231,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav ref={navRef} className={`sticky top-0 z-50 transition-colors duration-500 ${T.text}`} data-tone={scrolled ? tone : "top"}>
+      <nav ref={navRef} className={`sticky top-0 z-50 transition-colors duration-500 ${T.text}`} data-tone={isDashboard || !scrolled ? "top" : tone}>
         {/* Contrasting stripe that shows under the hand-cut bottom edge */}
         <motion.div aria-hidden="true" className="absolute inset-0" animate={{ backgroundColor: T.stripe }} transition={{ duration: 0.5 }} />
         {/* Hand-cut slab */}
