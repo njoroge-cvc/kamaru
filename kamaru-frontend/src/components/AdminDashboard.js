@@ -85,7 +85,8 @@ const AdminDashboard = () => {
   const isStaff = permissions.includes(PERMS.DASHBOARD);
 
   useEffect(() => {
-    if (!token) navigate("/login?next=/admin");
+    // Skip if another part of the app already moved away (e.g. the inactivity sign-out)
+    if (!token && window.location.pathname.startsWith("/admin")) navigate("/login?next=/admin");
   }, [token, navigate]);
 
   const handleLogout = () => {

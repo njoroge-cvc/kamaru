@@ -9,12 +9,14 @@ import { useSeo } from "../utils/seo";
 const LoginForm = () => {
   useSeo({ title: "Log in", path: "/login", noindex: true });
   const [credentials, setCredentials] = useState({ email: "", password: "" });
+  const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const banner = useBanner();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const expired = params.get("expired") === "1";
+  const idle = params.get("idle") === "1";
   // Only allow in-app paths as redirect targets
   const rawNext = params.get("next") || "";
   const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : null;
@@ -27,7 +29,7 @@ const LoginForm = () => {
     setLoading(true);
     try {
       const { data } = await loginUser(credentials);
-      saveSession(data);
+      saveSession({ ...data, remember });
       const staff = (data.permissions || []).includes(PERMS.DASHBOARD) || data.is_admin;
       toast.success(`Welcome back${data.user?.username ? `, ${data.user.username}` : ""}!`);
       navigate(next || (staff ? "/admin" : "/"));
@@ -54,6 +56,7 @@ const LoginForm = () => {
     >
       <form onSubmit={handleSubmit} className="space-y-5">
         {expired && !error && <Alert tone="info">Your session expired. Please log in again to continue.</Alert>}
+        {idle && !expired && !error && <Alert tone="info">You were signed out after 30 minutes of inactivity. Log in again to continue.</Alert>}
         {error && <Alert>{error}</Alert>}
         <Field label="Email">
           <input type="email" name="email" value={credentials.email} onChange={handleChange} required autoComplete="email" className="k-input" placeholder="you@example.com" />
@@ -61,7 +64,11 @@ const LoginForm = () => {
         <Field label="Password">
           <PasswordInput value={credentials.password} onChange={handleChange} required />
         </Field>
-        <div className="flex justify-end">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <label className="flex cursor-pointer items-center gap-2 text-sm text-earth-700">
+            <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="h-4 w-4 accent-kamaru" />
+            Keep me signed in on this device
+          </label>
           <Link to="/forgot_password" className="text-sm font-semibold text-ochre hover:text-earth">
             Forgot your password?
           </Link>

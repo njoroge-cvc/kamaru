@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getSession, onSessionChange, saveSession } from "../auth";
+import { getSession, getToken, onSessionChange, saveSession } from "../auth";
 import { fetchMe } from "../api";
 
 /** Live session state; re-renders on login, logout or role changes. */
@@ -14,7 +14,8 @@ export const SessionSync = () => {
   useEffect(() => {
     if (!getSession().token) return;
     fetchMe()
-      .then((r) => saveSession({ role: r.data.role, permissions: r.data.permissions, is_admin: r.data.is_admin }))
+      // Skip if the person signed out meanwhile (e.g. inactivity sign-out on load)
+      .then((r) => getToken() && saveSession({ role: r.data.role, permissions: r.data.permissions, is_admin: r.data.is_admin }))
       .catch(() => {}); // expiry is handled by the API interceptor
   }, []);
   return null;

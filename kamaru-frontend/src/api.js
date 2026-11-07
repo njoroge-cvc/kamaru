@@ -1,5 +1,5 @@
 import axios from "axios";
-import { clearSession } from "./auth";
+import { clearSession, getToken } from "./auth";
 
 // Base URL for the backend API
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_API_URL || "/api";
@@ -34,7 +34,7 @@ api.interceptors.response.use(
   (error) => {
     const status = error.response?.status;
     const msg = String(error.response?.data?.msg || "");
-    const hadToken = !!localStorage.getItem("token");
+    const hadToken = !!getToken();
     if (hadToken && (status === 401 || (status === 422 && /token|signature|segments/i.test(msg)))) {
       clearSession();
       if (!window.location.pathname.startsWith("/login")) {
@@ -51,31 +51,31 @@ export const loginUser = (credentials) => api.post("/users/login", credentials);
 export const getAdminDashboard = () =>
   api.get("/users/admin/dashboard", {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
     },
   });
 export const fetchUsers = () =>
   api.get("/users/admin/users", {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
     },
   });
 export const fetchUser = (userId) =>
   api.get(`/users/admin/users/${userId}`, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
     },
   });
 export const updateUser = (userId, userData) =>
   api.put(`/users/admin/users/${userId}`, userData, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
     },
   });
 export const deleteUser = (userId) =>
   api.delete(`/users/admin/users/${userId}`, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
     },
   });
 
@@ -85,32 +85,32 @@ export const fetchParticipants = (seasonId = "") =>
     `/participants/${seasonId ? `?season_id=${seasonId}` : ""}`,
     {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${getToken()}`,
       },
     }
   );
 export const registerParticipant = (participantData) =>
   api.post("/participants/", participantData, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
     },
   });
 export const adminRegisterParticipant = (participantData) =>
   api.post("/participants/admin", participantData, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
     },
   });
 export const updateParticipant = (participantId, participantData) =>
   api.put(`/participants/${participantId}`, participantData, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
     },
   });
 export const deleteParticipant = (participantId) =>
   api.delete(`/participants/${participantId}`, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
     },
   });
 
@@ -118,14 +118,14 @@ export const deleteParticipant = (participantId) =>
   export const fetchSeasons = () =>
   api.get("/seasons/", {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
     },
   });
 
   export const fetchActiveSeason = () =>
     api.get("/seasons/active");
 
-const authHeader = () => ({ Authorization: `Bearer ${localStorage.getItem("token")}` });
+const authHeader = () => ({ Authorization: `Bearer ${getToken()}` });
 
 export const createSeason = (data) => api.post("/seasons/", data, { headers: authHeader() });
 // data: { name?, year?, is_active?, registration_open?, registration_closes_at? }
@@ -145,7 +145,7 @@ export const fetchGalleryImages = () => api.get("/gallery");
 export const uploadImage = (formData) =>
   api.post("/gallery/upload", formData, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
       "Content-Type": "multipart/form-data",
     },
   });
@@ -159,7 +159,7 @@ export const fetchPublicSeasons = () => api.get("/seasons/");
 export const deleteImage = (imageId) =>
   api.delete(`/gallery/${imageId}`, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
     },
   });
 
@@ -167,7 +167,7 @@ export const deleteImage = (imageId) =>
 export const uploadSystemImage = (formData) =>
   api.post("/sys_images/upload", formData, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
       "Content-Type": "multipart/form-data",
     },
   });
@@ -176,7 +176,7 @@ export const fetchSystemImage = (section) => api.get(`/sys_images/${section}`);
 export const deleteSystemImage = (imageId) =>
   api.delete(`/sys_images/${imageId}`, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
     },
   });
 
@@ -184,7 +184,7 @@ export const deleteSystemImage = (imageId) =>
 export const uploadBanner = (formData) =>
   api.post("/sys_images/banners/upload", formData, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
       "Content-Type": "multipart/form-data",
     },
   });
@@ -194,7 +194,7 @@ export const fetchBanners = () => api.get("/sys_images/banners");
 export const deleteBanner = (bannerId) =>
   api.delete(`/sys_images/banners/${bannerId}`, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
     },
   });
 
@@ -203,13 +203,13 @@ export const fetchVideos = () => api.get("/videos");
 export const addVideo = (videoData) =>
   api.post("/videos/add", videoData, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
     },
   });
 export const deleteVideo = (videoId) =>
   api.delete(`/videos/delete/${videoId}`, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
     },
   });
 
@@ -221,21 +221,21 @@ export const fetchEvent = (eventId) => api.get(`/events/${eventId}`);
 export const createEvent = (formData) =>
   api.post("/events/", formData, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
       "Content-Type": "multipart/form-data",
     },
   });
 export const updateEvent = (eventId, formData) =>
   api.put(`/events/${eventId}`, formData, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
       "Content-Type": "multipart/form-data",
     },
   });
 export const deleteEvent = (eventId) =>
   api.delete(`/events/${eventId}`, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
     },
   });
 
@@ -243,7 +243,7 @@ export const deleteEvent = (eventId) =>
 export const fetchStats = () =>
   api.get("/stats/", {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${getToken()}`,
     },
   });
 
@@ -271,7 +271,7 @@ export default api;
 // Blog
 // ---------------------------------------------------------------------------
 const authHeaders = (multipart) => ({
-  Authorization: `Bearer ${localStorage.getItem("token")}`,
+  Authorization: `Bearer ${getToken()}`,
   ...(multipart ? { "Content-Type": "multipart/form-data" } : {}),
 });
 export const fetchBlogPosts = () => api.get("/blog/");
