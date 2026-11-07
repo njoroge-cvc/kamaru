@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import { FaPlus, FaDoorOpen, FaDoorClosed, FaStar, FaClock } from "react-icons/fa";
+import { FaPlus, FaDoorOpen, FaDoorClosed, FaStar, FaClock, FaPen } from "react-icons/fa";
 import { fetchSeasons, createSeason, updateSeason } from "../api";
 import { PageHeader, Modal, Field, EmptyState, Spinner } from "./ui";
 
@@ -72,6 +72,13 @@ const ManageSeasons = () => {
     patch(season, { registration_open: open }, open ? `Registration for ${season.name} is now open.` : `Registration for ${season.name} is now closed.`);
   };
 
+  // The name carries the edition (e.g. "Season 3 · Ndeiya Edition") and is shown on the public site
+  const rename = (season) => {
+    const name = window.prompt("Season name (include the edition, e.g. “Season 4 · Ndeiya Edition”):", season.name);
+    if (name === null || !name.trim() || name.trim() === season.name) return;
+    patch(season, { name: name.trim() }, `Renamed to “${name.trim()}”.`);
+  };
+
   const activate = (season) => {
     if (!window.confirm(`Make ${season.name} the active season? Any other active season will be deactivated and its registration closed.`)) return;
     patch(season, { is_active: true }, `${season.name} is now the active season.`);
@@ -122,7 +129,12 @@ const ManageSeasons = () => {
               <div className="grid gap-6 p-6 md:grid-cols-[1fr_auto] md:items-center md:p-8">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.25em] text-kamaru-light">Active season</p>
-                  <h3 className="mt-1 font-display text-3xl font-bold">{active.name}</h3>
+                  <h3 className="mt-1 flex flex-wrap items-center gap-3 font-display text-3xl font-bold">
+                    {active.name}
+                    <button onClick={() => rename(active)} className="k-icon-btn !text-cream/70 hover:!bg-cream/10 hover:!text-cream" aria-label={`Rename ${active.name}`} title="Rename">
+                      <FaPen className="text-sm" />
+                    </button>
+                  </h3>
                   <div className="mt-3"><StatusBadge season={active} /></div>
                   <div className="mt-5 max-w-sm">
                     <span className="k-label text-cream/80 flex items-center gap-2">
@@ -168,7 +180,14 @@ const ManageSeasons = () => {
               <tbody>
                 {seasons.map((s) => (
                   <tr key={s.id}>
-                    <td className="font-semibold">{s.name}</td>
+                    <td className="font-semibold">
+                      <span className="inline-flex items-center gap-2">
+                        {s.name}
+                        <button onClick={() => rename(s)} disabled={busyId === s.id} className="k-icon-btn h-7 w-7" aria-label={`Rename ${s.name}`} title="Rename">
+                          <FaPen className="text-xs" />
+                        </button>
+                      </span>
+                    </td>
                     <td>{s.year}</td>
                     <td><StatusBadge season={s} /></td>
                     <td className="text-right">
@@ -190,8 +209,8 @@ const ManageSeasons = () => {
 
       <Modal open={creating} onClose={() => setCreating(false)} title="New season" size="sm">
         <form onSubmit={handleCreate} className="space-y-4">
-          <Field label="Season name">
-            <input className="k-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Kamaru Challenge – Ndeiya Edition 2027" required />
+          <Field label="Season name" hint="Include the edition (where it is hosted). It appears on the homepage and the Challenge page.">
+            <input className="k-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Season 4 · Ndeiya Edition" required />
           </Field>
           <Field label="Year">
             <input className="k-input" type="number" min="2024" value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })} required />

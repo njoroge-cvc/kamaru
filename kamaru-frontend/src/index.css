@@ -186,7 +186,7 @@
 .kk-mac::after {
   content: ""; position: absolute; height: 0.1em; background: currentColor; border-radius: 0.03em;
 }
-.kk-i::after { left: 0.02em; right: 0.02em; bottom: 0.71em; }
+.kk-i::after { left: -0.01em; right: -0.01em; bottom: 0.8em; }
 .kk-u::after { left: 0.1em; right: 0.12em; bottom: 0.82em; }
 .kk-I::after { left: 0.04em; right: 0.06em; bottom: 0.97em; }
 .kk-U::after { left: 0.12em; right: 0.12em; bottom: 0.99em; }

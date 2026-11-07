@@ -56,7 +56,7 @@ const ParticipantsRegistrationPage = () => {
     <div className="min-h-screen bg-cream">
       <PageHero
         crumb="The Challenge"
-        eyebrow={season?.name || "Kamaru Challenge – Ndeiya Edition"}
+        eyebrow={season?.name || "Kamaru Challenge"}
         title="Take the Kamaru stage"
         intro="An annual competition for the Ndeiya community to showcase its talent in the Kikuyu language, promoting timeless values and joyful, positive living."
       />

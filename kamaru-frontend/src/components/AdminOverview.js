@@ -7,6 +7,7 @@ import { fetchActiveSeason, fetchDashboardStats } from "../api";
 import { ChartCard, BarList, ColumnChart, MonthlyLine, SplitMeter, SERIES } from "./charts";
 import { CATEGORIES } from "../content/story";
 import { PageHeader } from "./ui";
+import { kk } from "./Kikuyu";
 import { useSession } from "./useSession";
 import { PERMS } from "../auth";
 
@@ -35,7 +36,14 @@ const AdminOverview = ({ sections }) => {
 
   return (
     <div>
-      <PageHeader eyebrow="Overview" title="Habari! Here’s where things stand." />
+      <PageHeader
+        eyebrow="Overview"
+        title={
+          <>
+            <span lang="ki">{kk("Wī mūhoro!")}</span> Here’s where things stand.
+          </>
+        }
+      />
 
       {season !== undefined && (
         <motion.div

@@ -1,7 +1,7 @@
 {
   "short_name": "Kamaru",
-  "name": "Kamaru Challenge – Ndeiya Edition",
-  "description": "Kikuyu music, poetry and folk dance competition in Ndeiya, Kiambu, Kenya.",
+  "name": "Kamaru Challenge",
+  "description": "Kikuyu music, poetry and folk dance competition in Kenya.",
   "lang": "en-KE",
   "icons": [
     { "src": "kamaru-challenge-icon-32.png", "sizes": "32x32", "type": "image/png" },

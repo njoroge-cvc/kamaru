@@ -133,7 +133,8 @@ const Hero = ({ gallery = [], upcoming = [], season }) => {
             className="k-quad inline-flex items-center gap-3 bg-cream/10 px-5 py-2 text-xs md:text-sm tracking-[0.2em] uppercase text-kamaru-light"
           >
             <span className="h-2 w-2 rounded-full bg-bead-red animate-pulse" />
-            Ndeiya Edition · Since 2024
+            {/* The edition comes from the active season's name (set by admins each season) */}
+            {season?.name || "Every August · Since 2024"}
           </motion.p>
 
           <h1 className="mt-6 font-display font-black leading-[0.9] tracking-tight">

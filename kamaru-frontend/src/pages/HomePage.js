@@ -17,7 +17,7 @@ import { useSeo } from "../utils/seo";
 //   Hero, 1. why (the indifference), 2. the seven values, 3. our part, 4. the Challenge,
 //   moments (gallery), voices (videos), live numbers, support, contact, other activities
 const HomePage = () => {
-  useSeo({ title: "Kamaru Challenge | Kikuyu Music, Poetry & Folk Dance Competition in Ndeiya, Kenya", description: "Kamaru Challenge is a free annual Kikuyu music, poetry (marebeta) and folk dance competition held every August in Ndeiya, Kiambu, Kenya. Nyīmbo ciitū, songs for values and justice.", path: "/" });
+  useSeo({ title: "Kamaru Challenge | Kikuyu Music, Poetry & Folk Dance Competition in Kenya", description: "Kamaru Challenge is a free annual Kikuyu music, poetry (marebeta) and folk dance competition held every August in Kenya, born in Ndeiya, Kiambu. Nyīmbo ciitū, songs for values and justice.", path: "/" });
   const { gallery, upcoming, past, videos, aboutImage, stats, season, loading } = useHomeData();
 
 

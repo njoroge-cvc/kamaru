@@ -7,7 +7,7 @@ export const TAGLINE_ENGLISH = "Songs of the Land, Voices for Values and Justice
 
 // The most recent / current edition. Update each season.
 export const EDITION = {
-  name: "Kamaru Challenge – Ndeiya Edition 2026",
+  name: "Kamaru Challenge 2026",
   year: 2026,
   date: "2026-08-15T09:00:00", // local (EAT) time
   venue: "Rediscovery Garden, Karera, Nguirubi, Ndeiya",

@@ -104,18 +104,18 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col items-center gap-1 border-t border-cream/10 pb-20 pt-6 text-center text-sm text-cream/50 md:flex-row md:items-center md:justify-between md:pb-0 md:text-left">
+        <div className="mt-14 flex flex-col items-center gap-4 border-t border-cream/10 pb-20 pt-6 text-center text-sm text-cream/50 md:pb-0">
           {/* Social links for screens without the vertical "Follow us on" rail */}
           <SocialIcons className="mb-4 flex gap-2 md:mb-0 xl:hidden" itemClassName="h-10 w-10 bg-cream/10 text-lg text-cream hover:bg-kamaru hover:text-earth" />
-          <div className="flex flex-col gap-1 text-sm text-cream/50 md:flex-row md:gap-6">
-            <p>© {new Date().getFullYear()} Kamaru Challenge – Ndeiya Edition</p>
+          <div className="flex flex-col items-center justify-center gap-2 text-sm text-cream/50 md:flex-row md:gap-6">
+            <p>© {new Date().getFullYear()} Kamaru Challenge</p>
             <Link to="/terms" className="hover:text-kamaru-light">
               Terms & Conditions
             </Link>
             {/* Developer credit: a normal (followed) link, so it also counts for the studio's SEO */}
-            <p>
+            <p className="flex items-center justify-center gap-1.5">
               Crafted with{" "}
-              <img src={cvcLove} alt="love" className="mx-0.5 inline-block h-[1.25em] w-auto -translate-y-[0.1em] align-middle" />{" "}
+              <img src={cvcLove} alt="love" className="inline-block h-8 w-auto" />{" "}
               by{" "}
               {/* Referrer kept on purpose so the studio's analytics can see visits from this site */}
               {/* eslint-disable-next-line react/jsx-no-target-blank */}
