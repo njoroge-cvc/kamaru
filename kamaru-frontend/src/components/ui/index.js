@@ -88,14 +88,7 @@ export const Spinner = ({ className = "h-5 w-5" }) => (
 /** Centered card layout for login / register / password screens. */
 export const AuthShell = ({ title, subtitle, children, footer, banner }) => (
   <div className="relative flex min-h-[80vh] items-center justify-center overflow-hidden px-4 py-14">
-    <div className="absolute inset-0 bg-earth swirl-bg" aria-hidden="true" />
-    {banner && (
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-25"
-        style={{ backgroundImage: `url(${banner})` }}
-        aria-hidden="true"
-      />
-    )}
+    <div className="absolute inset-0 bg-kamaru" aria-hidden="true" />
     <motion.div
       initial={{ opacity: 0, y: 30, rotate: -1 }}
       animate={{ opacity: 1, y: 0, rotate: 0 }}
