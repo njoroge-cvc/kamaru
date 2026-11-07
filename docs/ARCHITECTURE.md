@@ -114,6 +114,22 @@ Auth column: **public**, **JWT** (any logged-in user), or the permission require
 2. Apply migrations `a1c3e5f7b9d2` (roles, registration window) and `b4d6f8a0c2e1` (entries ↔ accounts) with `flask db upgrade` — **already applied to the live database on 2026-11-07**. It adds `user.role` (existing admins → `admin`) and the season registration columns (the currently active season stays **open**).
 3. Deploy the backend, then the frontend. Existing logged-in admins keep working; others pick up roles on next load.
 
+## Keeping the backend awake
+
+The backend runs on Render's **free plan**, which puts it to sleep after about 15 minutes without requests. The next visitor then waits about 45 seconds while it wakes. During that wait the site used to show empty sections and the wrong registration status.
+
+- **The ping:** `.github/workflows/keep-backend-awake.yml` sends `GET /api/stats/` every 10 minutes (`cron: "*/10 * * * *"`), so the backend never goes idle long enough to sleep. It can also be run by hand from **Actions → Keep backend awake → Run workflow**.
+- **Healthy runs:** a run takes a few seconds and the log ends with `200 in ~1s`. About 45 seconds means the backend had been asleep. GitHub sometimes starts scheduled runs a few minutes late.
+- **Cost:** free. Actions minutes are free on public repos. One always-awake service uses about 744 of Render's 750 free monthly hours, so **don't keep a second free Render service awake the same way**.
+- **If runs stop:**
+  - *"Account is locked due to a billing issue"*: check **GitHub → Settings → Billing and licensing → Payment information** (a failed card verification causes this).
+  - GitHub disables scheduled workflows after **60 days with no commits** to the repo: re-enable it in the Actions tab.
+- **Safety net in the frontend:** if the backend is asleep anyway, the site copes:
+  - `api.js` retries failed reads for about 45 seconds.
+  - The logo is bundled at `public/brand/logo.png`.
+  - The hero shows a loading state until the season is known.
+- **Retire the ping** (disable or delete the workflow) if the backend moves to a paid Render plan, which never sleeps.
+
 ## Hardening in place
 
 - **Rate limiting** (Flask-Limiter): login 10/min · 60/h, register 10/h, forgot-password 5/15 min, reset 10/15 min, contact 5/h, newsletter 5/h, contestant registration 20/h. In-memory per process; set `RATELIMIT_STORAGE_URI=redis://…` if you scale to several instances.
@@ -127,4 +143,4 @@ Auth column: **public**, **JWT** (any logged-in user), or the permission require
 - No **pagination** on list endpoints; no **unsubscribe** endpoint for the newsletter.
 - Event create/update return raw exception text on bad input; password length is enforced client-side only.
 - JWT lives in `localStorage` — fine with today's content, but avoid rendering untrusted HTML anywhere.
-- Render free tier cold starts (2s+) — the homepage loads each section independently so a slow endpoint doesn't block the page.
+- Render free tier cold starts are kept away by the scheduled ping (see *Keeping the backend awake*); the homepage still loads each section independently so a slow endpoint doesn't block the page.
