@@ -13,6 +13,20 @@ const api = axios.create({
   withCredentials: true,
 });
 
+// Render's free plan sleeps when idle; the first requests fail (network error / 502-504) while it
+// wakes. Retry reads with growing waits (about 45s in total) instead of showing empty or wrong states.
+const RETRY_DELAYS = [1500, 3000, 6000, 10000, 12000, 12000];
+api.interceptors.response.use(undefined, async (error) => {
+  const cfg = error.config;
+  const status = error.response?.status;
+  const transient = !error.response || [502, 503, 504].includes(status);
+  if (!cfg || (cfg.method || "get").toLowerCase() !== "get" || !transient) return Promise.reject(error);
+  cfg.__retry = (cfg.__retry || 0) + 1;
+  if (cfg.__retry > RETRY_DELAYS.length) return Promise.reject(error);
+  await new Promise((r) => setTimeout(r, RETRY_DELAYS[cfg.__retry - 1]));
+  return api.request(cfg);
+});
+
 // Expired or invalid session: clear stale credentials so the UI stops claiming
 // the user is logged in, then send them to log in again.
 api.interceptors.response.use(

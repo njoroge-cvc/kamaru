@@ -35,8 +35,8 @@
   .k-input:focus { box-shadow: inset 0 0 0 2px #D57500; }
 
   /* Section subheadings (eyebrows) */
-  /* Section subheadings (eyebrows): Slackey, a clear step below the title */
-  .k-eyebrow { @apply font-display leading-snug tracking-normal; font-size: 22px; }
+  /* Section subheadings (eyebrows): Outfit, a clear step below the Slackey title */
+  .k-eyebrow { @apply font-sans font-semibold leading-tight; font-size: 24px; }
   @media (min-width: 768px) { .k-eyebrow { font-size: 30px; } }
   .k-hint { @apply mt-1 text-xs text-earth-600; }
 

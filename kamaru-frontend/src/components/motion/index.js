@@ -144,7 +144,7 @@ export const SectionHeading = ({ eyebrow, title, intro, light = false, align = "
   <div className={`${align === "center" ? "text-center mx-auto" : "text-center mx-auto md:text-left md:mx-0"} max-w-3xl ${className}`}>
     {eyebrow && (
       <Reveal>
-        <p className={`k-eyebrow ${light ? "text-kamaru-light" : "text-ochre"}`}>{kk(eyebrow)}</p>
+        <p className={`k-eyebrow ${light ? "text-kamaru-light" : "text-ochre"}`}>{eyebrow}</p>
       </Reveal>
     )}
     <h2

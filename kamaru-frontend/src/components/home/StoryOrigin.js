@@ -2,7 +2,6 @@ import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { QUOTE } from "../../content/story";
 import flame from "../../assets/flame.svg";
-import { kk } from "../Kikuyu";
 import ReadMore from "../ReadMore";
 
 // One word whose opacity/colour is driven by scroll progress
@@ -64,7 +63,7 @@ const StoryOrigin = () => (
   <section id="story" className="relative overflow-hidden bg-cream">
     <div className="container mx-auto flex max-w-4xl flex-col items-center px-5 py-24 text-center md:px-8 md:py-36">
       <ScrollFade offset={["start 0.95", "start 0.75"]}>
-        <p className="k-eyebrow text-ochre">{kk("Kūhurutira Mwaki na Nyīmbo. Fanning the Flame with music")}</p>
+        <p className="k-eyebrow text-ochre">Kūhurutira Mwaki na Nyīmbo. Fanning the Flame with music</p>
       </ScrollFade>
 
       {/* The quote */}

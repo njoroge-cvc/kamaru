@@ -9,7 +9,7 @@ const INITIAL = {
   videos: [],
   aboutImage: "",
   stats: null,
-  season: null,
+  season: undefined, // undefined = still loading, null = none / unavailable
 };
 
 // Loads everything the landing page needs in parallel. Each request updates the page
@@ -42,7 +42,10 @@ const useHomeData = () => {
     }));
     load(fetchSystemImage("about"), (d) => ({ aboutImage: d?.image?.image_url || "" }));
     load(fetchStats(), (d) => ({ stats: d && !d.error ? d : null }));
-    load(fetchActiveSeason(), (d) => ({ season: d && d.id ? d : null }));
+    fetchActiveSeason()
+      .then((r) => alive && setData((d) => ({ ...d, season: r.data && r.data.id ? r.data : null })))
+      .catch(() => alive && setData((d) => ({ ...d, season: null })))
+      .finally(() => alive && setPending((n) => n - 1));
 
     return () => {
       alive = false;

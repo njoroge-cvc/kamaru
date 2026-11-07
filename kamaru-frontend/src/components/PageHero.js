@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { SplitWords, Reveal } from "./motion";
 import { SunSpiral } from "./home/Ornaments";
-import { kk } from "./Kikuyu";
 
 // Dark, patterned page header shared by Gallery, Videos and About pages
 const PageHero = ({ crumb, eyebrow, title, intro }) => (
@@ -17,7 +16,7 @@ const PageHero = ({ crumb, eyebrow, title, intro }) => (
         <span className="mx-2">/</span>
         <span className="text-cream">{crumb}</span>
       </nav>
-      <p className="k-eyebrow mt-8 text-kamaru-light">{kk(eyebrow)}</p>
+      <p className="k-eyebrow mt-8 text-kamaru-light">{eyebrow}</p>
       <motion.div
         className="mt-4 inline-block max-w-4xl bg-kamaru px-6 py-5 md:px-10 md:py-7 text-earth shadow-2xl"
         style={{ clipPath: "polygon(1.5% 8%, 100% 0, 98.5% 100%, 0 94%)" }}

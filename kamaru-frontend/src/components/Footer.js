@@ -6,7 +6,6 @@ import BrandBadge from "./BrandBadge";
 import SocialIcons from "./SocialIcons";
 import NewsletterForm from "./NewsletterSubscriptionForm";
 import { TAGLINE_KIKUYU, CONTACT, EDITION } from "../content/story";
-import { kk } from "./Kikuyu";
 
 const EXPLORE = [
   ["/", "Home"],
@@ -64,7 +63,7 @@ const Footer = () => {
                 <BrandBadge className="h-full w-full drop-shadow-xl" ringColor="#D57500" textColor="#FBF3E8" emblemColor="#D57500" />
               </motion.div>
             </div>
-            <p className="mt-6 font-display text-lg leading-snug text-kamaru-light">{kk(TAGLINE_KIKUYU)}</p>
+            <p className="mt-6 font-sans text-lg font-semibold text-kamaru-light">{TAGLINE_KIKUYU}</p>
             <p className="mx-auto mt-2 max-w-xs text-sm text-cream/60 sm:mx-0">Fanning the flame of values through music & culture.</p>
           </div>
 

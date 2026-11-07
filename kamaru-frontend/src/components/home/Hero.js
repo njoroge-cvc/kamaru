@@ -15,7 +15,6 @@ import SocialIcons from "../SocialIcons";
 import { SplitWords, EASE } from "../motion";
 import { SunSpiral, SoundBars } from "./Ornaments";
 import { TAGLINE_KIKUYU, TAGLINE_ENGLISH, EDITION, CONTACT } from "../../content/story";
-import { kk } from "../Kikuyu";
 
 const useCountdown = (target) => {
   const [left, setLeft] = useState(null);
@@ -81,7 +80,7 @@ const PhotoFrame = ({ images, index, frame, mx, my }) => {
   );
 };
 
-const Hero = ({ gallery = [], upcoming = [], season = null }) => {
+const Hero = ({ gallery = [], upcoming = [], season }) => {
   const registrationOpen = !!season?.accepting_registrations;
   // Shuffle once per visit so returning visitors see different faces
   const pool = useMemo(() => [...gallery].sort(() => Math.random() - 0.5).slice(0, 12), [gallery]);
@@ -150,9 +149,9 @@ const Hero = ({ gallery = [], upcoming = [], season = null }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.9, duration: 1 }}
-            className="mt-6 font-display text-2xl md:text-3xl leading-snug text-cream/90 text-balance"
+            className="mt-6 font-sans font-semibold text-2xl md:text-3xl text-cream/90 text-balance"
           >
-            {kk(TAGLINE_KIKUYU)}
+            {TAGLINE_KIKUYU}
           </motion.p>
           <motion.p
             initial={{ opacity: 0 }}
@@ -195,7 +194,16 @@ const Hero = ({ gallery = [], upcoming = [], season = null }) => {
             transition={{ delay: 1.45, duration: 0.8, ease: EASE }}
             className="k-cut mt-10 max-w-lg bg-cream/10 backdrop-blur-sm p-5 md:p-6"
           >
-            {registrationOpen ? (
+            {season === undefined ? (
+              // Still loading (the API may be waking up): don't guess the season's state
+              <div className="flex items-center gap-4" aria-busy="true" aria-label="Loading registration status">
+                <span className="h-12 w-12 shrink-0 animate-pulse k-quad-shape bg-cream/15" />
+                <span className="flex-1 space-y-2">
+                  <span className="block h-3 w-32 animate-pulse k-quad-shape bg-cream/15" />
+                  <span className="block h-4 w-48 animate-pulse k-quad-shape bg-cream/20" />
+                </span>
+              </div>
+            ) : registrationOpen ? (
               <div className="flex items-center gap-4">
                 <span className="relative grid h-12 w-12 shrink-0 place-items-center">
                   <span className="absolute inset-0 animate-ping rounded-full bg-bead-green/40" />

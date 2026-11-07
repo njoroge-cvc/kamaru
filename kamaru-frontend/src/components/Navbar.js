@@ -10,9 +10,10 @@ import { useSession } from "./useSession";
 import { useBackdropTone } from "../utils/backdropTone";
 import { clearSession, PERMS } from "../auth";
 import { CONTACT, TAGLINE_KIKUYU } from "../content/story";
-import { kk } from "./Kikuyu";
 
 // Visible in the brush-stroke band on desktop
+const DEFAULT_LOGO = "/brand/logo.png";
+
 const QUICK_LINKS = [
   { to: "/", text: "Home", end: true },
   { to: "/about_us", text: "About us" },
@@ -161,7 +162,7 @@ const FullMenu = ({ open, onClose, logo, token, isAdmin, onLogout }) => {
               animate={{ opacity: 1, transition: { delay: 0.6 } }}
               className="flex flex-col items-center gap-4 border-t border-earth/15 pt-5 pb-8 text-sm md:flex-row md:justify-between"
             >
-              <p className="font-display text-base">{kk(TAGLINE_KIKUYU)}</p>
+              <p className="font-sans font-semibold text-base">{TAGLINE_KIKUYU}</p>
               <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 font-semibold">
                 <a href={`tel:${CONTACT.phones[0].replace(/\s/g, "")}`} className="flex items-center gap-2 hover:text-cream">
                   <FaPhoneAlt /> {CONTACT.phones[0]}
@@ -190,7 +191,14 @@ const NAV_TONES = {
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [logo, setLogo] = useState(null);
+  // Bundled logo shows instantly (even while the API wakes up); the dashboard-managed one replaces it when it loads
+  const [logo, setLogo] = useState(() => {
+    try {
+      return localStorage.getItem("kamaru:logo") || DEFAULT_LOGO;
+    } catch {
+      return DEFAULT_LOGO;
+    }
+  });
   const [scrolledRaw, setScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -210,7 +218,13 @@ const Navbar = () => {
   useEffect(() => {
     fetchSystemImage("logo")
       .then((response) => {
-        if (response.data.image) setLogo(response.data.image.image_url);
+        const url = response.data?.image?.image_url;
+        if (url) {
+          setLogo(url);
+          try {
+            localStorage.setItem("kamaru:logo", url);
+          } catch {}
+        }
       })
       .catch((error) => console.error("Error fetching logo:", error));
   }, []);
