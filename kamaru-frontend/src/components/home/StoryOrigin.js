@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { QUOTE } from "../../content/story";
-import { Shield } from "./Ornaments";
+import flame from "../../assets/flame.svg";
 
 // One word whose opacity/colour is driven by scroll progress
 const Word = ({ children, progress, range, dim, bright, strong }) => {
@@ -39,7 +39,7 @@ const ScrollLit = ({ parts, as: Tag = "p", className = "", dim = "#6B4A33", brig
   );
 };
 
-/** Any block that fades/rises in step with scroll (used for the shield and fault lines). */
+/** Any block that fades/rises in step with scroll (used for the flame and fault lines). */
 const ScrollFade = ({ children, className = "", offset = ["start 0.95", "start 0.6"] }) => {
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({ target: ref, offset });
@@ -78,9 +78,9 @@ const StoryOrigin = () => (
         />
       </blockquote>
 
-      {/* Shield anchor */}
+      {/* Flame anchor */}
       <ScrollFade className="mt-20 md:mt-28">
-        <Shield className="mx-auto w-16 md:w-20" />
+        <img src={flame} alt="" aria-hidden="true" className="mx-auto w-24 md:w-32" />
       </ScrollFade>
 
       {/* The two paragraphs, one after the other */}
