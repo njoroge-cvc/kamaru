@@ -1,0 +1,15 @@
+# Keeps the Render backend awake by visiting it every 10 minutes.
+name: Keep backend awake
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Ping the API
+        run: curl -fsS --max-time 90 --retry 2 --retry-delay 20 -o /dev/null -w "%{http_code} in %{time_total}s\n" https://kamaru-challenge.onrender.com/api/stats/
