@@ -17,7 +17,7 @@ const Chapter = ({ eyebrow, title, lead, children, image, reverse = false }) => 
     <section ref={ref} className="grid items-center gap-10 md:grid-cols-2 lg:gap-20">
       <div className={reverse ? "md:order-2" : ""}>
         <Reveal>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-ochre">{eyebrow}</p>
+          <p className="k-eyebrow text-ochre">{eyebrow}</p>
           <h2 className="mt-3 font-display text-4xl md:text-5xl font-bold text-earth">{title}</h2>
           <p className="mt-4 text-lg font-semibold text-earth-700">{lead}</p>
         </Reveal>
@@ -63,7 +63,7 @@ const AboutUs = () => {
         crumb="Our story"
         eyebrow="About us"
         title="Fanning the flame of values"
-        intro={`“${QUOTE.text}” — ${QUOTE.author}`}
+        intro={`“${QUOTE.text}”, ${QUOTE.author}`}
       />
 
       <div className="container mx-auto space-y-24 px-5 py-20 md:space-y-32 md:px-8">
@@ -92,13 +92,13 @@ const AboutUs = () => {
             Postcolonial self-legitimation ideologies promoted material wealth and adoption of the colonisers’
             education and culture as the hallmarks of a good leader, rather than the culturally inculcated values
             our communities had always lived by. Indifference to these values shows in broken families,
-            alcoholism, and disengagement from family and community by the youth — especially men.
+            alcoholism, and disengagement from family and community by the youth, especially men.
           </p>
           <div className="flex flex-wrap gap-2 pt-2">
             {VALUES.map((v) => (
               <span
                 key={v.name}
-                className="rounded-full px-4 py-1.5 text-sm font-semibold text-cream"
+                className="k-quad-shape px-4 py-1.5 text-sm font-semibold text-cream"
                 style={{ backgroundColor: v.color }}
               >
                 {v.name}
@@ -116,7 +116,7 @@ const AboutUs = () => {
           <p>
             We have purposed to do our part to help the community rediscover and reconnect with their identity by
             fanning the flames of the cultural values. We have dedicated two spaces in Nguirubi, Ndeiya to this
-            purpose — open for community healing through authentic knowledge and experiences that encourage living
+            purpose, open for community healing through authentic knowledge and experiences that encourage living
             out those values in every facet of our lives.
           </p>
         </Chapter>
@@ -145,7 +145,7 @@ const AboutUs = () => {
               ))}
             </ul>
             <p className="mt-6 text-earth-600">
-              These initiatives are offered at no fee — our way of sowing seeds that will benefit generations to come.
+              These initiatives are offered at no fee, our way of sowing seeds that will benefit generations to come.
             </p>
           </Reveal>
         </section>

@@ -39,7 +39,7 @@ const ParticipantsRegistrationForm = ({ season, onRegistered }) => {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="rounded-3xl bg-white p-10 text-center shadow-sm ring-1 ring-earth/5"
+        className="k-cut-strong bg-cream p-10 text-center shadow-2xl"
       >
         <FaCheckCircle className="mx-auto text-5xl text-bead-green" />
         <h2 className="mt-4 font-display text-3xl font-bold text-earth">You’re in!</h2>
@@ -61,7 +61,7 @@ const ParticipantsRegistrationForm = ({ season, onRegistered }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="overflow-hidden rounded-3xl bg-white shadow-xl ring-1 ring-earth/5">
+    <form onSubmit={handleSubmit} className="k-cut-strong overflow-hidden bg-cream shadow-2xl">
       <div className="space-y-5 p-8">
         <div>
           <h2 className="font-display text-3xl font-bold text-earth">Register to compete</h2>
@@ -87,19 +87,20 @@ const ParticipantsRegistrationForm = ({ season, onRegistered }) => {
           <div className="grid gap-3 sm:grid-cols-3">
             {CATEGORIES.map((c) => {
               const Icon = ICONS[c.icon];
-              const active = formData.category === c.name;
+              const active = formData.category === c.value;
               return (
                 <button
                   type="button"
-                  key={c.name}
-                  onClick={() => setFormData({ ...formData, category: c.name })}
+                  key={c.value}
+                  onClick={() => setFormData({ ...formData, category: c.value })}
                   aria-pressed={active}
-                  className={`flex flex-col items-center gap-2 rounded-2xl border-2 p-4 text-center text-sm font-semibold transition ${
-                    active ? "border-kamaru bg-kamaru/10 text-earth" : "border-earth/10 text-earth-700 hover:border-kamaru/50"
+                  className={`k-quad flex flex-col items-center gap-1.5 p-4 text-center text-sm font-semibold ${
+                    active ? "bg-kamaru text-earth" : "bg-cream-dark text-earth-700 hover:bg-kamaru/25"
                   }`}
                 >
-                  <Icon className={`text-2xl ${active ? "text-kamaru" : "text-earth-600"}`} />
-                  {c.name}
+                  <Icon className={`text-2xl ${active ? "text-earth" : "text-earth-600"}`} />
+                  <span className="font-bold leading-tight">{c.kikuyu}</span>
+                  <span className="text-xs font-medium opacity-80">{c.name}</span>
                 </button>
               );
             })}

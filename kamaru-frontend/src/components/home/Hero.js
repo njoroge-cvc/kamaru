@@ -180,7 +180,7 @@ const Hero = ({ gallery = [], upcoming = [], season = null }) => {
               to="/#videos"
               className="group inline-flex items-center gap-3 rounded-full bg-cream/10 px-6 py-3.5 font-semibold transition hover:bg-cream hover:text-earth"
             >
-              <span className="grid place-items-center h-7 w-7 rounded-full bg-bead-red text-cream text-[10px]">
+              <span className="grid place-items-center h-7 w-7 k-quad-shape bg-bead-red text-cream text-[10px]">
                 <FaPlay className="ml-0.5" />
               </span>
               Watch performances

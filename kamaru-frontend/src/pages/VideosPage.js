@@ -29,7 +29,7 @@ const VideosPage = () => {
       <PageHero
         crumb="Videos"
         eyebrow="On stage"
-        title="Hear the voices of Ndeiya"
+        title="Hear the voices of Nyīmbo Ciitū"
         intro="Inspiring performances, musical talent and cultural showcases from past Kamaru Challenge – Ndeiya Edition events."
       />
 

@@ -47,7 +47,7 @@ const NewsletterForm = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full flex-1 rounded-full border border-cream/20 bg-cream/10 px-5 py-3 text-cream placeholder-cream/40 focus:outline-none focus:ring-2 focus:ring-kamaru"
+          className="k-input w-full flex-1 !bg-cream/10 !text-cream placeholder-cream/50 focus:!bg-cream/15 [box-shadow:inset_0_0_0_1px_rgba(251,243,232,0.25)]"
         />
         <button
   type="submit"

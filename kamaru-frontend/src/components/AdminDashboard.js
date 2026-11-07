@@ -12,6 +12,7 @@ import {
   FaHome,
   FaTimes,
   FaExternalLinkAlt,
+  FaFeatherAlt,
 } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import { FaBarsStaggered } from "react-icons/fa6";
@@ -22,6 +23,7 @@ import ManageUsers from "./ManageUsers";
 import ManageEvent from "./ManageEvent";
 import ManageSystemImages from "./ManageSystemImages";
 import ManageSeasons from "./ManageSeasons";
+import ManageBlog from "./ManageBlog";
 import AdminOverview from "./AdminOverview";
 import { useSession } from "./useSession";
 import { clearSession, PERMS, ROLE_LABELS } from "../auth";
@@ -33,6 +35,7 @@ export const ADMIN_SECTIONS = [
   { path: "events", icon: FaCalendarAlt, label: "Events", perm: PERMS.EVENTS, element: <ManageEvent /> },
   { path: "gallery", icon: FaImage, label: "Gallery", perm: PERMS.GALLERY, element: <ManageGallery /> },
   { path: "videos", icon: FaVideo, label: "Videos", perm: PERMS.VIDEOS, element: <ManageVideos /> },
+  { path: "blog", icon: FaFeatherAlt, label: "Blog", perm: PERMS.BLOG, element: <ManageBlog /> },
   { path: "system_images", icon: FaCog, label: "Site Images", perm: PERMS.SITE_IMAGES, element: <ManageSystemImages /> },
   { path: "users", icon: FaUserShield, label: "Users & Roles", perm: PERMS.USERS, element: <ManageUsers /> },
 ];

@@ -14,6 +14,7 @@ export const PERMS = {
   VIDEOS: "videos:manage",
   SITE_IMAGES: "site_images:manage",
   USERS: "users:manage",
+  BLOG: "blog:manage",
 };
 
 export const ROLE_LABELS = {

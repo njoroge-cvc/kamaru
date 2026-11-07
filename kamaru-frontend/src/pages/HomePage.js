@@ -6,15 +6,15 @@ import Hero from "../components/home/Hero";
 import StoryOrigin from "../components/home/StoryOrigin";
 import StoryValues from "../components/home/StoryValues";
 import StorySpaces from "../components/home/StorySpaces";
-import StoryChallenge from "../components/home/StoryChallenge";
+import StoryChallenge, { StatsBand } from "../components/home/StoryChallenge";
 import EventsSection from "../components/home/EventsSection";
 import GallerySection from "../components/home/GallerySection";
 import VideosSection from "../components/home/VideosSection";
 import { PartnerSection, ContactSection } from "../components/home/PartnerContact";
 
 // The landing page reads as a story, in chapters:
-//   Hero → 1. why (the indifference) → 2. the seven values → 3. the spaces we opened
-//   → 4. the Challenge → gatherings → moments (gallery) → voices (videos) → partner → contact
+//   Hero, 1. why (the indifference), 2. the seven values, 3. our part, 4. the Challenge,
+//   moments (gallery), voices (videos), live numbers, support, contact, other activities
 const HomePage = () => {
   const { gallery, upcoming, past, videos, aboutImage, stats, season, loading } = useHomeData();
 
@@ -25,12 +25,13 @@ const HomePage = () => {
       <StoryOrigin />
       <StoryValues />
       <StorySpaces aboutImage={aboutImage} />
-      <StoryChallenge stats={stats} />
-      <EventsSection upcoming={upcoming} past={past} />
+      <StoryChallenge />
       {(loading || gallery.length > 0) && <GallerySection gallery={gallery} />}
       {(loading || videos.length > 0) && <VideosSection videos={videos} />}
+      <StatsBand stats={stats} />
       <PartnerSection />
       <ContactSection />
+      <EventsSection upcoming={upcoming} past={past} />
 
       <FloatingRegisterButton />
     </div>
@@ -48,7 +49,7 @@ const FloatingRegisterButton = () => (
       to="/register/participant"
       className="inline-block rounded-full bg-kamaru px-6 py-3 font-semibold text-earth shadow-xl shadow-earth/30 ring-4 ring-cream/40"
     >
-      Register Now
+      Join the Challenge
     </Link>
   </motion.div>
 );

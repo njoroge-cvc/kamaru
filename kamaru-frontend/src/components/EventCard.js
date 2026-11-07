@@ -38,7 +38,7 @@ const EventCard = ({ event, compact = false }) => {
         <div className="absolute inset-0 bg-gradient-to-t from-earth/60 via-transparent to-transparent" />
 
         {/* Calendar tab */}
-        <div className="absolute left-4 top-4 overflow-hidden rounded-2xl bg-cream text-center shadow-lg">
+        <div className="absolute left-4 top-4 overflow-hidden k-quad-shape bg-cream text-center shadow-lg">
           <p className="bg-ochre px-4 py-1 text-[11px] font-bold uppercase tracking-widest text-cream">
             {date.toLocaleDateString("en-KE", { month: "short" })}
           </p>
@@ -47,7 +47,7 @@ const EventCard = ({ event, compact = false }) => {
         </div>
 
         <span
-          className={`absolute right-4 top-4 rounded-full px-3 py-1 text-xs font-semibold capitalize ${
+          className={`absolute right-4 top-4 k-quad-shape px-3 py-1 text-xs font-semibold capitalize ${
             STATUS_STYLES[status] || STATUS_STYLES.upcoming
           }`}
         >
@@ -74,7 +74,7 @@ const EventCard = ({ event, compact = false }) => {
         </div>
 
         <div className="mt-auto flex items-center justify-between pt-6">
-          <span className="rounded-full bg-cream px-3 py-1 text-sm font-semibold text-earth">
+          <span className="k-quad-shape bg-cream px-3 py-1 text-sm font-semibold text-earth">
             {event.cost || "Free"}
           </span>
           <span className="inline-flex items-center gap-2 font-semibold text-ochre">

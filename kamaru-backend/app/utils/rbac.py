@@ -5,8 +5,8 @@ Every user has exactly one role. Roles grant permissions; routes ask for a
 permission, never for a role, so roles can be reshaped without touching routes.
 
     member       -> ordinary account (can register as a contestant)
-    media        -> gallery, videos and site images
-    coordinator  -> events, seasons/registration window and participants
+    media        -> gallery, videos, site images and the blog
+    coordinator  -> events, seasons/registration window, participants and the blog
     admin        -> everything, including users and their roles
 """
 from functools import wraps
@@ -23,14 +23,15 @@ VIDEOS = "videos:manage"
 SITE_IMAGES = "site_images:manage"
 USERS = "users:manage"
 DASHBOARD = "dashboard:view"
+BLOG = "blog:manage"
 
-ALL_PERMISSIONS = [DASHBOARD, EVENTS, PARTICIPANTS, SEASONS, GALLERY, VIDEOS, SITE_IMAGES, USERS]
+ALL_PERMISSIONS = [DASHBOARD, EVENTS, PARTICIPANTS, SEASONS, GALLERY, VIDEOS, SITE_IMAGES, USERS, BLOG]
 
 # --- Roles ---------------------------------------------------------------
 ROLE_PERMISSIONS = {
     "member": [],
-    "media": [DASHBOARD, GALLERY, VIDEOS, SITE_IMAGES],
-    "coordinator": [DASHBOARD, EVENTS, SEASONS, PARTICIPANTS],
+    "media": [DASHBOARD, GALLERY, VIDEOS, SITE_IMAGES, BLOG],
+    "coordinator": [DASHBOARD, EVENTS, SEASONS, PARTICIPANTS, BLOG],
     "admin": list(ALL_PERMISSIONS),
 }
 

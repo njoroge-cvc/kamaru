@@ -9,20 +9,21 @@ import { TAGLINE_KIKUYU, CONTACT, EDITION } from "../content/story";
 
 const EXPLORE = [
   ["/", "Home"],
-  ["/about_us", "Our story"],
+  ["/about_us", "About us"],
+  ["/blog", "Blog"],
   ["/gallery", "Gallery"],
   ["/videos", "Videos"],
 ];
 const TAKE_PART = [
-  ["/register/participant", "Join the Challenge"],
+  ["/register/participant", "The Challenge"],
   ["/support", "Support us"],
-  ["/join", "Create an account"],
+  ["/join", "Join us"],
   ["/login", "Log in"],
 ];
 
 const LinkList = ({ title, items }) => (
   <div>
-    <h3 className="text-xs font-bold uppercase tracking-[0.25em] text-kamaru-light">{title}</h3>
+    <h3 className="text-base font-bold uppercase tracking-[0.2em] text-kamaru-light md:text-lg">{title}</h3>
     <ul className="mt-4 space-y-2.5">
       {items.map(([to, label]) => (
         <li key={to}>
@@ -71,7 +72,7 @@ const Footer = () => {
 
           {/* Contact + newsletter */}
           <div id="newsletter" className="scroll-mt-24">
-            <h3 className="text-xs font-bold uppercase tracking-[0.25em] text-kamaru-light">Stay connected</h3>
+            <h3 className="text-base font-bold uppercase tracking-[0.2em] text-kamaru-light md:text-lg">Stay connected</h3>
             <p className="mt-4 text-sm text-cream/60">Be first to know when registration opens.</p>
             <div className="mt-4">
               <NewsletterForm />

@@ -3,7 +3,9 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaArrowRight, FaDoorOpen, FaDoorClosed } from "react-icons/fa";
 import Stats from "./Stats";
-import { fetchActiveSeason } from "../api";
+import { fetchActiveSeason, fetchDashboardStats } from "../api";
+import { ChartCard, BarList, ColumnChart, MonthlyLine, SplitMeter, SERIES } from "./charts";
+import { CATEGORIES } from "../content/story";
 import { PageHeader } from "./ui";
 import { useSession } from "./useSession";
 import { PERMS } from "../auth";
@@ -12,12 +14,22 @@ import { PERMS } from "../auth";
 const AdminOverview = ({ sections }) => {
   const { permissions } = useSession();
   const [season, setSeason] = useState(undefined);
+  const [charts, setCharts] = useState(null);
 
   useEffect(() => {
     fetchActiveSeason()
       .then((r) => setSeason(r.data))
       .catch(() => setSeason(null));
+    fetchDashboardStats()
+      .then((r) => setCharts(r.data))
+      .catch(() => setCharts(null));
   }, []);
+
+  // Show categories with their Kikuyu names
+  const catLabel = (v) => {
+    const c = CATEGORIES.find((x) => x.value === v);
+    return c ? `${c.kikuyu} (${c.name})` : v;
+  };
 
   const open = season?.accepting_registrations;
 
@@ -29,12 +41,12 @@ const AdminOverview = ({ sections }) => {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`mb-8 flex flex-col gap-4 rounded-3xl p-6 md:flex-row md:items-center md:justify-between ${
+          className={`k-cut-strong mb-8 flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between ${
             open ? "bg-bead-green text-cream" : "bg-earth text-cream"
           }`}
         >
           <div className="flex items-center gap-4">
-            <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-cream/15 text-2xl">
+            <span className="grid h-14 w-14 shrink-0 place-items-center k-quad-shape bg-cream/15 text-2xl">
               {open ? <FaDoorOpen /> : <FaDoorClosed />}
             </span>
             <div>
@@ -63,11 +75,51 @@ const AdminOverview = ({ sections }) => {
 
       <Stats />
 
+      {charts && (
+        <div className="mt-8 grid gap-6 lg:grid-cols-2">
+          <ChartCard title="Registrations per month" subtitle="Contestant entries over the last 12 months" className="lg:col-span-2">
+            <MonthlyLine data={charts.registrations_by_month} caption="Contestant registrations per month" unit=" entries" />
+          </ChartCard>
+          <ChartCard title="Entries per season" subtitle="● marks the active season">
+            <ColumnChart
+              data={charts.participants_by_season.map((s) => ({ ...s, label: s.season }))}
+              caption="Contestant entries per season"
+              mark={(d) => d.active}
+            />
+          </ChartCard>
+          <ChartCard title="Entries per category" subtitle="All seasons">
+            <BarList
+              data={charts.participants_by_category.map((c) => ({ label: catLabel(c.category), count: c.count }))}
+              caption="Contestant entries per category"
+            />
+          </ChartCard>
+          <ChartCard title="Members by role">
+            <BarList
+              data={charts.users_by_role.map((r) => ({ label: r.role.charAt(0).toUpperCase() + r.role.slice(1), count: r.count }))}
+              caption="Accounts by role"
+              color={SERIES.secondary}
+            />
+          </ChartCard>
+          <ChartCard title="Newsletter subscribers" subtitle={`${charts.subscribers.total.toLocaleString()} in total`}>
+            <SplitMeter
+              caption="Verified and pending newsletter subscribers"
+              parts={[
+                { label: "Verified", value: charts.subscribers.verified, color: SERIES.primary },
+                { label: "Pending", value: charts.subscribers.total - charts.subscribers.verified, color: SERIES.secondary },
+              ]}
+            />
+            <div className="mt-6">
+              <MonthlyLine data={charts.subscribers.by_month} caption="New subscribers per month" color={SERIES.secondary} unit=" sign-ups" />
+            </div>
+          </ChartCard>
+        </div>
+      )}
+
       <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {sections.map(({ path, icon: Icon, label }, i) => (
           <motion.div key={path} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
             <Link to={`/admin/${path}`} className="group k-card flex items-center gap-4 transition hover:-translate-y-1 hover:shadow-lg">
-              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-kamaru/15 text-xl text-kamaru-dark group-hover:bg-kamaru group-hover:text-earth">
+              <span className="grid h-12 w-12 place-items-center k-quad-shape bg-kamaru/15 text-xl text-kamaru-dark group-hover:bg-kamaru group-hover:text-earth">
                 <Icon />
               </span>
               <span className="flex-1 font-semibold text-earth">{label}</span>

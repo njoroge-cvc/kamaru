@@ -54,9 +54,9 @@ const StoryValues = () => {
             <SectionHeading
               light
               align="left"
-              eyebrow="Mitugo, What we stand for"
+              eyebrow="Mītugo īītū, What We Stand For"
               title="Our Timeless Values"
-              intro="Communality, Reverence, Justice, Courage, Diligence, Introspection and Self-control — the values that once made us a dignified, happy community. Every performance on the Kamaru stage carries one of them forward."
+              intro="Communality, Reverence, Justice, Courage, Diligence, Introspection and Self-control, the values that once made us a dignified, happy community. Every performance on the Kamaru stage carries one of them forward."
             />
           </div>
           <motion.div ref={trackRef} style={{ x }} className="flex w-max gap-6 pl-8">
@@ -73,9 +73,9 @@ const StoryValues = () => {
           <SectionHeading
             light
             align="left"
-            eyebrow="Mitugo, What we stand for"
+            eyebrow="Mītugo īītū, What We Stand For"
             title="Our Timeless Values"
-            intro="The values that once made us a dignified, happy community — carried forward by every performance."
+            intro="The values that once made us a dignified, happy community, carried forward by every performance."
           />
         </div>
         <Stagger className="mt-10 flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-5 md:scroll-px-8 px-5 md:px-8 pb-4 [scrollbar-width:none]">

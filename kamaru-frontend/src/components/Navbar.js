@@ -14,18 +14,19 @@ import { CONTACT, TAGLINE_KIKUYU } from "../content/story";
 // Visible in the brush-stroke band on desktop
 const QUICK_LINKS = [
   { to: "/", text: "Home", end: true },
-  { to: "/#events", text: "Events", hash: true },
+  { to: "/about_us", text: "About us" },
   { to: "/gallery", text: "Gallery" },
   { to: "/videos", text: "Videos" },
-  { to: "/register/participant", text: "Participate" },
+  { to: "/register/participant", text: "The Challenge" },
 ];
 
 // Full-screen "More" menu — one flat list, no nested dropdowns
 const MENU = [
   { to: "/", text: "Home" },
-  { to: "/about_us", text: "Our Story" },
-  { to: "/#events", text: "Events", hash: true },
-  { to: "/register/participant", text: "Join the Challenge" },
+  { to: "/about_us", text: "About Us" },
+  { to: "/register/participant", text: "The Challenge" },
+  { to: "/blog", text: "Blog" },
+  { to: "/#events", text: "Other Activities", hash: true },
   { to: "/support", text: "Support Us" },
   { to: "/gallery", text: "Gallery" },
   { to: "/videos", text: "Videos" },
@@ -143,7 +144,7 @@ const FullMenu = ({ open, onClose, logo, token, isAdmin, onLogout }) => {
                       Login
                     </Link>
                     <Link to="/join" onClick={onClose} className="rounded-full bg-earth px-7 py-3 font-bold text-kamaru hover:bg-earth-700 transition">
-                      Join
+                      Join us
                     </Link>
                   </>
                 ) : (
@@ -297,7 +298,7 @@ const Navbar = () => {
                   Login
                 </Link>
                 <Link to="/join" className={`k-quad hidden md:inline-flex items-center px-6 py-2.5 text-sm font-bold uppercase tracking-[0.15em] ${T.join}`}>
-                  Join
+                  Join us
                 </Link>
               </>
             )}

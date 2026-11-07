@@ -143,15 +143,7 @@ export const SectionHeading = ({ eyebrow, title, intro, light = false, align = "
   <div className={`${align === "center" ? "text-center mx-auto" : ""} max-w-3xl ${className}`}>
     {eyebrow && (
       <Reveal>
-        <p
-          className={`inline-flex items-center gap-3 text-xs md:text-sm font-semibold uppercase tracking-[0.25em] ${
-            light ? "text-kamaru-light" : "text-ochre"
-          }`}
-        >
-          <span className={`h-px w-8 ${light ? "bg-kamaru-light" : "bg-ochre"}`} />
-          {eyebrow}
-          {align === "center" && <span className={`h-px w-8 ${light ? "bg-kamaru-light" : "bg-ochre"}`} />}
-        </p>
+        <p className={`k-eyebrow ${light ? "text-kamaru-light" : "text-ochre"}`}>{eyebrow}</p>
       </Reveal>
     )}
     <h2

@@ -25,10 +25,17 @@
 
   /* Form fields */
   .k-label { @apply mb-1.5 block text-sm font-semibold text-earth; }
+  /* Hand-cut field: no border (a clip-path would slice it), a tinted fill and an inset focus line */
   .k-input {
-    @apply w-full rounded-xl border border-earth/15 bg-white px-4 py-2.5 text-sm text-earth placeholder-earth-600/60 shadow-sm
-      transition focus:border-kamaru focus:outline-none focus:ring-2 focus:ring-kamaru/30;
+    @apply w-full bg-white px-4 py-3 text-sm text-earth placeholder-earth-600/60
+      transition-colors focus:bg-cream focus:outline-none;
+    clip-path: polygon(0.6% 6%, 99.6% 0%, 100% 94%, 0% 100%);
+    box-shadow: inset 0 0 0 1px rgba(43, 26, 16, 0.12);
   }
+  .k-input:focus { box-shadow: inset 0 0 0 2px #D57500; }
+
+  /* Section subheadings (eyebrows) */
+  .k-eyebrow { @apply font-sans font-semibold leading-tight; font-size: 30px; }
   .k-hint { @apply mt-1 text-xs text-earth-600; }
 
   /* Surfaces */
@@ -130,6 +137,46 @@
 }
 :is(.k-card, .k-panel, .k-cut, [class*="rounded-[2rem]"], [class*="rounded-[2.5rem]"], [class*="rounded-3xl"]):not(.no-cut):nth-child(3n + 2) { clip-path: var(--cut-b); }
 :is(.k-card, .k-panel, .k-cut, [class*="rounded-[2rem]"], [class*="rounded-[2.5rem]"], [class*="rounded-3xl"]):not(.no-cut):nth-child(3n) { clip-path: var(--cut-c); }
+
+/* Stronger hand-cut for feature cards and labels that should read clearly as quadrilaterals */
+.k-cut-strong { border-radius: 0 !important; clip-path: polygon(1.5% 4%, 99% 0%, 100% 95%, 0% 100%) !important; }
+.k-cut-strong:nth-child(3n + 2) { clip-path: polygon(0% 0%, 98.5% 4.5%, 100% 100%, 1.5% 95.5%) !important; }
+.k-cut-strong:nth-child(3n) { clip-path: polygon(1% 1%, 100% 3.5%, 98.5% 99%, 0% 96%) !important; }
+
+/* ------------------------------------------------------------------
+   Site-wide consistency: every field, label, chip and button is hand-cut,
+   whatever rounded-* utility a component happened to use.
+   ------------------------------------------------------------------ */
+/* Form fields */
+:is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]), select, textarea):not(.no-quad) {
+  border-radius: 0 !important;
+  clip-path: polygon(0.6% 6%, 99.6% 0%, 100% 94%, 0% 100%);
+}
+/* Buttons & links using any small rounding */
+:is(a, button):is([class~="rounded"], [class~="rounded-sm"], [class~="rounded-md"], [class~="rounded-lg"], [class~="rounded-xl"], [class~="rounded-2xl"]):not(.no-quad):not([role="switch"]) {
+  border-radius: 0 !important;
+  clip-path: var(--quad-a);
+  transition-property: clip-path, color, background-color, opacity, transform !important;
+  transition-duration: 0.35s !important;
+}
+:is(a, button):is([class~="rounded"], [class~="rounded-sm"], [class~="rounded-md"], [class~="rounded-lg"], [class~="rounded-xl"], [class~="rounded-2xl"]):not(.no-quad):not([role="switch"]):hover {
+  clip-path: var(--quad-a-hover);
+}
+/* Labels, chips, badges, icon tiles and number tiles (empty decorative dots stay round) */
+:is(span, label, p, small, strong, em, time, mark, kbd, code):is([class~="rounded"], [class~="rounded-sm"], [class~="rounded-md"], [class~="rounded-lg"], [class~="rounded-xl"], [class~="rounded-2xl"], [class~="rounded-full"]):not(.no-quad):not(.animate-spin):not(.animate-ping):not([class*="blur"]):not([role="switch"] *):not(:empty) {
+  border-radius: 0 !important;
+  clip-path: var(--quad-a);
+}
+/* Panels and list rows: the gentler card cut */
+:is(div, li, ul, section, article, form, aside, figure, header, nav, details, dialog, table):is([class~="rounded"], [class~="rounded-md"], [class~="rounded-lg"], [class~="rounded-xl"], [class~="rounded-2xl"]):not(.no-cut):not(.animate-spin):not([class*="blur"]):not([role="switch"] *) {
+  border-radius: 0 !important;
+  clip-path: var(--cut-a);
+}
+/* Rounded-full blocks with content (icon tiles, avatars) become quads; empty dots, spinners and glows stay round */
+:is(div, li):is([class~="rounded-full"]):not(.no-quad):not(.animate-spin):not(.animate-ping):not([class*="blur"]):not([role="switch"] *):not(:empty) {
+  border-radius: 0 !important;
+  clip-path: var(--quad-a);
+}
 
 /* Shape-only helper for highlight pills inside quad buttons (tabs, filters) */
 .k-quad-shape { border-radius: 0 !important; clip-path: var(--quad-a); }

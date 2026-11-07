@@ -8,7 +8,7 @@ const GalleryPage = () => (
       crumb="Gallery"
       eyebrow="Our journey"
       title="Every moment in a thousand words"
-      intro="The unforgettable moments captured at Kamaru Challenge events. Tap any photo to open it — swipe or use your arrow keys to move through."
+      intro="The unforgettable moments captured at Kamaru Challenge events. Tap any photo to open it, swipe or use your arrow keys to move through."
     />
     <div className="container mx-auto px-5 md:px-8 py-14">
       <Gallery />

@@ -40,9 +40,9 @@ const MyEntries = ({ season, refreshKey = 0 }) => {
   };
 
   return (
-    <div className="mb-8 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-earth/5">
+    <div className="k-cut-strong mb-8 bg-cream p-6 shadow-xl">
       <h2 className="font-display text-2xl font-bold text-earth">Your entries</h2>
-      <p className="mt-1 text-sm text-earth-600">Entries submitted from this account. You can add more — for example for a group.</p>
+      <p className="mt-1 text-sm text-earth-600">Entries submitted from this account. You can add more, for example for a group.</p>
       <ul className="mt-4 space-y-2">
         <AnimatePresence initial={false}>
           {entries.map((e) => (
@@ -52,7 +52,7 @@ const MyEntries = ({ season, refreshKey = 0 }) => {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="flex items-center gap-3 rounded-2xl bg-cream px-4 py-3"
+              className="flex items-center gap-3 k-quad-shape bg-white px-4 py-3"
             >
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-kamaru/15 text-kamaru-dark">
                 <FaMicrophoneAlt />

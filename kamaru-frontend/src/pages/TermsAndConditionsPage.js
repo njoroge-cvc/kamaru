@@ -25,7 +25,7 @@ const TermsAndConditionsPage = () => {
           By participating in or attending any of our events, you consent to the capturing of photographs, videos, and audio recordings in which you may appear or be heard. These materials are the sole property of the Kamaru Challenge organization.
         </p>
         <p className="text-base">
-          We reserve the right to use this media in any format for promotional, informational, archival, or other legitimate purposes — including but not limited to social media, our official website, and event-related publications — without seeking further permission or offering compensation.
+          We reserve the right to use this media in any format for promotional, informational, archival, or other legitimate purposes, including but not limited to social media, our official website, and event-related publications, without seeking further permission or offering compensation.
         </p>
       </section>
 

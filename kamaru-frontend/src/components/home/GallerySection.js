@@ -39,9 +39,9 @@ const GallerySection = ({ gallery = [] }) => {
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <SectionHeading
             align="left"
-            eyebrow="Our journey"
+            eyebrow="Nī Rūgendo Rwega, Our Journey"
             title="Captured moments, a thousand words each"
-            intro="Since 2024 — the faces, the costumes, the dancing feet and the proud families of Ndeiya."
+            intro="Since 2024, the faces, the costumes, the dancing feet and the proud families of Ndeiya."
           />
           <Reveal>
             <Link

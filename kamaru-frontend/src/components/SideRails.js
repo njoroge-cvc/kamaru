@@ -45,7 +45,7 @@ const SupportTab = () => {
             <motion.span
               className="absolute left-1/2 top-0 flex -translate-x-1/2 flex-col items-center"
               animate={reduce ? undefined : { y: ["0%", "-50%"] }}
-              transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+              transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
             >
               {[0, 1].map((k) => (
                 <span

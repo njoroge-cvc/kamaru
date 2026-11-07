@@ -19,9 +19,9 @@ const VideosSection = ({ videos = [] }) => {
           <SectionHeading
             light
             align="left"
-            eyebrow="On stage"
-            title="Hear the voices"
-            intro="Poetry, folk songs and original music — performed in Kikuyu, straight from the Kamaru stage."
+            eyebrow="Mīgambo ya Mītugo na Kīhoto"
+            title="Listen to the Voices"
+            intro="Poetry, folk songs and original music, performed in Kikuyu, straight from the Kamaru stage."
           />
           <SoundBars bars={32} className="hidden md:flex h-20" color="#D57500" />
         </div>
@@ -41,11 +41,11 @@ const VideosSection = ({ videos = [] }) => {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.08 }}
-                  className={`group flex w-64 lg:w-auto shrink-0 gap-3 rounded-2xl p-2 text-left transition ${
-                    i === active ? "bg-cream/15 ring-1 ring-kamaru" : "hover:bg-cream/5"
+                  className={`k-quad group flex w-64 lg:w-auto shrink-0 gap-3 p-2.5 text-left ${
+                    i === active ? "bg-kamaru text-earth" : "bg-cream/5 hover:bg-cream/15"
                   }`}
                 >
-                  <span className="relative aspect-video w-28 shrink-0 overflow-hidden rounded-xl">
+                  <span className="relative aspect-video w-28 shrink-0 overflow-hidden k-quad-shape">
                     <img src={youTubeThumb(v.youtube_id)} alt="" loading="lazy" className="h-full w-full object-cover" />
                     <span className="absolute inset-0 grid place-items-center bg-earth/30 opacity-0 group-hover:opacity-100 transition">
                       <FaPlay className="text-cream" />

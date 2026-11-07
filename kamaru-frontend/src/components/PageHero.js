@@ -16,7 +16,7 @@ const PageHero = ({ crumb, eyebrow, title, intro }) => (
         <span className="mx-2">/</span>
         <span className="text-cream">{crumb}</span>
       </nav>
-      <p className="mt-8 text-xs md:text-sm font-semibold uppercase tracking-[0.25em] text-kamaru-light">{eyebrow}</p>
+      <p className="k-eyebrow mt-8 text-kamaru-light">{eyebrow}</p>
       <motion.div
         className="mt-4 inline-block max-w-4xl bg-kamaru px-6 py-5 md:px-10 md:py-7 text-earth shadow-2xl"
         style={{ clipPath: "polygon(1.5% 8%, 100% 0, 98.5% 100%, 0 94%)" }}

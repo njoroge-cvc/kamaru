@@ -15,9 +15,9 @@ export const PartnerSection = () => (
   <section id="partner" className="relative bg-cream overflow-hidden">
     <div className="container mx-auto px-5 md:px-8 py-24 md:py-32">
       <SectionHeading
-        eyebrow="Walk with us"
+        eyebrow="Nītūnyitanire Tūnyitanirire, walk with us"
         title="A fire is kept alive by many hands"
-        intro="Our initiatives are offered free of charge — seeds sown for generations to come. Here is how you can help them grow."
+        intro="Our initiatives are offered free of charge, seeds sown for generations to come. Here is how you can help them grow."
       />
       <Stagger className="mt-16 grid md:grid-cols-3 gap-6">
         {PARTNERSHIPS.map((p, i) => {
@@ -35,7 +35,7 @@ export const PartnerSection = () => (
                   whileHover={{ scale: 1.6 }}
                 />
                 <span
-                  className="relative grid h-14 w-14 place-items-center rounded-2xl text-2xl text-cream"
+                  className="relative grid h-14 w-14 place-items-center k-quad-shape text-2xl text-cream"
                   style={{ backgroundColor: P_COLORS[i] }}
                 >
                   <Icon />
@@ -65,10 +65,10 @@ export const ContactSection = () => (
       <SectionHeading
         light
         align="left"
-        eyebrow="Talk to us"
+        eyebrow="Twaririe, Talk to Us"
         title="Have a question? Reach out."
-        intro="Contestants, parents, partners, journalists — we'd love to hear from you."
-        className="[&_p]:!text-cream/90 [&_span.h-px]:!bg-cream"
+        intro="Contestants, parents, partners, journalists, we'd love to hear from you."
+        className="[&_p]:!text-cream/90"
       />
       <Reveal delay={0.15} className="relative">
         {/* The spinning sun anchors the form, peeking out behind its top-right corner */}

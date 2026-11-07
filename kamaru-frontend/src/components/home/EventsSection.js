@@ -4,7 +4,7 @@ import { HashLink } from "react-router-hash-link";
 import { FaRegBell } from "react-icons/fa";
 import EventCard from "../EventCard";
 import { Reveal, SectionHeading, Stagger, StaggerItem, EASE } from "../motion";
-import { PROGRAMME, EDITION } from "../../content/story";
+import { ACTIVITIES } from "../../content/story";
 
 const Tab = ({ active, onClick, children, count }) => (
   <button
@@ -35,9 +35,9 @@ const EventsSection = ({ upcoming = [], past = [] }) => {
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
           <SectionHeading
             align="left"
-            eyebrow="Gatherings"
-            title="Come sit by the fire"
-            intro="Competitions, camps, retreats and healing days — open to the whole community."
+            eyebrow="Other activities"
+            title="The More, Come sit by the Fire"
+            intro="Competitions, camps, retreats and healing days, open to the whole community."
           />
           <Reveal className="flex gap-1 k-quad-shape bg-cream p-1.5 self-start lg:self-end">
             <Tab active={tab === "upcoming"} onClick={() => setTab("upcoming")} count={upcoming.length}>
@@ -92,35 +92,21 @@ const EventsSection = ({ upcoming = [], past = [] }) => {
           </motion.div>
         </AnimatePresence>
 
-        {/* A day at the challenge */}
-        <div className="mt-24 grid lg:grid-cols-[1fr_1.4fr] gap-12">
-          <div className="lg:sticky lg:top-28 self-start">
-            <SectionHeading
-              align="left"
-              eyebrow={`${EDITION.year} programme`}
-              title="A day at the Challenge"
-              intro="From the first drumbeat at nine to the last photo at sunset — this is how Ndeiya sings."
-            />
-          </div>
-          <Stagger className="relative space-y-3" stagger={0.07}>
-            {PROGRAMME.map((p, i) => (
-              <StaggerItem
-                key={p.time + p.title}
-                className="group flex gap-5 rounded-2xl bg-cream p-5 shadow-sm ring-1 ring-earth/5 transition hover:bg-white hover:shadow-md"
-              >
-                <span className="w-16 shrink-0 font-display text-2xl font-black text-kamaru tabular-nums">{p.time}</span>
-                <div>
-                  <p className="font-semibold text-earth text-lg">{p.title}</p>
-                  {p.note && <p className="text-earth-600">{p.note}</p>}
-                </div>
-                <span
-                  className="ml-auto mt-2 h-3 w-3 shrink-0 rounded-full transition-transform group-hover:scale-150"
-                  style={{ backgroundColor: ["#D7262E", "#2588C9", "#3E9B4F", "#E8B21E"][i % 4] }}
-                />
-              </StaggerItem>
-            ))}
-          </Stagger>
-        </div>
+        {/* Activities held in our spaces */}
+        <Reveal className="mt-16">
+          <p className="font-display text-2xl text-ochre">Held in our spaces since 2022, all free of charge</p>
+        </Reveal>
+        <Stagger className="mt-5 flex flex-wrap gap-3" stagger={0.06}>
+          {ACTIVITIES.map((a, i) => (
+            <StaggerItem
+              key={a}
+              className="k-quad-shape px-5 py-3 font-semibold text-cream"
+              style={{ backgroundColor: ["#B5441B", "#3F6A5E", "#262C45", "#62293B", "#3E9B4F"][i % 5] }}
+            >
+              {a}
+            </StaggerItem>
+          ))}
+        </Stagger>
       </div>
     </section>
   );

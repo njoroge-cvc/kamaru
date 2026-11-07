@@ -245,3 +245,18 @@ export const verifyNewsletter = (token) =>
 export const sendContactMessage = (data) => api.post("/contact", data);
 
 export default api;
+
+// ---------------------------------------------------------------------------
+// Blog
+// ---------------------------------------------------------------------------
+const authHeaders = (multipart) => ({
+  Authorization: `Bearer ${localStorage.getItem("token")}`,
+  ...(multipart ? { "Content-Type": "multipart/form-data" } : {}),
+});
+export const fetchBlogPosts = () => api.get("/blog/");
+export const fetchBlogPost = (slug) => api.get(`/blog/${encodeURIComponent(slug)}`);
+export const fetchAllBlogPosts = () => api.get("/blog/admin/all", { headers: authHeaders() });
+export const createBlogPost = (formData) => api.post("/blog/", formData, { headers: authHeaders(true) });
+export const updateBlogPost = (id, formData) => api.put(`/blog/${id}`, formData, { headers: authHeaders(true) });
+export const deleteBlogPost = (id) => api.delete(`/blog/${id}`, { headers: authHeaders() });
+export const fetchDashboardStats = () => api.get("/stats/dashboard", { headers: authHeaders() });

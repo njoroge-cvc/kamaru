@@ -60,7 +60,7 @@ return (
       <div className="absolute bottom-0 left-0 right-0 max-w-7xl mx-auto px-6 pb-10 text-white">
         
         <span
-          className={`inline-block px-4 py-2 text-sm font-semibold rounded-full mb-4 ${
+          className={`inline-block px-4 py-2 text-sm font-semibold k-quad-shape mb-4 ${
             event.status === "upcoming"
               ? "bg-bead-green text-cream"
               : event.status === "past"
@@ -84,7 +84,7 @@ return (
             href={event.registration_link}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block mt-6 bg-kamaru hover:bg-kamaru-light text-earth px-8 py-4 rounded-xl font-semibold transition-all"
+            className="inline-block mt-6 bg-kamaru hover:bg-kamaru-light text-earth px-8 py-4 k-quad font-semibold transition-all"
           >
             Register Now
           </a>
@@ -209,7 +209,7 @@ return (
                   href={event.registration_link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block text-center mt-8 bg-kamaru hover:bg-kamaru-light text-earth py-4 rounded-xl font-semibold transition"
+                  className="block text-center mt-8 bg-kamaru hover:bg-kamaru-light text-earth py-4 k-quad font-semibold transition"
                 >
                   Register Now
                 </a>

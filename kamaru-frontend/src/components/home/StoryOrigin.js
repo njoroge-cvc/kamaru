@@ -52,13 +52,17 @@ const ScrollFade = ({ children, className = "", offset = ["start 0.95", "start 0
   );
 };
 
-const FAULT_LINES = ["Broken families", "Alcoholism", "Youth — especially men — disengaged from family and community"];
+const FAULT_LINES = [
+  { text: "Broken families", bg: "#D7262E" },
+  { text: "Alcoholism", bg: "#2588C9" },
+  { text: "Youth, especially men, disengaged from family and community", bg: "#3E9B4F" },
+];
 
 const StoryOrigin = () => (
   <section id="story" className="relative overflow-hidden bg-cream">
     <div className="container mx-auto flex max-w-4xl flex-col items-center px-5 py-24 text-center md:px-8 md:py-36">
       <ScrollFade offset={["start 0.95", "start 0.75"]}>
-        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-ochre md:text-sm">Kuhurutira Mwaki, Fanning the Flame</p>
+        <p className="k-eyebrow text-ochre">Kūhurutira Mwaki na Nyīmbo. Fanning the Flame with music</p>
       </ScrollFade>
 
       {/* The quote */}
@@ -70,17 +74,17 @@ const StoryOrigin = () => (
         />
         <ScrollLit
           as="footer"
-          parts={[`— ${QUOTE.author}, ${QUOTE.role}`]}
-          className="mt-6 text-earth-600"
-          dim="#A07A45"
-          bright="#4E3221"
+          parts={[`${QUOTE.author}, ${QUOTE.role}`]}
+          className="mt-6 font-semibold"
+          dim="#9CCBA5"
+          bright="#3E9B4F"
           offset={["start 0.9", "end 0.75"]}
         />
       </blockquote>
 
       {/* Flame anchor */}
       <ScrollFade className="mt-20 md:mt-28">
-        <img src={flame} alt="" aria-hidden="true" className="mx-auto w-24 md:w-32" />
+        <img src={flame} alt="" aria-hidden="true" className="mx-auto w-40 md:w-56" />
       </ScrollFade>
 
       {/* The two paragraphs, one after the other */}
@@ -89,21 +93,23 @@ const StoryOrigin = () => (
         parts={[
           "We believe Africans have grown",
           { text: "indifferent", strong: true },
-          "towards the unique values that established them as a dignified and happy community — an indifference hastened by colonial ideologies that taught many to see their own culture as something to be ashamed of.",
+          "towards the unique values that established them as a dignified and happy community, an indifference hastened by colonial ideologies that taught many to see their own culture as something to be ashamed of.",
         ]}
       />
       <ScrollLit
         className="mt-10 text-xl leading-relaxed md:text-2xl"
         parts={[
-          "After independence, material wealth and borrowed education became the marks of a good leader — rather than the timeless values our communities had always taught. The cost is visible in the fault lines around us:",
+          "After independence, material wealth and borrowed education became the marks of a good leader, rather than the timeless values our communities had always taught. The cost is visible in the fault lines around us:",
         ]}
       />
 
       {/* Fault lines, revealed one by one in a single column */}
       <div className="mt-12 flex w-full flex-col items-center gap-4">
         {FAULT_LINES.map((f) => (
-          <ScrollFade key={f} offset={["start 0.95", "start 0.7"]}>
-            <span className="k-quad inline-block bg-ochre/10 px-6 py-3 font-semibold text-ochre-dark md:text-lg">{f}</span>
+          <ScrollFade key={f.text} offset={["start 0.95", "start 0.7"]}>
+            <span className="k-quad inline-block px-6 py-3 font-semibold text-cream md:text-lg" style={{ backgroundColor: f.bg }}>
+              {f.text}
+            </span>
           </ScrollFade>
         ))}
       </div>

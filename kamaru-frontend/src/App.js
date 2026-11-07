@@ -47,6 +47,8 @@ const EventPage = lazyRetry(() => import("./pages/EventPage"));
 const AboutUs = lazyRetry(() => import("./pages/AboutUsPage"));
 const TermsAndConditionsPage = lazyRetry(() => import("./pages/TermsAndConditionsPage"));
 const SupportPage = lazyRetry(() => import("./pages/SupportPage"));
+const BlogPage = lazyRetry(() => import("./pages/BlogPage"));
+const BlogPostPage = lazyRetry(() => import("./pages/BlogPostPage"));
 const VerifyNewsletter = lazyRetry(() => import("./pages/VerifyNewsletter"));
 
 const RouteFallback = () => (
@@ -67,7 +69,7 @@ const FULL_BLEED = [
 const Main = ({ children }) => {
   const { pathname } = useLocation();
   const full =
-    FULL_BLEED.includes(pathname) || pathname.startsWith("/events/") || pathname.startsWith("/admin");
+    FULL_BLEED.includes(pathname) || pathname.startsWith("/events/") || pathname.startsWith("/blog") || pathname.startsWith("/admin");
   return <main className={`flex-grow ${full ? "" : "container mx-auto p-4"}`}>{children}</main>;
 };
 
@@ -92,6 +94,8 @@ const App = () => {
             <Route path="/events/:id" element={<EventPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/videos" element={<VideosPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/:slug" element={<BlogPostPage />} />
             <Route path="/register/user" element={<UserRegistrationForm />} />
             <Route path="/join" element={<UserRegistrationForm />} />
             <Route path="/support" element={<SupportPage />} />

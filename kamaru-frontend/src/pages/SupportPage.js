@@ -51,7 +51,7 @@ const SupportForm = ({ selected, onSelect }) => {
       .join("\n");
     try {
       await sendContactMessage({ name: form.name, email: form.email, message });
-      setStatus({ tone: "success", text: "Asante! Your message is on its way — we’ll get back to you soon." });
+      setStatus({ tone: "success", text: "Asante! Your message is on its way, we’ll get back to you soon." });
       setForm({ name: "", email: "", phone: "", organisation: "", message: "" });
       setAgree(false);
     } catch (err) {
@@ -105,7 +105,7 @@ const SupportForm = ({ selected, onSelect }) => {
         <textarea name="message" rows={5} value={form.message} onChange={set} required className="k-input resize-y" placeholder="What would you like to offer, and when?" />
       </Field>
 
-      <label className="flex items-start gap-3 rounded-2xl bg-cream-dark p-4 text-sm text-earth">
+      <label className="flex items-start gap-3 k-quad-shape bg-cream-dark p-4 text-sm text-earth">
         <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} required className="mt-0.5 h-5 w-5 accent-kamaru" />
         <span>I understand that my support will uphold the Kamaru Challenge mission and its values, and won’t change them.</span>
       </label>
@@ -135,7 +135,7 @@ const SupportPage = () => {
         crumb="Support us"
         eyebrow="Walk with us"
         title="A fire is kept alive by many hands"
-        intro="We welcome collaboration in any form — time, talent, resources or ideas — so long as it carries our mission and values forward rather than changing them."
+        intro="We welcome collaboration in any form, time, talent, resources or ideas, so long as it carries our mission and values forward rather than changing them."
       />
 
       {/* Ways to support */}
@@ -157,7 +157,7 @@ const SupportPage = () => {
                   className="group relative flex h-full w-full flex-col overflow-hidden rounded-[2rem] bg-white p-7 text-left shadow-sm ring-1 ring-earth/5 transition-shadow hover:shadow-xl"
                 >
                   <span className="absolute -right-8 -top-8 h-28 w-28 rounded-full opacity-15 transition-transform duration-500 group-hover:scale-150" style={{ backgroundColor: w.color }} />
-                  <span className="relative grid h-14 w-14 place-items-center rounded-2xl text-2xl text-cream" style={{ backgroundColor: w.color }}>
+                  <span className="relative grid h-14 w-14 place-items-center k-quad-shape text-2xl text-cream" style={{ backgroundColor: w.color }}>
                     <Icon />
                   </span>
                   <h3 className="relative mt-5 font-display text-2xl font-bold text-earth">{w.title}</h3>
@@ -180,11 +180,11 @@ const SupportPage = () => {
               align="left"
               eyebrow="What stays the same"
               title="Our mission is not for sale"
-              intro="We’re grateful for every partner. We also protect what makes this work matter — so these hold for every collaboration."
+              intro="We’re grateful for every partner. We also protect what makes this work matter, so these hold for every collaboration."
             />
             <Reveal className="mt-8 flex flex-wrap gap-2">
               {VALUES.map((v) => (
-                <span key={v.name} className="rounded-full px-3 py-1 text-sm font-semibold text-cream" style={{ backgroundColor: v.color }}>
+                <span key={v.name} className="k-quad-shape px-3 py-1 text-sm font-semibold text-cream" style={{ backgroundColor: v.color }}>
                   {v.name}
                 </span>
               ))}
@@ -209,7 +209,7 @@ const SupportPage = () => {
           <ol className="relative mt-10 space-y-8 border-l-2 border-dashed border-kamaru/40 pl-8">
             {SUPPORT_STEPS.map((s, i) => (
               <Reveal as="li" key={s.title} delay={i * 0.1} className="relative">
-                <span className="absolute -left-[3.05rem] grid h-9 w-9 place-items-center rounded-full bg-kamaru font-bold text-earth">{i + 1}</span>
+                <span className="absolute -left-[3.05rem] grid h-9 w-9 place-items-center k-quad-shape bg-kamaru font-bold text-earth">{i + 1}</span>
                 <h3 className="font-display text-xl font-bold text-earth">{s.title}</h3>
                 <p className="text-earth-700">{s.text}</p>
               </Reveal>
