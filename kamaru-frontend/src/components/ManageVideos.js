@@ -1,6 +1,8 @@
+import { toast } from "react-toastify";
 import React, { useEffect, useState } from "react";
 import { fetchVideos, addVideo, deleteVideo } from "../api";
 import { FaTrash, FaPlay, FaPlus, FaTimes } from "react-icons/fa";
+import { extractYouTubeID } from "../utils/youtube";
 
 const ManageVideos = () => {
   const [videos, setVideos] = useState([]);
@@ -17,7 +19,7 @@ const ManageVideos = () => {
     e.preventDefault();
     addVideo(newVideo)
       .then(() => {
-        alert("Video added successfully!");
+        toast.success("Video added successfully!");
         setNewVideo({ title: "", youtube_url: "" });
         setShowForm(false);
         fetchVideos().then((response) => setVideos(response.data.videos));
@@ -29,7 +31,7 @@ const ManageVideos = () => {
     if (window.confirm("Are you sure you want to delete this video?")) {
       deleteVideo(videoId)
         .then(() => {
-          alert("Video deleted successfully!");
+          toast.success("Video deleted successfully!");
           setVideos(videos.filter((video) => video.id !== videoId));
         })
         .catch((error) => console.error("Error deleting video:", error));
@@ -37,27 +39,27 @@ const ManageVideos = () => {
   };
 
   return (
-    <div className="p-6 bg-white shadow-md rounded-md">
-      <h2 className="text-2xl font-semibold text-[#8F3B1B] mb-4">Manage Videos</h2>
+    <div >
+      <h2 className="k-h2 mb-6">Manage Videos</h2>
 
       {/* Add Video Button */}
       <button
         onClick={() => setShowForm(true)}
-        className="bg-[#D57500] text-white px-4 py-2 rounded-md flex items-center space-x-2 mb-4 hover:bg-[#8F3B1B] transition"
+        className="k-btn-primary mb-6"
       >
         <FaPlus />
         <span>Add Video</span>
       </button>
 
       {/* Video List */}
-      <h3 className="text-lg font-semibold text-[#8F3B1B] mb-3">Existing Videos</h3>
+      <h3 className="font-display text-xl font-bold text-earth mb-3">Existing Videos</h3>
       {videos.length === 0 ? (
-        <p className="text-gray-600">No videos added yet.</p>
+        <p className="text-earth-600">No videos added yet.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {videos.map((video) => (
-            <div key={video.id} className="bg-gray-100 p-4 rounded-md shadow-sm">
-              <h4 className="font-semibold text-[#8F3B1B] mb-2">{video.title}</h4>
+            <div key={video.id} className="k-card p-4">
+              <h4 className="font-semibold text-earth mb-2">{video.title}</h4>
               <div className="aspect-w-16 aspect-h-9 mb-3">
                 <iframe
                   src={`https://www.youtube.com/embed/${extractYouTubeID(video.youtube_url)}`}
@@ -71,14 +73,14 @@ const ManageVideos = () => {
                   href={video.youtube_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 flex items-center space-x-1 hover:text-blue-800"
+                  className="k-btn-ghost k-btn-sm"
                 >
                   <FaPlay />
                   <span>Watch</span>
                 </a>
                 <button
                   onClick={() => handleDeleteVideo(video.id)}
-                  className="text-red-600 hover:text-red-800 flex items-center space-x-1"
+                  className="k-btn-ghost k-btn-sm hover:!text-bead-red"
                 >
                   <FaTrash />
                   <span>Delete</span>
@@ -91,11 +93,11 @@ const ManageVideos = () => {
 
       {/* Add Video Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-md shadow-lg w-96">
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-earth/60 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl bg-cream p-6 shadow-2xl">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold text-[#8F3B1B]">Add New Video</h3>
-              <button onClick={() => setShowForm(false)} className="text-gray-600 hover:text-gray-900">
+              <h3 className="font-display text-xl font-bold text-earth">Add New Video</h3>
+              <button onClick={() => setShowForm(false)} className="k-icon-btn">
                 <FaTimes className="text-xl" />
               </button>
             </div>
@@ -107,7 +109,7 @@ const ManageVideos = () => {
                 onChange={(e) =>
                   setNewVideo({ ...newVideo, title: e.target.value })
                 }
-                className="w-full border border-gray-300 p-2 rounded-md"
+                className="k-input"
                 required
               />
               <input
@@ -117,20 +119,20 @@ const ManageVideos = () => {
                 onChange={(e) =>
                   setNewVideo({ ...newVideo, youtube_url: e.target.value })
                 }
-                className="w-full border border-gray-300 p-2 rounded-md"
+                className="k-input"
                 required
               />
               <div className="flex justify-end space-x-3 mt-4">
                 <button
                   type="button"
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md"
+                  className="k-btn-ghost"
                   onClick={() => setShowForm(false)}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-[#D57500] text-white px-4 py-2 rounded-md"
+                  className="k-btn-primary"
                 >
                   Add Video
                 </button>
@@ -141,14 +143,6 @@ const ManageVideos = () => {
       )}
     </div>
   );
-};
-
-// Helper function to extract YouTube video ID
-const extractYouTubeID = (url) => {
-  const match = url.match(
-    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\\s]{11})/
-  );
-  return match ? match[1] : "";
 };
 
 export default ManageVideos;

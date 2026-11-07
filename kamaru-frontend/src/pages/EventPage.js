@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { cld } from "../utils/cloudinary";
 import { useParams, Link } from "react-router-dom";
 import { fetchEvent } from "../api";
 
@@ -27,12 +28,12 @@ const EventPage = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-[#8F3B1B] border-opacity-75"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-ochre-dark border-opacity-75"></div>
       </div>
     );
   }
 
-  if (!event) return <p className="text-center text-red-500">Event not found.</p>;
+  if (!event) return <p className="text-center text-bead-red">Event not found.</p>;
 
   const formattedDate = new Intl.DateTimeFormat("en-US", {
     weekday: "long",
@@ -44,12 +45,12 @@ const EventPage = () => {
   }).format(new Date(event.date_time));
 
 return (
-  <div className="bg-[#F8F8F8] min-h-screen">
+  <div className="bg-cream min-h-screen">
     
     {/* Hero Section */}
     <div className="relative h-[500px] md:h-[600px] overflow-hidden">
       <img
-        src={event.image_url}
+        src={cld(event.image_url, 1920)}
         alt={event.title}
         className="w-full h-full object-cover"
       />
@@ -61,16 +62,16 @@ return (
         <span
           className={`inline-block px-4 py-2 text-sm font-semibold rounded-full mb-4 ${
             event.status === "upcoming"
-              ? "bg-green-500 text-white"
+              ? "bg-bead-green text-cream"
               : event.status === "past"
-              ? "bg-gray-700 text-white"
-              : "bg-red-500 text-white"
+              ? "bg-earth-600 text-cream"
+              : "bg-bead-red text-cream"
           }`}
         >
           {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
         </span>
 
-        <h1 className="text-4xl md:text-6xl font-bold mb-4">
+        <h1 className="font-display text-4xl md:text-6xl font-black mb-4">
           {event.title}
         </h1>
 
@@ -83,7 +84,7 @@ return (
             href={event.registration_link}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block mt-6 bg-[#D57500] hover:bg-[#b86500] text-white px-8 py-4 rounded-xl font-semibold transition-all"
+            className="inline-block mt-6 bg-kamaru hover:bg-kamaru-light text-earth px-8 py-4 rounded-xl font-semibold transition-all"
           >
             Register Now
           </a>
@@ -93,16 +94,16 @@ return (
 
     {/* Breadcrumb */}
     <div className="max-w-7xl mx-auto px-6 py-6">
-      <nav className="text-sm text-gray-600">
-        <Link to="/" className="hover:text-[#D57500]">
+      <nav className="text-sm text-earth-600">
+        <Link to="/" className="hover:text-kamaru">
           Home
         </Link>
         {" / "}
-        <Link to="/#events" className="hover:text-[#D57500]">
+        <Link to="/#events" className="hover:text-kamaru">
           Events
         </Link>
         {" / "}
-        <span className="text-gray-800">{event.title}</span>
+        <span className="text-earth">{event.title}</span>
       </nav>
     </div>
 
@@ -116,24 +117,24 @@ return (
 
           {/* Theme */}
           {event.theme && (
-            <div className="bg-white rounded-2xl shadow-sm p-8 mb-8">
-              <h2 className="text-sm uppercase tracking-widest text-[#D57500] font-semibold mb-3">
+            <div className="bg-white rounded-3xl shadow-sm ring-1 ring-earth/5 p-8 mb-8">
+              <h2 className="text-sm uppercase tracking-widest text-kamaru font-semibold mb-3">
                 Theme
               </h2>
 
-              <h3 className="text-2xl md:text-3xl font-bold text-[#333]">
+              <h3 className="text-2xl md:text-3xl font-bold text-earth">
                 {event.theme}
               </h3>
             </div>
           )}
 
           {/* Details */}
-          <div className="bg-white rounded-2xl shadow-sm p-8">
-            <h2 className="text-2xl font-bold text-[#333] mb-6">
+          <div className="bg-white rounded-3xl shadow-sm ring-1 ring-earth/5 p-8">
+            <h2 className="text-2xl font-bold text-earth mb-6">
               About This Event
             </h2>
 
-            <p className="text-gray-700 leading-8 whitespace-pre-line">
+            <p className="text-earth-700 leading-8 whitespace-pre-line">
               {event.details}
             </p>
           </div>
@@ -143,28 +144,28 @@ return (
         {/* Sidebar */}
         <div>
 
-          <div className="bg-white rounded-2xl shadow-sm p-6 sticky top-24">
+          <div className="bg-white rounded-3xl shadow-sm ring-1 ring-earth/5 p-6 sticky top-24">
 
-            <h3 className="text-xl font-bold text-[#333] mb-6">
+            <h3 className="text-xl font-bold text-earth mb-6">
               Event Information
             </h3>
 
             <div className="space-y-5">
 
               <div>
-                <p className="text-sm text-gray-500 uppercase">
+                <p className="text-sm text-earth-600 uppercase">
                   Date & Time
                 </p>
-                <p className="font-medium text-[#333]">
+                <p className="font-medium text-earth">
                   {formattedDate}
                 </p>
               </div>
 
               <div>
-                <p className="text-sm text-gray-500 uppercase">
+                <p className="text-sm text-earth-600 uppercase">
                   Location
                 </p>
-                <p className="font-medium text-[#333]">
+                <p className="font-medium text-earth">
                   {event.location}
                 </p>
 
@@ -173,7 +174,7 @@ return (
                     href={event.map_link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-block mt-2 text-[#D57500] hover:underline"
+                    className="inline-block mt-2 text-kamaru hover:underline"
                   >
                     View on Map →
                   </a>
@@ -181,21 +182,21 @@ return (
               </div>
 
               <div>
-                <p className="text-sm text-gray-500 uppercase">
+                <p className="text-sm text-earth-600 uppercase">
                   Cost
                 </p>
 
-                <p className="font-medium text-[#333]">
+                <p className="font-medium text-earth">
                   {event.cost || "Free"}
                 </p>
               </div>
 
               <div>
-                <p className="text-sm text-gray-500 uppercase">
+                <p className="text-sm text-earth-600 uppercase">
                   Status
                 </p>
 
-                <p className="font-medium text-[#333] capitalize">
+                <p className="font-medium text-earth capitalize">
                   {event.status}
                 </p>
               </div>
@@ -208,7 +209,7 @@ return (
                   href={event.registration_link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block text-center mt-8 bg-[#D57500] hover:bg-[#b86500] text-white py-4 rounded-xl font-semibold transition"
+                  className="block text-center mt-8 bg-kamaru hover:bg-kamaru-light text-earth py-4 rounded-xl font-semibold transition"
                 >
                   Register Now
                 </a>
@@ -219,13 +220,13 @@ return (
       </div>
 
       {/* Bottom CTA */}
-      <div className="mt-16 bg-white rounded-2xl shadow-sm p-10 text-center">
+      <div className="mt-16 bg-white rounded-3xl shadow-sm ring-1 ring-earth/5 p-10 text-center">
 
-        <h2 className="text-3xl font-bold text-[#333] mb-4">
+        <h2 className="text-3xl font-bold text-earth mb-4">
           Join Us For This Experience
         </h2>
 
-        <p className="text-gray-600 max-w-2xl mx-auto mb-6">
+        <p className="text-earth-600 max-w-2xl mx-auto mb-6">
           Be part of a meaningful community gathering that celebrates
           creativity, culture, learning and connection.
         </p>
@@ -238,7 +239,7 @@ return (
                 href={event.registration_link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-[#D57500] text-white px-8 py-4 rounded-xl hover:bg-[#b86500] transition"
+                className="k-btn-primary px-8 py-4"
               >
                 Register Now
               </a>
@@ -246,7 +247,7 @@ return (
 
           <button
             onClick={() => navigate(-1)}
-            className="bg-[#333] text-white px-8 py-4 rounded-xl hover:opacity-90 transition"
+            className="k-btn-dark px-8 py-4"
           >
             ← Back to Events
           </button>

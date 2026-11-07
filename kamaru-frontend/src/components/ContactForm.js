@@ -1,95 +1,48 @@
 import React, { useState } from "react";
 import { sendContactMessage } from "../api";
+import { Field, Alert, Spinner } from "./ui";
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
-  const [message, setMessage] = useState({ text: "", type: "" });
+  const [status, setStatus] = useState(null); // { tone, text }
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage({ text: "", type: "" });
+    setStatus(null);
     setIsSubmitting(true);
-
     try {
-      await sendContactMessage(formData);
-      setMessage({ text: "Message sent successfully!", type: "success" });
+      const { data } = await sendContactMessage(formData);
+      setStatus({ tone: "success", text: data?.message || "Message sent successfully!" });
       setFormData({ name: "", email: "", message: "" });
     } catch (error) {
-      setMessage({ text: "Failed to send message. Please try again.", type: "error" });
+      setStatus({ tone: "error", text: error.response?.data?.error || "Failed to send message. Please try again." });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="p-9 rounded-lg">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Name and Email Fields */}
-        <div className="md:flex md:gap-4">
-          <label className="block md:w-1/2">
-            <span className="text-[#333] font-semibold">Your Name</span>
-            <input
-              type="text"
-              name="name"
-              placeholder="Enter your name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 border border-[#D57500] rounded-md focus:outline-none focus:ring-2 focus:ring-[#F4A261]"
-            />
-          </label>
-
-          <label className="block md:w-1/2">
-            <span className="text-[#333] font-semibold">Your Email</span>
-            <input
-              type="email"
-              name="email"
-              placeholder="Enter your email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 border border-[#D57500] rounded-md focus:outline-none focus:ring-2 focus:ring-[#F4A261]"
-            />
-          </label>
-        </div>
-
-        {/* Message Field */}
-        <label className="block">
-          <span className="text-[#333] font-semibold">Your Message</span>
-          <textarea
-            name="message"
-            placeholder="Type your message here"
-            value={formData.message}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-3 border border-[#D57500] rounded-md focus:outline-none focus:ring-2 focus:ring-[#F4A261]"
-          ></textarea>
-        </label>
-
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className={`w-full py-2 rounded-md text-sm transition duration-300 text-white ${
-            isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-[#D57500] hover:bg-[#333]"
-          }`}
-        >
-          {isSubmitting ? "Sending..." : "Send Message"}
-        </button>
-      </form>
-
-      {/* Success/Error Message */}
-      {message.text && (
-        <p className={`text-center mt-4 ${message.type === "success" ? "text-green-600" : "text-red-600"}`}>
-          {message.text}
-        </p>
-      )}
-    </div>
+    <form onSubmit={handleSubmit} className="space-y-5 p-6 md:p-8">
+      <div className="grid gap-5 md:grid-cols-2">
+        <Field label="Your name">
+          <input name="name" value={formData.name} onChange={handleChange} required autoComplete="name" className="k-input" placeholder="Wanjiku Kamau" />
+        </Field>
+        <Field label="Your email">
+          <input type="email" name="email" value={formData.email} onChange={handleChange} required autoComplete="email" className="k-input" placeholder="you@example.com" />
+        </Field>
+      </div>
+      <Field label="Your message">
+        <textarea name="message" rows={5} value={formData.message} onChange={handleChange} required className="k-input resize-y" placeholder="How can we help?" />
+      </Field>
+      {status && <Alert tone={status.tone}>{status.text}</Alert>}
+      <button type="submit" disabled={isSubmitting} className="k-btn-primary w-full py-3">
+        {isSubmitting && <Spinner />}
+        {isSubmitting ? "Sending…" : "Send message"}
+      </button>
+    </form>
   );
 };
 

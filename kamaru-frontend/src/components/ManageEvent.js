@@ -36,7 +36,7 @@ const ManageEvent = () => {
 
   const loadEvents = async () => {
     try {
-      const response = await fetchEvents();
+      const response = await fetchEvents("all");
       setEvents(response.data);
     } catch (error) {
       toast.error("Failed to load events.");
@@ -129,7 +129,7 @@ const ManageEvent = () => {
 
     // Format date_time for input field (YYYY-MM-DDTHH:MM) and handle null case gracefully
     const formattedDateTime = event.date_time // Check if date_time exists before formatting
-    ? new Date(event.date_time).toISOString().slice(0, 16) // Format for datetime-local input
+    ? event.date_time.slice(0, 16) // Backend stores naive local time; use it as-is (toISOString would shift it to UTC)
     : ""; // If date_time is null or undefined, set it to an empty string to avoid errors
     
     // Populate form data with existing event details
@@ -159,9 +159,9 @@ const ManageEvent = () => {
   };
 
   return (
-    <div className="p-0 md:p-6 bg-white rounded-md shadow-md">
+    <div >
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
-        <h2 className="text-xl md:text-2xl font-semibold text-[#333]">Manage Events</h2>
+        <h2 className="k-h2">Manage Events</h2>
         <button
           onClick={() => {
             setEditMode(false);
@@ -180,16 +180,16 @@ const ManageEvent = () => {
             });
             setShowForm(true);
           }}
-          className="bg-[#D57500] text-white px-3 py-2 rounded hover:bg-[#333] flex items-center gap-2 w-full sm:w-auto"
+          className="k-btn-primary w-full sm:w-auto"
         >
           <FaPlus /> <span>Create Event</span>
         </button>
       </div>
 
       <div className="relative w-full mt-4">
-        <div className="overflow-x-auto">
-          <table className="min-w-[900px] w-full border border-gray-200 rounded-md">
-            <thead className="bg-[#D57500] text-white">
+        <div className="k-table-wrap bg-white">
+          <table className="k-table min-w-[900px]">
+            <thead >
               <tr>
                 <th className="p-2 text-left">Title</th>
                 <th className="p-2 text-left">Theme</th>
@@ -215,9 +215,9 @@ const ManageEvent = () => {
                     <td className="p-2 max-w-[120px] break-words whitespace-normal text-xs sm:text-sm">
                       {isExpanded ? (
                         <>
-                          <div dangerouslySetInnerHTML={{ __html: event.details }} />
+                          <div className="whitespace-pre-line">{event.details}</div>
                           <button
-                            className="text-[#D57500] text-xs underline mt-1"
+                            className="text-ochre text-xs font-semibold underline mt-1"
                             onClick={() => toggleExpand(event.id)}
                           >
                             Show less
@@ -228,7 +228,7 @@ const ManageEvent = () => {
                           <span>{preview}</span>
                           {plainDetails.length > 60 && (
                             <button
-                              className="text-[#D57500] text-xs underline ml-1"
+                              className="text-ochre text-xs font-semibold underline ml-1"
                               onClick={() => toggleExpand(event.id)}
                             >
                               Show more
@@ -248,10 +248,10 @@ const ManageEvent = () => {
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-semibold ${
                           event.status === "upcoming"
-                            ? "bg-green-100 text-green-800"
+                            ? "bg-bead-green/15 text-bead-green"
                             : event.status === "past"
-                            ? "bg-gray-100 text-gray-800"
-                            : "bg-red-100 text-red-800"
+                            ? "bg-earth/10 text-earth"
+                            : "bg-bead-red/10 text-bead-red"
                         }`}
                       >
                         {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
@@ -280,13 +280,13 @@ const ManageEvent = () => {
                     <td className="p-2 flex flex-col md:flex-row gap-2">
                       <button
                         onClick={() => handleEdit(event)}
-                        className="bg-[#D57500] text-white px-3 py-1 rounded hover:bg-[#c26a00] flex items-center gap-1 justify-center"
+                        className="k-btn-outline k-btn-sm"
                       >
                         <FaEdit /> <span className="hidden md:inline">Edit</span>
                       </button>
                       <button
                         onClick={() => handleDelete(event.id)}
-                        className="bg-[#333] text-white px-3 py-1 rounded hover:bg-[#222] flex items-center gap-1 justify-center"
+                        className="k-btn-ghost k-btn-sm hover:!text-bead-red"
                       >
                         <FaTrash /> <span className="hidden md:inline">Delete</span>
                       </button>
@@ -300,15 +300,15 @@ const ManageEvent = () => {
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white w-[95%] md:w-[700px] p-6 rounded-md shadow-xl">
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-earth/60 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl bg-cream p-6 shadow-2xl">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold text-[#8F3B1B]">
+              <h3 className="font-display text-xl font-bold text-earth">
                 {editMode ? "Edit Event" : "Create Event"}
               </h3>
               <button
                 onClick={() => setShowForm(false)}
-                className="text-[#333] hover:text-[#D57500]"
+                className="k-icon-btn"
               >
                 <FaTimes />
               </button>
@@ -321,7 +321,7 @@ const ManageEvent = () => {
                 onChange={handleChange}
                 placeholder="Event Title"
                 required
-                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-[#D57500]"
+                className="k-input"
               />
               <input
                 type="text"
@@ -330,11 +330,11 @@ const ManageEvent = () => {
                 onChange={handleChange}
                 placeholder="Event Theme"
                 required
-                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-[#D57500]"
+                className="k-input"
               />
               <div>
-                <label className="block text-sm mb-1 font-medium">Details</label>
-                <div className="w-full border rounded p-2">
+                <label className="k-label">Details</label>
+                <div className="k-input">
                   <LexicalEditor
                     initialContent={formData.details}
                     onChange={handleDetailsChange}
@@ -347,7 +347,7 @@ const ManageEvent = () => {
                 value={formData.date_time}
                 onChange={handleChange}
                 required
-                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-[#D57500]"
+                className="k-input"
               />
               <input
                 type="text"
@@ -356,12 +356,12 @@ const ManageEvent = () => {
                 onChange={handleChange}
                 placeholder="Event Location"
                 required
-                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-[#D57500]"
+                className="k-input"
               />
 
               {/* Event Status */}
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="k-label">
                   Event Status
                 </label>
 
@@ -369,7 +369,7 @@ const ManageEvent = () => {
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
-                  className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-[#D57500]"
+                  className="k-input"
                 >
                   <option value="upcoming">Upcoming</option>
                   <option value="past">Past</option>
@@ -379,7 +379,7 @@ const ManageEvent = () => {
 
               {/* Event Cost */}
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="k-label">
                   Event Cost
                 </label>
 
@@ -389,7 +389,7 @@ const ManageEvent = () => {
                   value={formData.cost}
                   onChange={handleChange}
                   placeholder="Free, KES 500, Donation Based..."
-                  className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-[#D57500]"
+                  className="k-input"
                 />
               </div>
 
@@ -407,14 +407,14 @@ const ManageEvent = () => {
                   }
                 />
                 
-                <label className="text-sm font-medium">
+                <label className="k-label !mb-0">
                     Registration Required
                 </label>
               </div>
 
               {formData.registration_required && (
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="k-label">
                     Registration Link
                   </label>
                   <input
@@ -423,14 +423,14 @@ const ManageEvent = () => {
                     value={formData.registration_link}
                     onChange={handleChange}
                     placeholder="https://example.com/registration"
-                    className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-[#D57500]"
+                    className="k-input"
                   />
                 </div>
               )}
 
               {/* Map Link */}
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="k-label">
                   Map Link (Google Maps URL)
                 </label>
 
@@ -440,7 +440,7 @@ const ManageEvent = () => {
                   value={formData.map_link}
                   onChange={handleChange}
                   placeholder="https://maps.google.com/?q=location"
-                  className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-[#D57500]"
+                  className="k-input"
                 />
               </div>
 
@@ -448,12 +448,12 @@ const ManageEvent = () => {
                 type="file"
                 name="image"
                 onChange={handleChange}
-                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#D57500]"
+                className="k-input"
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#D57500] text-white py-2 rounded hover:bg-[#333] transition"
+                className="k-btn-primary w-full"
               >
                 {loading ? "Processing..." : editMode ? "Update Event" : "Create Event"}
               </button>

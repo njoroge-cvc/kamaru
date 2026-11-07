@@ -1,57 +1,91 @@
 import React from "react";
+import { cld } from "../utils/cloudinary";
 import { Link } from "react-router-dom";
-import { FaCalendarAlt, FaClock, FaMapMarkerAlt } from "react-icons/fa"; // Import appropriate icons
-import { ChevronRightIcon } from "@heroicons/react/24/solid";
+import { motion } from "framer-motion";
+import { FaClock, FaMapMarkerAlt, FaArrowRight } from "react-icons/fa";
 
-const EventCard = ({ event }) => {
+const STATUS_STYLES = {
+  upcoming: "bg-bead-green text-cream",
+  past: "bg-earth-600 text-cream",
+  cancelled: "bg-bead-red text-cream",
+};
+
+const EventCard = ({ event, compact = false }) => {
+  const date = new Date(event.date_time);
+  const isPast = date < new Date();
+  const status = isPast && event.status === "upcoming" ? "past" : event.status || "upcoming";
+
   return (
-    <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transform hover:scale-[1.03] transition-all duration-300 overflow-hidden">
-      <img
-        src={event.image_url}
-        alt={event.title}
-        className="w-full h-56 object-cover rounded-t-2xl"
-      />
-      <div className="p-5">
-        <h3 className="text-lg font-bold text-gray-900 truncate">{event.title}</h3>
+    <motion.article
+      whileHover="hover"
+      initial="rest"
+      animate="rest"
+      className={`group relative flex h-full flex-col overflow-hidden rounded-[2rem] bg-white shadow-md ring-1 ring-earth/5 ${
+        isPast ? "opacity-95" : ""
+      }`}
+    >
+      <Link to={`/events/${event.id}`} className="absolute inset-0 z-10" aria-label={event.title} />
 
-        {/* Date */}
-        <p className="text-sm text-gray-500 mt-2 flex items-center">
-          <FaCalendarAlt className="mr-2 text-[#333]" />
-          {new Date(event.date_time).toLocaleDateString("en-US", {
-            weekday: "short",
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-          })}
-        </p>
+      <div className={`relative overflow-hidden ${compact ? "h-44" : "h-60"}`}>
+        <motion.img
+          src={cld(event.image_url, 800)}
+          alt={event.title}
+          loading="lazy"
+          variants={{ rest: { scale: 1 }, hover: { scale: 1.08 } }}
+          transition={{ duration: 0.6 }}
+          className={`h-full w-full object-cover ${isPast ? "grayscale-[40%]" : ""}`}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-earth/60 via-transparent to-transparent" />
 
-        {/* Time */}
-        <p className="text-sm text-gray-500 mt-1 flex items-center">
-          <FaClock className="mr-2 text-[#333]" />
-          {new Date(event.date_time).toLocaleTimeString("en-US", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </p>
+        {/* Calendar tab */}
+        <div className="absolute left-4 top-4 overflow-hidden rounded-2xl bg-cream text-center shadow-lg">
+          <p className="bg-ochre px-4 py-1 text-[11px] font-bold uppercase tracking-widest text-cream">
+            {date.toLocaleDateString("en-KE", { month: "short" })}
+          </p>
+          <p className="px-4 pt-1 font-display text-3xl font-black leading-none text-earth">{date.getDate()}</p>
+          <p className="pb-1.5 text-[11px] text-earth-600">{date.getFullYear()}</p>
+        </div>
 
-        {/* Location */}
-        <p className="text-sm text-gray-600 mt-2 flex items-center">
-          <FaMapMarkerAlt className="mr-2 text-[#333]" />
-          {event.location}
-        </p>
-
-        {/* Read More Link */}
-        <Link
-          to={`/events/${event.id}`}
-          className="mt-4 inline-flex items-center text-[#D57500] font-semibold hover:text-[#333] transition-colors duration-300"
+        <span
+          className={`absolute right-4 top-4 rounded-full px-3 py-1 text-xs font-semibold capitalize ${
+            STATUS_STYLES[status] || STATUS_STYLES.upcoming
+          }`}
         >
-          <span className="mr-1 transition-transform duration-300 group-hover:translate-x-1">
-            Read More
-          </span>
-          <ChevronRightIcon className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-        </Link>
+          {status}
+        </span>
       </div>
-    </div>
+
+      <div className="flex flex-1 flex-col p-6">
+        {event.theme && (
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ochre line-clamp-1">{event.theme}</p>
+        )}
+        <h3 className="mt-1 font-display text-2xl font-bold leading-tight text-earth line-clamp-2">{event.title}</h3>
+
+        <div className="mt-4 space-y-1.5 text-sm text-earth-700">
+          <p className="flex items-center gap-2">
+            <FaClock className="text-kamaru" />
+            {date.toLocaleDateString("en-KE", { weekday: "long" })} ·{" "}
+            {date.toLocaleTimeString("en-KE", { hour: "2-digit", minute: "2-digit" })}
+          </p>
+          <p className="flex items-center gap-2">
+            <FaMapMarkerAlt className="text-kamaru" />
+            <span className="line-clamp-1">{event.location}</span>
+          </p>
+        </div>
+
+        <div className="mt-auto flex items-center justify-between pt-6">
+          <span className="rounded-full bg-cream px-3 py-1 text-sm font-semibold text-earth">
+            {event.cost || "Free"}
+          </span>
+          <span className="inline-flex items-center gap-2 font-semibold text-ochre">
+            {isPast ? "Look back" : "Details"}
+            <motion.span variants={{ rest: { x: 0 }, hover: { x: 6 } }}>
+              <FaArrowRight />
+            </motion.span>
+          </span>
+        </div>
+      </div>
+    </motion.article>
   );
 };
 

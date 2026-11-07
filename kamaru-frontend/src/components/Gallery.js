@@ -1,23 +1,22 @@
-import React, { useEffect, useState, Fragment, useCallback } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { cld, cldSrcSet } from "../utils/cloudinary";
+import { LayoutGroup, motion } from "framer-motion";
+import { FaExpand } from "react-icons/fa";
 import { fetchGalleryImages } from "../api";
-import { Dialog, Transition } from "@headlessui/react";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
+import Lightbox from "./Lightbox";
+
+const PAGE = 30;
 
 const Gallery = () => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(null);
+  const [year, setYear] = useState("all");
+  const [shown, setShown] = useState(PAGE);
+  const [open, setOpen] = useState(null);
 
   useEffect(() => {
     fetchGalleryImages()
-      .then((response) => {
-        if (response.data && Array.isArray(response.data.images)) {
-          setImages(response.data.images);
-        } else {
-          console.error("Invalid response format:", response.data);
-          setImages([]);
-        }
-      })
+      .then((response) => setImages(Array.isArray(response.data?.images) ? response.data.images : []))
       .catch((error) => {
         console.error("Error fetching gallery images:", error);
         setImages([]);
@@ -25,131 +24,104 @@ const Gallery = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const openModal = (index) => {
-    setSelectedImageIndex(index);
-  };
-
-  const closeModal = () => {
-    setSelectedImageIndex(null);
-  };
-
-  const prevImage = useCallback(() => {
-    setSelectedImageIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
-    );
+  const years = useMemo(() => {
+    const ys = new Set(images.map((i) => new Date(i.uploaded_at).getFullYear()).filter(Boolean));
+    return [...ys].sort((a, b) => b - a);
   }, [images]);
 
-  const nextImage = useCallback(() => {
-    setSelectedImageIndex((prevIndex) =>
-      prevIndex === images.length - 1 ? 0 : prevIndex + 1
-    );
-  }, [images]);
+  const filtered = useMemo(
+    () => (year === "all" ? images : images.filter((i) => new Date(i.uploaded_at).getFullYear() === year)),
+    [images, year]
+  );
+  const visible = filtered.slice(0, shown);
 
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (selectedImageIndex !== null) {
-        if (event.key === "ArrowRight") nextImage();
-        if (event.key === "ArrowLeft") prevImage();
-        if (event.key === "Escape") closeModal();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedImageIndex, nextImage, prevImage]);
+  const pickYear = (y) => {
+    setYear(y);
+    setShown(PAGE);
+  };
+
+  if (loading) {
+    return (
+      <div className="columns-2 sm:columns-3 lg:columns-4 gap-4">
+        {Array.from({ length: 12 }).map((_, i) => (
+          <div
+            key={i}
+            className="mb-4 animate-pulse rounded-2xl bg-cream-dark"
+            style={{ height: 160 + ((i * 53) % 140) }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (!images.length) {
+    return <p className="py-16 text-center text-earth-600">No images available yet.</p>;
+  }
 
   return (
-    <div className="bg-white px-4 py-8 h-auto">
-
-      {/* Loading Spinner */}
-      {loading && (
-        <div className="flex justify-center items-center py-10">
-          <div className="w-12 h-12 border-4 border-[#D57500] border-t-transparent rounded-full animate-spin"></div>
-        </div>
+    <div>
+      {years.length > 1 && (
+        <LayoutGroup>
+          <div className="mb-10 flex flex-wrap justify-center gap-2">
+            {["all", ...years].map((y) => (
+              <button
+                key={y}
+                onClick={() => pickYear(y)}
+                className={`relative rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
+                  year === y ? "text-cream" : "text-earth hover:text-ochre"
+                }`}
+              >
+                {year === y && (
+                  <motion.span layoutId="year-pill" className="absolute inset-0 rounded-full bg-earth" />
+                )}
+                <span className="relative">{y === "all" ? `All · ${images.length}` : y}</span>
+              </button>
+            ))}
+          </div>
+        </LayoutGroup>
       )}
 
-      {/* Masonry Layout */}
-      {!loading && images.length > 0 ? (
-        <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-4 space-y-4">
-          {images.map((image, index) => (
-            <div
+      <div key={year} className="columns-2 sm:columns-3 lg:columns-4 gap-4">
+          {visible.map((image, index) => (
+            <motion.button
               key={image.id}
-              className="relative w-full overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-              onClick={() => openModal(index)}
+              initial={{ opacity: 0, y: 30, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.5, delay: (index % PAGE) * 0.03 }}
+              onClick={() => setOpen(index)}
+              className="group relative mb-4 block w-full break-inside-avoid overflow-hidden rounded-2xl bg-earth-700 shadow-md"
+              aria-label={`Open ${image.title || "photo"}`}
             >
               <img
-                src={image.image_url}
-                alt={image.title}
-                className="w-full h-auto object-cover rounded-lg transition-transform duration-300 hover:scale-105"
+                src={cld(image.image_url, 640)}
+                srcSet={cldSrcSet(image.image_url, [400, 640, 960])}
+                sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+                alt={image.title || ""}
                 loading="lazy"
+                className="w-full h-auto transition-transform duration-700 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-black bg-opacity-20 opacity-0 hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
-                <p className="text-white font-semibold text-lg">{image.title}</p>
-              </div>
-            </div>
+              <span className="absolute inset-0 flex items-end justify-between gap-2 bg-gradient-to-t from-earth/80 via-transparent to-transparent p-4 text-left text-cream opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                <span className="text-sm font-semibold line-clamp-2">
+                  {image.title !== "Untitled" ? image.title : ""}
+                </span>
+                <FaExpand className="shrink-0" />
+              </span>
+            </motion.button>
           ))}
+      </div>
+
+      {shown < filtered.length && (
+        <div className="mt-10 text-center">
+          <button
+            onClick={() => setShown((s) => s + PAGE)}
+            className="rounded-full border-2 border-earth px-8 py-3 font-semibold text-earth transition hover:bg-earth hover:text-cream"
+          >
+            Load more ({filtered.length - shown} left)
+          </button>
         </div>
-      ) : (
-        !loading && <p className="text-center text-gray-500">No images available.</p>
       )}
 
-      {/* Modal for Enlarged Image */}
-      <Transition appear show={selectedImageIndex !== null} as={Fragment}>
-        <Dialog as="div" className="relative z-50" onClose={closeModal}>
-          <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4">
-            <Transition.Child
-              as={Fragment}
-              enter="transition ease-out duration-300"
-              enterFrom="opacity-0 scale-90"
-              enterTo="opacity-100 scale-100"
-              leave="transition ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-90"
-            >
-              <Dialog.Panel className="relative max-w-4xl w-full bg-white rounded-lg overflow-hidden shadow-lg">
-                {/* Close Button */}
-                <button
-                  className="absolute top-3 right-3 text-gray-600 hover:text-red-500 text-2xl"
-                  onClick={closeModal}
-                >
-                  ✕
-                </button>
-
-                {/* Image Display */}
-                <img
-                  src={images[selectedImageIndex]?.image_url}
-                  alt={images[selectedImageIndex]?.title}
-                  className="w-full h-auto max-h-[80vh] object-contain rounded-t-lg"
-                />
-
-                {/* Image Title */}
-                <p className="text-center text-[#8F3B1B] font-semibold p-3">
-                  {images[selectedImageIndex]?.title}
-                </p>
-
-                {/* Navigation Buttons */}
-                <div className="absolute top-1/2 left-4 -translate-y-1/2">
-                  <button
-                    onClick={prevImage}
-                    className="p-2 bg-[#8F3B1B] text-white rounded-full shadow-md hover:bg-[#D57500] transition"
-                  >
-                    <ChevronLeftIcon className="w-6 h-6" />
-                  </button>
-                </div>
-
-                <div className="absolute top-1/2 right-4 -translate-y-1/2">
-                  <button
-                    onClick={nextImage}
-                    className="p-2 bg-[#8F3B1B] text-white rounded-full shadow-md hover:bg-[#D57500] transition"
-                  >
-                    <ChevronRightIcon className="w-6 h-6" />
-                  </button>
-                </div>
-              </Dialog.Panel>
-            </Transition.Child>
-          </div>
-        </Dialog>
-      </Transition>
+      <Lightbox images={filtered} index={open} onChange={setOpen} />
     </div>
   );
 };

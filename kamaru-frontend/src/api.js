@@ -1,4 +1,5 @@
 import axios from "axios";
+import { clearSession } from "./auth";
 
 // Base URL for the backend API
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_API_URL || "/api";
@@ -11,6 +12,24 @@ const api = axios.create({
   },
   withCredentials: true,
 });
+
+// Expired or invalid session: clear stale credentials so the UI stops claiming
+// the user is logged in, then send them to log in again.
+api.interceptors.response.use(
+  (res) => res,
+  (error) => {
+    const status = error.response?.status;
+    const msg = String(error.response?.data?.msg || "");
+    const hadToken = !!localStorage.getItem("token");
+    if (hadToken && (status === 401 || (status === 422 && /token|signature|segments/i.test(msg)))) {
+      clearSession();
+      if (!window.location.pathname.startsWith("/login")) {
+        window.location.assign(`/login?expired=1&next=${encodeURIComponent(window.location.pathname)}`);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 // User API
 export const registerUser = (userData) => api.post("/users/register", userData);
@@ -92,6 +111,21 @@ export const deleteParticipant = (participantId) =>
   export const fetchActiveSeason = () =>
     api.get("/seasons/active");
 
+const authHeader = () => ({ Authorization: `Bearer ${localStorage.getItem("token")}` });
+
+export const createSeason = (data) => api.post("/seasons/", data, { headers: authHeader() });
+// data: { name?, year?, is_active?, registration_open?, registration_closes_at? }
+export const updateSeason = (seasonId, data) =>
+  api.patch(`/seasons/${seasonId}`, data, { headers: authHeader() });
+
+// Current user's profile + role + permissions
+// A member's own competition entries (all seasons) and withdrawal while registration is open
+export const fetchMyEntries = () => api.get("/participants/mine", { headers: authHeader() });
+export const withdrawMyEntry = (id) => api.delete(`/participants/mine/${id}`, { headers: authHeader() });
+
+export const fetchMe = () => api.get("/users/me", { headers: authHeader() });
+export const fetchRoles = () => api.get("/users/roles", { headers: authHeader() });
+
 // Gallery API
 export const fetchGalleryImages = () => api.get("/gallery");
 export const uploadImage = (formData) =>
@@ -159,7 +193,9 @@ export const deleteVideo = (videoId) =>
   });
 
 // Event API
-export const fetchEvents = () => api.get("/events/");
+// scope: "upcoming" (default), "past" or "all"
+export const fetchEvents = (scope) =>
+  api.get("/events/", { params: scope ? { scope } : undefined });
 export const fetchEvent = (eventId) => api.get(`/events/${eventId}`);
 export const createEvent = (formData) =>
   api.post("/events/", formData, {

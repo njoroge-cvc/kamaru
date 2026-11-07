@@ -1,32 +1,69 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import React, { Suspense, lazy } from "react";
+import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
+import { MotionConfig } from "framer-motion";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import HomePage from "./pages/HomePage";
-import GalleryPage from "./pages/GalleryPage";
-import VideosPage from "./pages/VideosPage";
-import UserRegistrationForm from "./components/UserRegistrationForm";
-import ParticipantsRegistrationPage from "./pages/ParticipantsRegistrationPage";
-import LoginForm from "./components/LoginForm";
-import AdminDashboard from "./components/AdminDashboard";
-import ForgotPasswordForm from "./components/ForgotPasswordForm";
-import ResetPasswordForm from "./components/ResetPasswordForm";
-import EventPage from "./pages/EventPage";
-import AboutUs from "./pages/AboutUsPage"; 
-import TermsAndConditionsPage from "./pages/TermsAndConditionsPage";
-import VerifyNewsletter from "./pages/VerifyNewsletter"; // Import the newsletter verification page
 import ScrollToTop from "./components/ScrollToTop";
+import SideRails from "./components/SideRails";
+import { SessionSync } from "./components/useSession";
 import "./index.css"; // Import Tailwind CSS
 
+// Code-split every route except the landing page: visitors only download what they open,
+// and the admin bundle (Excel/PDF export, rich-text editor) never loads for the public.
+const GalleryPage = lazy(() => import("./pages/GalleryPage"));
+const VideosPage = lazy(() => import("./pages/VideosPage"));
+const UserRegistrationForm = lazy(() => import("./components/UserRegistrationForm"));
+const ParticipantsRegistrationPage = lazy(() => import("./pages/ParticipantsRegistrationPage"));
+const LoginForm = lazy(() => import("./components/LoginForm"));
+const AdminDashboard = lazy(() => import("./components/AdminDashboard"));
+const ForgotPasswordForm = lazy(() => import("./components/ForgotPasswordForm"));
+const ResetPasswordForm = lazy(() => import("./components/ResetPasswordForm"));
+const EventPage = lazy(() => import("./pages/EventPage"));
+const AboutUs = lazy(() => import("./pages/AboutUsPage"));
+const TermsAndConditionsPage = lazy(() => import("./pages/TermsAndConditionsPage"));
+const SupportPage = lazy(() => import("./pages/SupportPage"));
+const VerifyNewsletter = lazy(() => import("./pages/VerifyNewsletter"));
 
+const RouteFallback = () => (
+  <div className="flex min-h-[60vh] items-center justify-center" aria-busy="true" aria-label="Loading">
+    <div className="bead-band h-1.5 w-40 animate-pulse rounded-full" />
+  </div>
+);
+
+
+
+// Full-bleed pages (storytelling layouts) manage their own widths;
+// everything else keeps the original centred container.
+const FULL_BLEED = [
+  "/", "/gallery", "/videos", "/about_us", "/register/participant",
+  "/login", "/register/user", "/join", "/support", "/forgot_password", "/reset_password", "/verify-newsletter",
+];
+
+const Main = ({ children }) => {
+  const { pathname } = useLocation();
+  const full =
+    FULL_BLEED.includes(pathname) || pathname.startsWith("/events/") || pathname.startsWith("/admin");
+  return <main className={`flex-grow ${full ? "" : "container mx-auto p-4"}`}>{children}</main>;
+};
+
+const AppFooter = () => {
+  const { pathname } = useLocation();
+  return pathname.startsWith("/admin") ? null : <Footer />;
+};
 
 const App = () => {
   return (
     <Router>
+      <MotionConfig reducedMotion="user">
       <ScrollToTop />
-      <div className="min-h-screen flex flex-col bg-gray-100">
+      <SessionSync />
+      <div className="min-h-screen flex flex-col bg-cream">
         <Navbar />
-        <div className="flex-grow container mx-auto p-4">
+        <Main>
+          <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/about_us" element={<AboutUs />} /> 
@@ -34,6 +71,8 @@ const App = () => {
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/videos" element={<VideosPage />} />
             <Route path="/register/user" element={<UserRegistrationForm />} />
+            <Route path="/join" element={<UserRegistrationForm />} />
+            <Route path="/support" element={<SupportPage />} />
             <Route path="/register/participant" element={<ParticipantsRegistrationPage />} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/forgot_password" element={<ForgotPasswordForm />} />
@@ -46,9 +85,13 @@ const App = () => {
               element={<VerifyNewsletter />} 
             />
           </Routes>
-        </div>
-        <Footer />
+          </Suspense>
+        </Main>
+        <AppFooter />
+        <SideRails />
       </div>
+      <ToastContainer position="top-right" autoClose={3500} theme="colored" />
+      </MotionConfig>
     </Router>
   );
 };

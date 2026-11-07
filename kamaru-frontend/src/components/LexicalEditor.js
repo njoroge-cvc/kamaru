@@ -78,21 +78,21 @@ function ToolbarPlugin() {
       <button
         type="button"
         onClick={() => applyFormat("bold")}
-        className="px-3 py-1 text-sm border rounded hover:bg-gray-100"
+        className="px-3 py-1 text-sm border rounded hover:bg-cream-dark"
       >
         Bold
       </button>
       <button
         type="button"
         onClick={() => applyFormat("italic")}
-        className="px-3 py-1 text-sm border rounded hover:bg-gray-100"
+        className="px-3 py-1 text-sm border rounded hover:bg-cream-dark"
       >
         Italic
       </button>
       <button
         type="button"
         onClick={() => applyFormat("underline")}
-        className="px-3 py-1 text-sm border rounded hover:bg-gray-100"
+        className="px-3 py-1 text-sm border rounded hover:bg-cream-dark"
       >
         Underline
       </button>
@@ -119,7 +119,7 @@ export default function LexicalEditor({ initialContent = "", onChange }) {
               <ContentEditable className="w-full outline-none px-2 py-1 text-sm" />
             }
             placeholder={
-              <div className="text-gray-400 px-2 py-1">Enter details...</div>
+              <div className="text-earth-600/60 px-2 py-1">Enter details...</div>
             }
             ErrorBoundary={LexicalErrorBoundary}
           />

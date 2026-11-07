@@ -20,12 +20,8 @@ const NewsletterForm = () => {
 
     setLoading(true);
     try {
-      await subscribeToNewsletter(
-        { email }
-      );
-      setMessage(
-        "Verification email sent! Please check your inbox."
-      );
+      const res = await subscribeToNewsletter({ email });
+      setMessage(res.data?.message || "Verification email sent! Please check your inbox.");
       setStatus(
         "success"
       );
@@ -33,9 +29,8 @@ const NewsletterForm = () => {
         ""
       );
     } catch (error) {
-      setMessage(
-        "Failed to subscribe. Please try again."
-      );
+      // Surface the API's reason (e.g. "already subscribed") instead of a generic failure
+      setMessage(error.response?.data?.error || "Failed to subscribe. Please try again.");
       setStatus(
         "error"
       );
@@ -44,20 +39,20 @@ const NewsletterForm = () => {
   };
 
   return (
-    <div className="bg-[#FFF7ED] p-6 rounded-lg bg-opacity-25">
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div>
+      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
         <input
           type="email"
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full px-4 py-3 border border-[#D57500] rounded-md focus:outline-none text-black focus:ring-2 focus:ring-[#F4A261]"
+          className="w-full flex-1 rounded-full border border-cream/20 bg-cream/10 px-5 py-3 text-cream placeholder-cream/40 focus:outline-none focus:ring-2 focus:ring-kamaru"
         />
         <button
   type="submit"
-  className={`w-full py-2 rounded-md text-sm transition duration-300 ${
-    loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#D57500] hover:bg-[#333] text-white"
+  className={`shrink-0 rounded-full px-6 py-3 font-semibold transition ${
+    loading ? "bg-earth-600 text-cream/60 cursor-not-allowed" : "bg-kamaru text-earth hover:bg-kamaru-light"
   }`}
   disabled={loading}
 >
@@ -65,7 +60,7 @@ const NewsletterForm = () => {
 </button>
       </form>
       {message && (
-        <p className={`text-center mt-4 ${status === "success" ? "text-green-600" : "text-red-600"}`}>
+        <p className={`mt-4 text-sm ${status === "success" ? "text-[#7BD389]" : "text-[#FF8A80]"}`}>
           {message}
         </p>
       )}

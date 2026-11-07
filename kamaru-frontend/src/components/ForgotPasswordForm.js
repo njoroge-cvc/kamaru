@@ -1,117 +1,63 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { fetchBanners, forgotPassword } from "../api"; // Import the API function to fetch banner images and handle forgot password requests
-import FloatingLabelInput from "./FloatingLabelInput"; // Import the reusable component
-import { Loader2 } from "lucide-react"; // Import the loader icon
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { forgotPassword } from "../api";
+import { AuthShell, Field, Alert, Spinner, useBanner } from "./ui";
 
 const ForgotPasswordForm = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [bannerImage, setBannerImage] = useState(""); // State for the banner image
+  const banner = useBanner();
   const navigate = useNavigate();
 
-  // Fetch the banner image
-  useEffect(() => {
-    fetchBanners()
-      .then((res) => {
-        if (res.data.banners.length > 0) {
-          setBannerImage(res.data.banners[0].image_url); // Set the banner image
-        }
-      })
-      .catch((err) => console.error("Error fetching banner image:", err));
-  }, []);
-
-  // Handle form submission to request a password reset code
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     setMessage("");
     setError("");
     setLoading(true);
-
-   try {
-    await forgotPassword(email);
-
-    setMessage(
-      "A reset code has been sent to your email."
-    );
-
-    setTimeout(() => {
-      navigate("/reset_password");
-    }, 2000);
-
-   } catch (err) {
-
-      setError(
-        err.response?.data?.error ||
-          "Failed to send reset code. Please try again."
-      );
-
-   } finally {
-    setLoading(false);
-   }
-
+    try {
+      const { data } = await forgotPassword(email);
+      setMessage(data?.message || "If that email is registered, a reset code has been sent to it.");
+      setTimeout(() => navigate("/reset_password"), 2500);
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to send reset code. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div
-      className="flex justify-center items-center min-h-screen bg-fixed bg-cover bg-center"
-      style={{
-        backgroundImage: `url(${bannerImage || "/default-banner.jpg"})`, // Use fetched banner or default
-        backgroundColor: "#FFF5EC",
-      }}
+    <AuthShell
+      banner={banner}
+      title="Forgot your password?"
+      subtitle="Enter your email and we’ll send you a 6-character reset code."
+      footer={
+        <>
+          Remembered it?{" "}
+          <Link to="/login" className="font-semibold text-ochre hover:text-earth">
+            Back to login
+          </Link>
+        </>
+      }
     >
-      <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-sm">
-        <h2 className="text-3xl font-bold text-[#333] text-center mb-6">
-          Forgot Password?
-        </h2>
-
-        {message && (
-          <p className="text-green-600 text-sm text-center bg-green-100 py-2 px-3 rounded mb-4">
-            {message}
-          </p>
-        )}
-        {error && (
-          <p className="text-red-500 text-sm text-center bg-red-100 py-2 px-3 rounded mb-4">
-            {error}
-          </p>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Email Field */}
-          <FloatingLabelInput
-            type="email"
-            id="email"
-            name="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            label="Email"
-            required
-          />
-
-
-          <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full flex items-center justify-center gap-2 bg-[#D57500] text-white font-semibold py-3 rounded-md hover:bg-[#333] transition duration-300 disabled:bg-[#333] disabled:cursor-not-allowed"
-                  >
-                    {loading && <Loader2 className="animate-spin w-5 h-5" />}
-                    {loading ? "Sending code..." : "Send Reset Code"}
-          </button>
-        </form>
-
-        <div className="text-center mt-5">
-          <button
-            onClick={() => navigate("/login")}
-            className="text-[#D57500] hover:text-[#333] font-semibold transition-all"
-          >
-            Back to Login
-          </button>
-        </div>
-      </div>
-    </div>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {message && <Alert tone="success">{message}</Alert>}
+        {error && <Alert>{error}</Alert>}
+        <Field label="Email">
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className="k-input" placeholder="you@example.com" />
+        </Field>
+        <button type="submit" disabled={loading} className="k-btn-primary w-full py-3">
+          {loading && <Spinner />}
+          {loading ? "Sending…" : "Send reset code"}
+        </button>
+        <p className="text-center text-sm">
+          <Link to="/reset_password" className="font-semibold text-ochre hover:text-earth">
+            I already have a code
+          </Link>
+        </p>
+      </form>
+    </AuthShell>
   );
 };
 

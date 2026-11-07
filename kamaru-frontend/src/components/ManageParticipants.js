@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -40,7 +41,7 @@ const ManageParticipants = ({ isAdmin }) => {
 
   useEffect(() => {
     if (!isAdmin) {
-      alert("Unauthorized access.");
+      toast.error("Unauthorized access.");
       navigate("/");
     } else {
       fetchParticipants()
@@ -74,12 +75,12 @@ const ManageParticipants = ({ isAdmin }) => {
     e.preventDefault();
     adminRegisterParticipant(newParticipant)
       .then(() => {
-        alert("Participant registered successfully!");
+        toast.success("Participant registered successfully!");
         setNewParticipant({ name: "", email: "", phone: "", category: "" });
         fetchParticipants().then((res) => setParticipants(res.data));
       })
       .catch((error) => {
-        alert("Error registering participant.");
+        toast.error("Error registering participant.");
         console.error(error);
       });
   };
@@ -88,7 +89,7 @@ const ManageParticipants = ({ isAdmin }) => {
     e.preventDefault();
     updateParticipant(editingParticipant.id, editingParticipant)
       .then(() => {
-        alert("Participant updated successfully!");
+        toast.success("Participant updated successfully!");
         setParticipants((prev) =>
           prev.map((p) =>
             p.id === editingParticipant.id ? editingParticipant : p
@@ -97,7 +98,7 @@ const ManageParticipants = ({ isAdmin }) => {
         setShowEditModal(false);
       })
       .catch((error) => {
-        alert("Error updating participant.");
+        toast.error("Error updating participant.");
         console.error(error);
       });
   };
@@ -106,11 +107,11 @@ const ManageParticipants = ({ isAdmin }) => {
     if (window.confirm("Are you sure you want to delete this participant?")) {
       deleteParticipant(id)
         .then(() => {
-          alert("Participant deleted successfully!");
+          toast.success("Participant deleted successfully!");
           setParticipants((prev) => prev.filter((p) => p.id !== id));
         })
         .catch((error) => {
-          alert("Error deleting participant.");
+          toast.error("Error deleting participant.");
           console.error(error);
         });
     }
@@ -144,8 +145,8 @@ const ManageParticipants = ({ isAdmin }) => {
   };
 
   return (
-    <div className="p-6 bg-white shadow-md rounded-md">
-      <h2 className="text-2xl font-semibold text-[#333] mb-4">
+    <div >
+      <h2 className="k-h2 mb-6">
         Manage Participants
       </h2>
 
@@ -156,7 +157,7 @@ const ManageParticipants = ({ isAdmin }) => {
           onChange={(e) =>
             handleSeasonFilter(e.target.value)
           }
-          className="border border-gray-300 p-2 rounded-md"
+          className="k-input sm:w-72"
         >
           <option value="">
             All Seasons
@@ -178,13 +179,13 @@ const ManageParticipants = ({ isAdmin }) => {
       <div className="flex justify-end gap-3 mb-4">
         <button
           onClick={exportToPDF}
-          className="bg-[#D57500] text-white px-3 py-2 rounded-md flex items-center gap-2"
+          className="k-btn-outline k-btn-sm"
         >
           <FaFilePdf /> PDF
         </button>
         <button
           onClick={exportToExcel}
-          className="bg-[#333] text-white px-3 py-2 rounded-md flex items-center gap-2"
+          className="k-btn-outline k-btn-sm"
         >
           <FaFileExcel /> Excel
         </button>
@@ -201,7 +202,7 @@ const ManageParticipants = ({ isAdmin }) => {
               setNewParticipant({ ...newParticipant, name: e.target.value })
             }
             required
-            className="border border-gray-300 p-2 rounded-md w-full"
+            className="k-input"
           />
           <input
             type="email"
@@ -211,7 +212,7 @@ const ManageParticipants = ({ isAdmin }) => {
               setNewParticipant({ ...newParticipant, email: e.target.value })
             }
             required
-            className="border border-gray-300 p-2 rounded-md w-full"
+            className="k-input"
           />
         </div>
         <div className="grid md:grid-cols-2 gap-4">
@@ -223,7 +224,7 @@ const ManageParticipants = ({ isAdmin }) => {
               setNewParticipant({ ...newParticipant, phone: e.target.value })
             }
             required
-            className="border border-gray-300 p-2 rounded-md w-full"
+            className="k-input"
           />
           <select
             value={newParticipant.category}
@@ -234,7 +235,7 @@ const ManageParticipants = ({ isAdmin }) => {
               })
             }
             required
-            className="border border-gray-300 p-2 rounded-md w-full"
+            className="k-input"
           >
             <option value="" disabled>
               Select Category
@@ -248,7 +249,7 @@ const ManageParticipants = ({ isAdmin }) => {
         </div>
         <button
           type="submit"
-          className="bg-[#D57500] text-white px-4 py-2 rounded-md flex items-center space-x-2 hover:bg-[#b65e00]"
+          className="k-btn-primary"
         >
           <FaPlus />
           <span>Add Participant</span>
@@ -256,9 +257,9 @@ const ManageParticipants = ({ isAdmin }) => {
       </form>
 
       {/* Participants Table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-gray-100 shadow-md rounded-lg">
-          <thead className="bg-[#333] text-white">
+      <div className="k-table-wrap bg-white">
+        <table className="k-table">
+          <thead >
             <tr>
               <th className="p-3">Name</th>
               <th className="p-3">Email</th>
@@ -283,13 +284,13 @@ const ManageParticipants = ({ isAdmin }) => {
                         setEditingParticipant(p);
                         setShowEditModal(true);
                       }}
-                      className="bg-[#D57500] hover:bg-[#B65E00]"
+                      className="k-icon-btn"
                     >
                       <FaEdit />
                     </button>
                     <button
                       onClick={() => handleDeleteParticipant(p.id)}
-                      className="bg-[#333] hover:bg-[#222]"
+                      className="k-icon-btn hover:!text-bead-red"
                     >
                       <FaTrash />
                     </button>
@@ -300,7 +301,7 @@ const ManageParticipants = ({ isAdmin }) => {
               <tr>
                 <td
                   colSpan="6"
-                  className="p-3 text-center text-gray-600 italic"
+                  className="p-6 text-center text-earth-600 italic"
                 >
                   No participants registered yet.
                 </td>
@@ -312,13 +313,13 @@ const ManageParticipants = ({ isAdmin }) => {
 
       {/* Edit Modal */}
       {showEditModal && editingParticipant && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-md shadow-lg w-96">
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-earth/60 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl bg-cream p-6 shadow-2xl">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Edit Participant</h2>
+              <h2 className="font-display text-xl font-bold text-earth">Edit Participant</h2>
               <button
                 onClick={() => setShowEditModal(false)}
-                className="text-gray-600 hover:text-gray-900"
+                className="k-icon-btn"
               >
                 <FaTimes />
               </button>
@@ -333,7 +334,7 @@ const ManageParticipants = ({ isAdmin }) => {
                     name: e.target.value,
                   })
                 }
-                className="w-full p-2 border rounded-md"
+                className="k-input"
                 required
               />
               <input
@@ -345,7 +346,7 @@ const ManageParticipants = ({ isAdmin }) => {
                     email: e.target.value,
                   })
                 }
-                className="w-full p-2 border rounded-md"
+                className="k-input"
                 required
               />
               <input
@@ -357,7 +358,7 @@ const ManageParticipants = ({ isAdmin }) => {
                     phone: e.target.value,
                   })
                 }
-                className="w-full p-2 border rounded-md"
+                className="k-input"
                 required
               />
               <select
@@ -368,7 +369,7 @@ const ManageParticipants = ({ isAdmin }) => {
                     category: e.target.value,
                   })
                 }
-                className="w-full p-2 border rounded-md"
+                className="k-input"
                 required
               >
                 <option value="" disabled>
@@ -382,7 +383,7 @@ const ManageParticipants = ({ isAdmin }) => {
               </select>
               <button
                 type="submit"
-                className="w-full bg-[#D57500] text-white py-2 rounded-md"
+                className="k-btn-primary w-full"
               >
                 Update
               </button>

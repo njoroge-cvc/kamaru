@@ -1,227 +1,251 @@
-import React, { useEffect, useState } from "react";
-import { fetchUsers, updateUser, deleteUser } from "../api";
-import {
-  FaUserEdit,
-  FaTrash,
-  FaUserShield,
-  FaUser,
-  FaTimes,
-  FaFilePdf,
-  FaFileExcel,
-} from "react-icons/fa";
+import React, { useEffect, useMemo, useState } from "react";
+import { toast } from "react-toastify";
+import { FaUserEdit, FaTrash, FaFilePdf, FaFileExcel, FaSearch } from "react-icons/fa";
 import * as XLSX from "xlsx";
+import { fetchUsers, updateUser, deleteUser, fetchRoles } from "../api";
+import { ROLE_LABELS } from "../auth";
+import { PageHeader, Modal, Field, EmptyState } from "./ui";
+
+const ROLE_STYLE = {
+  admin: "k-badge-red",
+  coordinator: "k-badge-blue",
+  media: "k-badge-gold",
+  member: "k-badge-earth",
+};
+
+const PERM_LABELS = {
+  "dashboard:view": "Dashboard",
+  "events:manage": "Events",
+  "participants:manage": "Participants",
+  "seasons:manage": "Seasons & registration",
+  "gallery:manage": "Gallery",
+  "videos:manage": "Videos",
+  "site_images:manage": "Site images",
+  "users:manage": "Users & roles",
+};
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
-  const [editingUser, setEditingUser] = useState(null);
+  const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [processingUser, setProcessingUser] = useState(null);
+  const [editingUser, setEditingUser] = useState(null);
+  const [busy, setBusy] = useState(null);
+  const [query, setQuery] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
 
   useEffect(() => {
-    fetchUsers()
-      .then((response) => {
-        setUsers(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching users:", error);
-        setLoading(false);
-      });
+    Promise.all([
+      fetchUsers().then((r) => setUsers(r.data)),
+      fetchRoles()
+        .then((r) => setRoles(r.data))
+        .catch(() => setRoles(Object.entries(ROLE_LABELS).map(([role, label]) => ({ role, label, permissions: [] })))),
+    ])
+      .catch(() => toast.error("Couldn't load users."))
+      .finally(() => setLoading(false));
   }, []);
 
-  const handleToggleAdmin = (userId, isAdmin) => {
-    if (!window.confirm(`Are you sure you want to ${isAdmin ? "grant" : "revoke"} admin rights?`)) return;
+  const replaceUser = (u) => setUsers((list) => list.map((x) => (x.id === u.id ? u : x)));
 
-    setProcessingUser(userId);
-    updateUser(userId, { is_admin: isAdmin })
-      .then((response) => {
-        alert("User role updated successfully!");
-        setUsers(users.map((user) => (user.id === userId ? response.data.user : user)));
-      })
-      .catch((error) => console.error("Error updating user role:", error))
-      .finally(() => setProcessingUser(null));
+  const changeRole = async (user, role) => {
+    if (role === user.role) return;
+    if (!window.confirm(`Change ${user.username}'s role to ${ROLE_LABELS[role] || role}?`)) return;
+    setBusy(user.id);
+    try {
+      const r = await updateUser(user.id, { role });
+      replaceUser(r.data.user);
+      toast.success(`${user.username} is now ${ROLE_LABELS[role] || role}.`);
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Couldn't change role.");
+    } finally {
+      setBusy(null);
+    }
   };
 
-  const handleUpdateUser = (e) => {
+  const handleUpdateUser = async (e) => {
     e.preventDefault();
-    setProcessingUser(editingUser.id);
-
-    updateUser(editingUser.id, editingUser)
-      .then((response) => {
-        alert("User updated successfully!");
-        setUsers(users.map((user) => (user.id === editingUser.id ? response.data.user : user)));
-        setEditingUser(null);
-      })
-      .catch((error) => console.error("Error updating user:", error))
-      .finally(() => setProcessingUser(null));
+    setBusy(editingUser.id);
+    try {
+      const r = await updateUser(editingUser.id, {
+        username: editingUser.username,
+        email: editingUser.email,
+        role: editingUser.role,
+      });
+      replaceUser(r.data.user);
+      setEditingUser(null);
+      toast.success("User updated.");
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Couldn't update user.");
+    } finally {
+      setBusy(null);
+    }
   };
 
-  const handleDeleteUser = (userId) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
-
-    setProcessingUser(userId);
-    deleteUser(userId)
-      .then(() => {
-        alert("User deleted successfully!");
-        setUsers(users.filter((user) => user.id !== userId));
-      })
-      .catch((error) => console.error("Error deleting user:", error))
-      .finally(() => setProcessingUser(null));
+  const handleDeleteUser = async (user) => {
+    if (!window.confirm(`Delete ${user.username}? This can't be undone.`)) return;
+    setBusy(user.id);
+    try {
+      await deleteUser(user.id);
+      setUsers((list) => list.filter((u) => u.id !== user.id));
+      toast.success("User deleted.");
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Couldn't delete user.");
+    } finally {
+      setBusy(null);
+    }
   };
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return users.filter(
+      (u) =>
+        (roleFilter === "all" || u.role === roleFilter) &&
+        (!q || u.username.toLowerCase().includes(q) || u.email.toLowerCase().includes(q))
+    );
+  }, [users, query, roleFilter]);
+
+  const roleLabel = (r) => ROLE_LABELS[r] || r;
 
   const exportToExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(users.map(u => ({
-      Username: u.username,
-      Email: u.email,
-      Role: u.is_admin ? "Admin" : "User",
-    })));
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Users");
-    XLSX.writeFile(workbook, "kamaru_users.xlsx");
+    const ws = XLSX.utils.json_to_sheet(filtered.map((u) => ({ Username: u.username, Email: u.email, Role: roleLabel(u.role) })));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Users");
+    XLSX.writeFile(wb, "kamaru_users.xlsx");
   };
 
   const exportToPDF = async () => {
     const { jsPDF } = await import("jspdf");
     const autoTable = (await import("jspdf-autotable")).default;
     const doc = new jsPDF();
+    doc.text("Kamaru Challenge — Users", 14, 12);
     autoTable(doc, {
+      startY: 18,
       head: [["Username", "Email", "Role"]],
-      body: users.map((u) => [u.username, u.email, u.is_admin ? "Admin" : "User"]),
+      body: filtered.map((u) => [u.username, u.email, roleLabel(u.role)]),
+      headStyles: { fillColor: [43, 26, 16] },
     });
     doc.save("kamaru_users.pdf");
   };
 
-  if (loading) {
-    return <p className="text-center text-lg font-semibold text-[#333]">Loading users...</p>;
-  }
-
   return (
-    <div className="p-6 bg-white shadow-md rounded-md">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold text-[#D57500]">Manage Users</h2>
-        <div className="flex gap-3">
-          <button
-            onClick={exportToPDF}
-            className="bg-[#D57500] text-white px-3 py-2 rounded flex items-center gap-2 text-sm hover:bg-[#b65e00]"
-          >
-            <FaFilePdf /> PDF
-          </button>
-          <button
-            onClick={exportToExcel}
-            className="bg-[#333] text-white px-3 py-2 rounded flex items-center gap-2 text-sm hover:bg-[#1a1a1a]"
-          >
-            <FaFileExcel /> Excel
-          </button>
-        </div>
-      </div>
+    <div>
+      <PageHeader
+        eyebrow="Access"
+        title="Users & Roles"
+        description="Give each team member only the access they need. Roles take effect the next time they load the site."
+        actions={
+          <>
+            <button onClick={exportToPDF} className="k-btn-outline k-btn-sm"><FaFilePdf /> PDF</button>
+            <button onClick={exportToExcel} className="k-btn-outline k-btn-sm"><FaFileExcel /> Excel</button>
+          </>
+        }
+      />
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full border border-gray-300 rounded-md">
-          <thead className="bg-[#333] text-white">
-            <tr>
-              <th className="px-4 py-2 text-left">Username</th>
-              <th className="px-4 py-2 text-left">Email</th>
-              <th className="px-4 py-2 text-left">Role</th>
-              <th className="px-4 py-2 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user, index) => (
-              <tr key={user.id} className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}>
-                <td className="px-4 py-2 text-[#333]">{user.username}</td>
-                <td className="px-4 py-2 text-[#333]">{user.email}</td>
-                <td className="px-4 py-2">
-                  {user.is_admin ? (
-                    <span className="text-green-600 font-semibold flex items-center">
-                      <FaUserShield className="mr-1" /> Admin
-                    </span>
-                  ) : (
-                    <span className="text-[#333] flex items-center">
-                      <FaUser className="mr-1" /> User
-                    </span>
-                  )}
-                </td>
-                <td className="px-4 py-2 flex space-x-3">
-                  <button
-                    className="text-[#D57500] hover:text-[#b65e00] flex items-center space-x-1"
-                    onClick={() => setEditingUser(user)}
-                  >
-                    <FaUserEdit /> <span className="hidden md:inline">Edit</span>
-                  </button>
-                  <button
-                    className={`${
-                      user.is_admin ? "text-red-600" : "text-green-600"
-                    } hover:opacity-80 flex items-center space-x-1`}
-                    onClick={() => handleToggleAdmin(user.id, !user.is_admin)}
-                    disabled={processingUser === user.id}
-                  >
-                    {user.is_admin ? <FaUser /> : <FaUserShield />}
-                    <span className="hidden md:inline">{user.is_admin ? "Revoke" : "Make Admin"}</span>
-                  </button>
-                  <button
-                    className="text-red-600 hover:text-red-800 flex items-center space-x-1"
-                    onClick={() => handleDeleteUser(user.id)}
-                    disabled={processingUser === user.id}
-                  >
-                    <FaTrash /> <span className="hidden md:inline">Delete</span>
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Edit User Modal */}
-      {editingUser && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
-          <div className="bg-white p-6 rounded-md shadow-lg w-96 transform transition-transform scale-95">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold text-[#D57500]">Edit User</h3>
-              <button onClick={() => setEditingUser(null)} className="text-gray-600 hover:text-gray-900">
-                <FaTimes className="text-xl" />
-              </button>
-            </div>
-            <form onSubmit={handleUpdateUser}>
-              <label className="block mb-2">
-                Username:
-                <input
-                  type="text"
-                  className="w-full border border-gray-300 p-2 rounded-md mt-1"
-                  value={editingUser.username}
-                  onChange={(e) => setEditingUser({ ...editingUser, username: e.target.value })}
-                  required
-                />
-              </label>
-              <label className="block mb-2">
-                Email:
-                <input
-                  type="email"
-                  className="w-full border border-gray-300 p-2 rounded-md mt-1"
-                  value={editingUser.email}
-                  onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
-                  required
-                />
-              </label>
-              <div className="flex justify-end space-x-3 mt-4">
-                <button
-                  type="button"
-                  className="bg-[#333] text-white px-4 py-2 rounded-md hover:bg-[#1a1a1a]"
-                  onClick={() => setEditingUser(null)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-[#D57500] text-white px-4 py-2 rounded-md hover:bg-[#b65e00]"
-                >
-                  Update
-                </button>
-              </div>
-            </form>
+      {/* What each role can do */}
+      <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {roles.map((r) => (
+          <div key={r.role} className="k-card p-5">
+            <span className={ROLE_STYLE[r.role] || "k-badge-earth"}>{r.label}</span>
+            <p className="mt-3 text-sm text-earth-700">
+              {r.permissions.length
+                ? r.permissions.filter((p) => p !== "dashboard:view").map((p) => PERM_LABELS[p] || p).join(" · ")
+                : "Public site & contestant registration"}
+            </p>
+            <p className="mt-2 text-xs text-earth-600">{users.filter((u) => u.role === r.role).length} user(s)</p>
           </div>
+        ))}
+      </div>
+
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+        <div className="relative flex-1">
+          <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-earth-600" />
+          <input className="k-input pl-11" placeholder="Search by name or email" value={query} onChange={(e) => setQuery(e.target.value)} />
+        </div>
+        <select className="k-input sm:w-56" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
+          <option value="all">All roles</option>
+          {roles.map((r) => (
+            <option key={r.role} value={r.role}>{r.label}</option>
+          ))}
+        </select>
+      </div>
+
+      {loading ? (
+        <div className="k-card h-48 animate-pulse" />
+      ) : filtered.length === 0 ? (
+        <EmptyState title="No users match." />
+      ) : (
+        <div className="k-table-wrap bg-white">
+          <table className="k-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th className="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((user) => (
+                <tr key={user.id}>
+                  <td>
+                    <div className="flex items-center gap-3">
+                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-kamaru/20 font-bold uppercase text-kamaru-dark">
+                        {user.username?.[0]}
+                      </span>
+                      <span className="font-semibold">{user.username}</span>
+                    </div>
+                  </td>
+                  <td className="text-earth-700">{user.email}</td>
+                  <td>
+                    <select
+                      value={user.role}
+                      disabled={busy === user.id}
+                      onChange={(e) => changeRole(user, e.target.value)}
+                      className="k-input w-44 py-1.5"
+                      aria-label={`Role for ${user.username}`}
+                    >
+                      {roles.map((r) => (
+                        <option key={r.role} value={r.role}>{r.label}</option>
+                      ))}
+                    </select>
+                  </td>
+                  <td className="text-right whitespace-nowrap">
+                    <button className="k-icon-btn" onClick={() => setEditingUser(user)} aria-label="Edit user" title="Edit">
+                      <FaUserEdit />
+                    </button>
+                    <button className="k-icon-btn hover:!text-bead-red" onClick={() => handleDeleteUser(user)} disabled={busy === user.id} aria-label="Delete user" title="Delete">
+                      <FaTrash />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
+
+      <Modal open={!!editingUser} onClose={() => setEditingUser(null)} title="Edit user" size="sm">
+        {editingUser && (
+          <form onSubmit={handleUpdateUser} className="space-y-4">
+            <Field label="Username">
+              <input className="k-input" value={editingUser.username} onChange={(e) => setEditingUser({ ...editingUser, username: e.target.value })} required />
+            </Field>
+            <Field label="Email">
+              <input type="email" className="k-input" value={editingUser.email} onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })} required />
+            </Field>
+            <Field label="Role">
+              <select className="k-input" value={editingUser.role} onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}>
+                {roles.map((r) => (
+                  <option key={r.role} value={r.role}>{r.label}</option>
+                ))}
+              </select>
+            </Field>
+            <div className="flex justify-end gap-2 pt-2">
+              <button type="button" className="k-btn-ghost" onClick={() => setEditingUser(null)}>Cancel</button>
+              <button type="submit" className="k-btn-primary" disabled={busy === editingUser.id}>Save changes</button>
+            </div>
+          </form>
+        )}
+      </Modal>
     </div>
   );
 };

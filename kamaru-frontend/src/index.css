@@ -1,5 +1,60 @@
 @tailwind base;
 @tailwind components;
+
+/* ------------------------------------------------------------------
+   Kamaru component vocabulary — use these everywhere (public + admin)
+   so every button, field, card and table looks like the same brand.
+   ------------------------------------------------------------------ */
+@layer components {
+  /* Buttons */
+  .k-btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-kamaru focus-visible:ring-offset-2
+      disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .k-btn-primary { @apply k-btn bg-kamaru text-earth shadow-sm hover:bg-kamaru-light; }
+  .k-btn-dark { @apply k-btn bg-earth text-cream hover:bg-earth-700; }
+  .k-btn-outline { @apply k-btn border-2 border-earth/80 text-earth hover:bg-earth hover:text-cream; }
+  .k-btn-ghost { @apply k-btn text-earth hover:bg-cream-dark; }
+  .k-btn-danger { @apply k-btn bg-bead-red text-cream hover:bg-ochre-dark; }
+  .k-btn-sm { @apply px-3.5 py-1.5 text-xs; }
+  .k-icon-btn {
+    @apply inline-grid h-9 w-9 place-items-center rounded-full text-earth-600 transition hover:bg-cream-dark hover:text-earth
+      disabled:opacity-40;
+  }
+
+  /* Form fields */
+  .k-label { @apply mb-1.5 block text-sm font-semibold text-earth; }
+  .k-input {
+    @apply w-full rounded-xl border border-earth/15 bg-white px-4 py-2.5 text-sm text-earth placeholder-earth-600/60 shadow-sm
+      transition focus:border-kamaru focus:outline-none focus:ring-2 focus:ring-kamaru/30;
+  }
+  .k-hint { @apply mt-1 text-xs text-earth-600; }
+
+  /* Surfaces */
+  .k-card { @apply rounded-3xl bg-white p-6 shadow-sm ring-1 ring-earth/5; }
+  .k-panel { @apply rounded-3xl bg-cream p-6 ring-1 ring-earth/5; }
+
+  /* Tables */
+  .k-table { @apply min-w-full overflow-hidden text-left text-sm; }
+  .k-table thead { @apply bg-earth text-cream; }
+  .k-table th { @apply whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-wider; }
+  .k-table td { @apply border-b border-earth/5 px-4 py-3 align-middle text-earth; }
+  .k-table tbody tr { @apply transition-colors hover:bg-cream; }
+  .k-table-wrap { @apply overflow-x-auto rounded-2xl ring-1 ring-earth/10; }
+
+  /* Badges */
+  .k-badge { @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold; }
+  .k-badge-green { @apply k-badge bg-bead-green/15 text-bead-green; }
+  .k-badge-red { @apply k-badge bg-bead-red/10 text-bead-red; }
+  .k-badge-gold { @apply k-badge bg-bead-gold/20 text-earth; }
+  .k-badge-blue { @apply k-badge bg-bead-blue/15 text-bead-blue; }
+  .k-badge-earth { @apply k-badge bg-earth/10 text-earth; }
+  .k-badge-orange { @apply k-badge bg-kamaru/15 text-kamaru-dark; }
+
+  /* Headings inside the dashboard */
+  .k-h2 { @apply font-display text-2xl md:text-3xl font-bold text-earth; }
+}
 @tailwind utilities;
 
 @import "~slick-carousel/slick/slick.css";
@@ -9,11 +64,96 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Brand the toast notifications */
+:root {
+  --toastify-font-family: "Outfit", Helvetica, Arial, sans-serif;
+  --toastify-color-success: #3E9B4F;
+  --toastify-color-error: #D7262E;
+  --toastify-color-warning: #E8B21E;
+  --toastify-color-info: #2588C9;
+  --toastify-text-color-warning: #2B1A10;
+}
+.Toastify__toast {
+  border-radius: 1rem;
+  font-weight: 600;
+}
+
 body {
   margin: 0;
-  font-family: 'Helvetica', 'Arial', sans-serif; /* Updated to use Helvetica */
+  font-family: 'Outfit', 'Helvetica', 'Arial', sans-serif;
+  background-color: #FBF3E8;
+  color: #2B1A10;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ------------------------------------------------------------------
+   Kikuyu-inspired decorative patterns (pure CSS, no image requests)
+   ------------------------------------------------------------------ */
+
+/* Beadwork band: repeating red / white / blue / green / gold blocks */
+.bead-band {
+  background-image: repeating-linear-gradient(
+    90deg,
+    #D7262E 0 14px,
+    #FFFDF8 14px 20px,
+    #2588C9 20px 34px,
+    #FFFDF8 34px 40px,
+    #3E9B4F 40px 54px,
+    #FFFDF8 54px 60px,
+    #E8B21E 60px 74px,
+    #2B1A10 74px 80px
+  );
+}
+
+/* Shield chevrons (zig-zag) used as section dividers */
+.chevron-band {
+  --c1: #D57500;
+  --c2: transparent;
+  background:
+    linear-gradient(135deg, var(--c1) 25%, var(--c2) 25%) -12px 0,
+    linear-gradient(225deg, var(--c1) 25%, var(--c2) 25%) -12px 0,
+    linear-gradient(315deg, var(--c1) 25%, var(--c2) 25%),
+    linear-gradient(45deg, var(--c1) 25%, var(--c2) 25%);
+  background-size: 24px 24px;
+}
+
+/* Subtle woven texture for dark earth sections */
+.weave {
+  background-image:
+    repeating-linear-gradient(45deg, rgba(255, 253, 248, 0.035) 0 2px, transparent 2px 12px),
+    repeating-linear-gradient(-45deg, rgba(255, 253, 248, 0.035) 0 2px, transparent 2px 12px);
+}
+
+/* Grain overlay to warm up flat colour fields */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.08;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.6'/></svg>");
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Pause CSS marquees on hover and for users who prefer reduced motion */
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-marquee,
+  .animate-marquee-reverse,
+  .animate-spin-slow,
+  .bounce-animation {
+    animation: none !important;
+  }
 }
 
 code {

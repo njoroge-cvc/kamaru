@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { fetchBanners, resetPassword } from "../api"; // Import fetchBanners
-import FloatingLabelInput from "./FloatingLabelInput"; // Import the reusable component
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import icons for password toggle
-import { Loader2 } from "lucide-react"; // Import the loader icon
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { resetPassword } from "../api";
+import { AuthShell, Field, PasswordInput, Alert, Spinner, useBanner } from "./ui";
 
 const ResetPasswordForm = () => {
   const [shortToken, setShortToken] = useState("");
@@ -12,158 +10,72 @@ const ResetPasswordForm = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [bannerImage, setBannerImage] = useState(""); // State for the banner image
-  const [showNewPassword, setShowNewPassword] = useState(false); // State for toggling new password visibility
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State for toggling confirm password visibility
+  const banner = useBanner();
   const navigate = useNavigate();
-
-  // Fetch the banner image
-  useEffect(() => {
-    fetchBanners()
-      .then((res) => {
-        if (res.data.banners.length > 0) {
-          setBannerImage(res.data.banners[0].image_url); // Set the banner image
-        }
-      })
-      .catch((err) => console.error("Error fetching banner image:", err));
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
     setError("");
-
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
-
     setLoading(true);
-
     try {
-        await resetPassword({ 
-          short_token: shortToken, 
-          new_password: newPassword 
-        });
-
-        setMessage(
-          "Password reset successfully! You can now log in."
-        );
-
-        setTimeout(() => {
-          navigate("/login");
-        }, 2000);
-
-        setShortToken("");
-        setNewPassword("");
-        setConfirmPassword("");
-      } catch (err) {
-      setError(
-        err.response?.data?.error ||
-          "Failed to reset password. Please try again."
-      );
+      await resetPassword({ short_token: shortToken.trim(), new_password: newPassword });
+      setMessage("Password reset successfully! Taking you to login…");
+      setShortToken("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setTimeout(() => navigate("/login"), 2000);
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to reset password. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div
-      className="flex justify-center items-center min-h-screen bg-fixed bg-cover bg-center"
-      style={{
-        backgroundImage: `url(${bannerImage || "/default-banner.jpg"})`, // Use fetched banner or default
-        backgroundColor: "#FFF5EC",
-      }}
+    <AuthShell
+      banner={banner}
+      title="Reset your password"
+      subtitle="Enter the code from your email and choose a new password."
+      footer={
+        <>
+          Didn’t get a code?{" "}
+          <Link to="/forgot_password" className="font-semibold text-ochre hover:text-earth">
+            Send another
+          </Link>
+        </>
+      }
     >
-      <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-sm">
-        <h2 className="text-3xl font-bold text-[#333] text-center mb-6">
-          Reset Password
-        </h2>
-
-        {message && (
-          <p className="text-green-600 text-sm text-center bg-green-100 py-2 px-3 rounded mb-4">
-            {message}
-          </p>
-        )}
-        {error && (
-          <p className="text-red-500 text-sm text-center bg-red-100 py-2 px-3 rounded mb-4">
-            {error}
-          </p>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Reset Code Field */}
-          <FloatingLabelInput
-            type="text"
-            id="reset-code"
-            name="reset-code"
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {message && <Alert tone="success">{message}</Alert>}
+        {error && <Alert>{error}</Alert>}
+        <Field label="Reset code" hint="Valid for 15 minutes.">
+          <input
             value={shortToken}
             onChange={(e) => setShortToken(e.target.value)}
-            label="Reset Code"
             required
+            maxLength={6}
+            autoComplete="one-time-code"
+            className="k-input text-center font-display text-2xl tracking-[0.5em]"
+            placeholder="••••••"
           />
-
-          {/* New Password Field with Visibility Toggle */}
-          <div className="relative">
-            <FloatingLabelInput
-              type={showNewPassword ? "text" : "password"}
-              id="new-password"
-              name="new-password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              label="New Password"
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowNewPassword((prev) => !prev)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xl text-[#D57500] hover:text-[#333] focus:outline-none"
-            >
-              {showNewPassword ? <FaEyeSlash /> : <FaEye />}
-            </button>
-          </div>
-
-          {/* Confirm Password Field with Visibility Toggle */}
-          <div className="relative">
-            <FloatingLabelInput
-              type={showConfirmPassword ? "text" : "password"}
-              id="confirm-password"
-              name="confirm-password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              label="Confirm Password"
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword((prev) => !prev)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xl text-[#D57500] hover:text-[#333] focus:outline-none"
-            >
-              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-            </button>
-          </div>
-
-          {/* Submit Button */}
-          <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full flex items-center justify-center gap-2 bg-[#D57500] text-white font-semibold py-3 rounded-md hover:bg-[#333] transition duration-300 disabled:bg-[#333] disabled:cursor-not-allowed"
-                  >
-                    {loading && <Loader2 className="animate-spin w-5 h-5" />}
-                    {loading ? "Resetting Password..." : "Reset Password"}
-          </button>
-        </form>
-
-        <div className="text-center mt-5">
-          <button
-            onClick={() => navigate("/login")}
-            className="text-[#D57500] hover:text-[#333] font-semibold transition-all"
-          >
-            Back to Login
-          </button>
-        </div>
-      </div>
-    </div>
+        </Field>
+        <Field label="New password">
+          <PasswordInput value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={8} autoComplete="new-password" />
+        </Field>
+        <Field label="Confirm new password">
+          <PasswordInput value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} autoComplete="new-password" />
+        </Field>
+        <button type="submit" disabled={loading} className="k-btn-primary w-full py-3">
+          {loading && <Spinner />}
+          {loading ? "Resetting…" : "Reset password"}
+        </button>
+      </form>
+    </AuthShell>
   );
 };
 

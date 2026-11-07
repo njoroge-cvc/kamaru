@@ -1,41 +1,56 @@
 import React, { useEffect, useState } from "react";
 import Videos from "../components/Videos";
-import { fetchVideos } from "../api"; // Assuming you have this API function
+import VideoPlayer from "../components/VideoPlayer";
+import PageHero from "../components/PageHero";
+import { Reveal } from "../components/motion";
+import { fetchVideos } from "../api";
+import { extractYouTubeID } from "../utils/youtube";
 
 const VideosPage = () => {
-  const [videos, setVideos] = useState([]); // State to store the list of videos
+  const [videos, setVideos] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch videos from the API
     fetchVideos()
       .then((response) => {
-        if (response.data?.videos) {
-          setVideos(response.data.videos); // Set the videos in state
-        }
+        const list = Array.isArray(response.data?.videos) ? response.data.videos : [];
+        setVideos(
+          list.map((v) => ({ ...v, youtube_id: extractYouTubeID(v.youtube_url) })).filter((v) => v.youtube_id)
+        );
       })
-      .catch((error) => console.error("Error fetching videos:", error));
+      .catch((error) => console.error("Error fetching videos:", error))
+      .finally(() => setLoading(false));
   }, []);
 
+  const [featured, ...rest] = videos;
+
   return (
-    <div className="min-h-screen flex flex-col items-center bg-white px-4 py-6">
-      {/* Title */}
-      <h1 className="text-3xl font-bold text-center text-[#8F3B1B] mb-3">
-        Event Videos
-      </h1>
+    <div className="min-h-screen bg-cream">
+      <PageHero
+        crumb="Videos"
+        eyebrow="On stage"
+        title="Hear the voices of Ndeiya"
+        intro="Inspiring performances, musical talent and cultural showcases from past Kamaru Challenge – Ndeiya Edition events."
+      />
 
-      {/* Short Description */}
-      <p className="text-center text-gray-700 max-w-2xl mb-6">
-        Explore inspiring performances, musical talent, and cultural showcases 
-        from past <strong>KAMARU CHALLENGE – NDEIYA EDITION</strong> events. Watch and relive 
-        the most exciting moments!
-      </p>
-
-      {/* Video Content */}
-      <div className="w-full max-w-5xl">
-        {videos.length > 0 ? (
-          <Videos videos={videos} /> // Pass the videos to the Videos component
+      <div className="container mx-auto px-5 md:px-8 py-14">
+        {loading ? (
+          <div className="aspect-video max-w-5xl mx-auto animate-pulse rounded-[2rem] bg-cream-dark" />
+        ) : featured ? (
+          <>
+            <Reveal className="max-w-5xl mx-auto">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-ochre">Latest</p>
+              <VideoPlayer video={featured} />
+            </Reveal>
+            {rest.length > 0 && (
+              <div className="mt-16">
+                <h2 className="mb-8 font-display text-3xl font-bold text-earth">More performances</h2>
+                <Videos videos={rest} />
+              </div>
+            )}
+          </>
         ) : (
-          <p className="text-center text-gray-500">No videos available.</p>
+          <p className="py-16 text-center text-earth-600">No videos available yet.</p>
         )}
       </div>
     </div>

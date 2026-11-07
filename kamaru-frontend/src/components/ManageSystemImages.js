@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import React, { useState, useEffect } from "react";
 import {
   fetchSystemImage,
@@ -22,7 +23,7 @@ const ManageSystemImages = () => {
         .then((response) =>
           setImages((prev) => ({
             ...prev,
-            [section]: response.data.image?.image_url || null,
+            [section]: response.data.image || null,
           }))
         )
         .catch(() =>
@@ -40,7 +41,7 @@ const ManageSystemImages = () => {
 
   const handleUpload = async (e) => {
     e.preventDefault();
-    if (!selectedImage || !section) return alert("Please select an image and section!");
+    if (!selectedImage || !section) return toast.error("Please select an image and section!");
 
     const formData = new FormData();
     formData.append("image", selectedImage);
@@ -55,7 +56,7 @@ const ManageSystemImages = () => {
         fetchSystemImage(section).then((response) =>
           setImages((prev) => ({
             ...prev,
-            [section]: response.data.image?.image_url || null,
+            [section]: response.data.image || null,
           }))
         );
       }
@@ -63,23 +64,21 @@ const ManageSystemImages = () => {
       setSection("");
     } catch (error) {
       console.error("Error uploading image:", error);
-      alert("Failed to upload image.");
+      toast.error("Failed to upload image.");
     }
   };
 
   const handleDeleteSystemImage = async (section) => {
     if (!window.confirm(`Delete the ${section} image?`)) return;
+    const image = images[section];
+    if (!image?.id) return;
 
     try {
-      await deleteSystemImage(section);
-      fetchSystemImage(section).then((response) =>
-        setImages((prev) => ({
-          ...prev,
-          [section]: response.data.image?.image_url || null,
-        }))
-      );
+      // The API deletes by numeric image id, not by section name
+      await deleteSystemImage(image.id);
+      setImages((prev) => ({ ...prev, [section]: null }));
     } catch (error) {
-      alert(`Failed to delete ${section} image.`);
+      toast.error(`Failed to delete ${section} image.`);
     }
   };
 
@@ -90,23 +89,23 @@ const ManageSystemImages = () => {
       await deleteBanner(bannerId);
       fetchBanners().then((response) => setBanners(response.data.banners));
     } catch (error) {
-      alert("Failed to delete banner.");
+      toast.error("Failed to delete banner.");
     }
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <h2 className="text-3xl font-bold text-gray-800 mb-6">Manage System Images</h2>
+    <div >
+      <h2 className="k-h2 mb-6">Manage System Images</h2>
 
       {/* Upload Form */}
-      <div className="bg-white shadow-md p-6 rounded-lg mb-6">
+      <div className="k-card mb-6">
         <form onSubmit={handleUpload} className="grid gap-4">
           <div>
-            <label className="block text-gray-700 font-medium">Select Section:</label>
+            <label className="k-label">Select Section:</label>
             <select
               value={section}
               onChange={(e) => setSection(e.target.value)}
-              className="border border-gray-300 p-2 w-full rounded-md focus:ring focus:ring-[#D57500]"
+              className="k-input"
             >
               <option value="">Choose Section</option>
               <option value="logo">Logo</option>
@@ -116,16 +115,16 @@ const ManageSystemImages = () => {
             </select>
           </div>
           <div>
-            <label className="block text-gray-700 font-medium">Upload Image:</label>
+            <label className="k-label">Upload Image:</label>
             <input
               type="file"
               onChange={(e) => setSelectedImage(e.target.files[0])}
-              className="border border-gray-300 p-2 w-full rounded-md"
+              className="k-input"
             />
           </div>
           <button
             type="submit"
-            className="bg-[#D57500] text-white py-2 rounded-md w-full hover:bg-[#b85e00] transition duration-200"
+            className="k-btn-primary w-full"
           >
             Upload Image
           </button>
@@ -134,35 +133,38 @@ const ManageSystemImages = () => {
 
       {/* System Images */}
       <div className="grid md:grid-cols-3 gap-6">
-        {Object.entries(images).map(([section, url]) => (
-          <div key={section} className="bg-white shadow-md p-4 rounded-lg relative">
-            <h3 className="text-lg font-semibold capitalize">{section}</h3>
+        {Object.entries(images).map(([section, image]) => {
+          const url = image?.image_url;
+          return (
+          <div key={section} className="k-card p-4 relative">
+            <h3 className="font-display text-lg font-bold text-earth capitalize">{section}</h3>
             {url ? (
               <div className="relative">
                 <img src={url} alt={section} className="w-full h-auto rounded-md shadow-sm mt-2" />
                 <button
                   onClick={() => handleDeleteSystemImage(section)}
-                  className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                  className="absolute top-3 right-3 grid h-9 w-9 place-items-center rounded-full bg-earth/80 text-cream backdrop-blur hover:bg-bead-red transition"
                 >
                   <FaTrash />
                 </button>
               </div>
             ) : (
-              <p className="text-gray-500 mt-2">No image uploaded</p>
+              <p className="text-earth-600 mt-2">No image uploaded</p>
             )}
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Banners */}
-      <h3 className="text-xl font-bold mt-8 mb-4">Banners</h3>
+      <h3 className="font-display text-2xl font-bold text-earth mt-10 mb-4">Banners</h3>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {banners.map((banner) => (
-          <div key={banner.id} className="bg-white shadow-md rounded-lg relative">
+          <div key={banner.id} className="relative overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-earth/5">
             <img src={banner.image_url} alt="Banner" className="w-full h-auto rounded-t-md" />
             <button
               onClick={() => handleDeleteBanner(banner.id)}
-              className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+              className="absolute top-3 right-3 grid h-9 w-9 place-items-center rounded-full bg-earth/80 text-cream backdrop-blur hover:bg-bead-red transition"
             >
               <FaTrash />
             </button>
