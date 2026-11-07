@@ -1,5 +1,7 @@
 # Python
 venv/
+k-venv/
+.venv/
 __pycache__/
 *.pyc
 *.pyo
@@ -10,8 +12,7 @@ instance/
 .env
 *.sqlite3
 
-# Flask Migrations
-migrations/
+# Flask Migrations — tracked on purpose: they are the schema history for production.
 
 # Node.js
 node_modules/
@@ -46,7 +47,9 @@ logs/
 *.manifest
 *.spec
 
-# Package managers
-package-lock.json
+# Package managers — lockfiles are tracked so builds are reproducible
 yarn.lock
 pnpm-lock.yaml
+
+# Local database backups (contain personal data — never commit)
+backups/
