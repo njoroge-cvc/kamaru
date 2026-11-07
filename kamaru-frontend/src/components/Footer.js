@@ -2,12 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaArrowUp, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
-import { cld } from "../utils/cloudinary";
-import SocialIcons from "./SocialIcons";
 import BrandBadge from "./BrandBadge";
+import SocialIcons from "./SocialIcons";
 import NewsletterForm from "./NewsletterSubscriptionForm";
-import { fetchSystemImage } from "../api";
-import { TAGLINE_KIKUYU, TAGLINE_ENGLISH, CONTACT, EDITION } from "../content/story";
+import { TAGLINE_KIKUYU, CONTACT, EDITION } from "../content/story";
 
 const EXPLORE = [
   ["/", "Home"],
@@ -40,15 +38,6 @@ const LinkList = ({ title, items }) => (
 
 const Footer = () => {
   const [showScroll, setShowScroll] = useState(false);
-  const [logo, setLogo] = useState(null);
-
-  useEffect(() => {
-    fetchSystemImage("logo")
-      .then((response) => {
-        if (response.data.image) setLogo(response.data.image.image_url);
-      })
-      .catch(() => {});
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => setShowScroll(window.scrollY > 400);
@@ -58,26 +47,6 @@ const Footer = () => {
 
   return (
     <footer className="relative overflow-hidden bg-earth text-cream swirl-bg">
-      {/* Call-to-action band */}
-      <div className="relative border-b border-cream/10">
-        <div className="container mx-auto flex flex-col items-start gap-6 px-5 py-12 md:flex-row md:items-center md:justify-between md:px-8">
-          <div>
-            <p className="font-display text-3xl font-black leading-tight md:text-4xl">
-              Keep the flame <span className="text-kamaru">burning.</span>
-            </p>
-            <p className="mt-2 text-cream/60">{TAGLINE_ENGLISH}</p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Link to="/register/participant" className="k-btn-primary px-6 py-3">
-              Join the Challenge
-            </Link>
-            <Link to="/support" className="k-btn bg-cream/10 px-6 py-3 text-cream hover:bg-cream hover:text-earth">
-              Support us
-            </Link>
-          </div>
-        </div>
-      </div>
-
       <div className="container relative mx-auto px-5 py-14 md:px-8">
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1.4fr]">
           {/* Brand */}
@@ -92,7 +61,6 @@ const Footer = () => {
               >
                 <BrandBadge className="h-full w-full drop-shadow-xl" ringColor="#D57500" textColor="#FBF3E8" emblemColor="#D57500" />
               </motion.div>
-              {logo && <img src={cld(logo, 400)} alt="Kamaru Challenge" className="h-14 w-auto sm:hidden xl:block" />}
             </div>
             <p className="mt-6 font-sans text-lg font-semibold text-kamaru-light">{TAGLINE_KIKUYU}</p>
             <p className="mt-2 max-w-xs text-sm text-cream/60">Fanning the flame of values through music & culture.</p>
@@ -134,11 +102,9 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col gap-5 border-t border-cream/10 pt-6 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-4">
-            <span className="text-xs font-bold uppercase tracking-[0.25em] text-cream/50">Follow us on</span>
-            <SocialIcons className="flex gap-2" itemClassName="h-10 w-10 bg-cream/10 text-lg hover:bg-kamaru hover:text-earth" />
-          </div>
+        <div className="mt-14 flex flex-col gap-1 border-t border-cream/10 pt-6 text-sm text-cream/50 md:flex-row md:items-center md:justify-between">
+          {/* Social links for screens without the vertical "Follow us on" rail */}
+          <SocialIcons className="mb-4 flex gap-2 md:mb-0 xl:hidden" itemClassName="h-10 w-10 bg-cream/10 text-lg text-cream hover:bg-kamaru hover:text-earth" />
           <div className="flex flex-col gap-1 text-sm text-cream/50 md:flex-row md:gap-6">
             <p>© {new Date().getFullYear()} Kamaru Challenge – Ndeiya Edition</p>
             <Link to="/terms" className="hover:text-kamaru-light">

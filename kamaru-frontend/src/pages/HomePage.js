@@ -16,7 +16,7 @@ import { PartnerSection, ContactSection } from "../components/home/PartnerContac
 //   Hero → 1. why (the indifference) → 2. the seven values → 3. the spaces we opened
 //   → 4. the Challenge → gatherings → moments (gallery) → voices (videos) → partner → contact
 const HomePage = () => {
-  const { gallery, upcoming, past, videos, aboutImage, contactImage, stats, season, loading } = useHomeData();
+  const { gallery, upcoming, past, videos, aboutImage, stats, season, loading } = useHomeData();
 
 
   return (
@@ -30,7 +30,7 @@ const HomePage = () => {
       {(loading || gallery.length > 0) && <GallerySection gallery={gallery} />}
       {(loading || videos.length > 0) && <VideosSection videos={videos} />}
       <PartnerSection />
-      <ContactSection contactImage={contactImage} />
+      <ContactSection />
 
       <FloatingRegisterButton />
     </div>

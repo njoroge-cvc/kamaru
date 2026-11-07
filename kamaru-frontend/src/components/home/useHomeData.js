@@ -8,7 +8,6 @@ const INITIAL = {
   past: [],
   videos: [],
   aboutImage: "",
-  contactImage: "",
   stats: null,
   season: null,
 };
@@ -18,7 +17,7 @@ const INITIAL = {
 // (e.g. a cold Render instance) never holds back or blanks the rest.
 const useHomeData = () => {
   const [data, setData] = useState(INITIAL);
-  const [pending, setPending] = useState(8);
+  const [pending, setPending] = useState(7);
 
   useEffect(() => {
     let alive = true;
@@ -42,7 +41,6 @@ const useHomeData = () => {
         .filter((v) => v.youtube_id),
     }));
     load(fetchSystemImage("about"), (d) => ({ aboutImage: d?.image?.image_url || "" }));
-    load(fetchSystemImage("contact"), (d) => ({ contactImage: d?.image?.image_url || "" }));
     load(fetchStats(), (d) => ({ stats: d && !d.error ? d : null }));
     load(fetchActiveSeason(), (d) => ({ season: d && d.id ? d : null }));
 

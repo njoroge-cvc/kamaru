@@ -1,11 +1,10 @@
 import React from "react";
-import { cld } from "../../utils/cloudinary";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaHandshake, FaMicrophone, FaSeedling } from "react-icons/fa";
+import { FaHandshake, FaMicrophone, FaSeedling } from "react-icons/fa";
 import ContactForm from "../ContactForm";
 import { Reveal, SectionHeading, Stagger, StaggerItem } from "../motion";
-import { PARTNERSHIPS, CONTACT, EDITION } from "../../content/story";
+import { PARTNERSHIPS } from "../../content/story";
 import { SunSpiral } from "./Ornaments";
 
 const P_ICONS = [FaMicrophone, FaHandshake, FaSeedling];
@@ -60,60 +59,24 @@ export const PartnerSection = () => (
   </section>
 );
 
-export const ContactSection = ({ contactImage }) => (
+export const ContactSection = () => (
   <section id="contact" className="relative bg-ochre text-cream overflow-hidden grain">
-    <SunSpiral className="pointer-events-none absolute -left-24 -bottom-24 w-96 opacity-20" color="#2B1A10" />
-    <div className="relative container mx-auto px-5 md:px-8 py-24 md:py-32 grid lg:grid-cols-2 gap-12 items-start">
-      <div>
-        <SectionHeading
-          light
-          align="left"
-          eyebrow="Talk to us"
-          title="Have a question? Reach out."
-          intro="Contestants, parents, partners, journalists — we'd love to hear from you."
-          className="[&_p]:!text-cream/90 [&_span.h-px]:!bg-cream"
+    <div className="relative container mx-auto px-5 md:px-8 py-24 md:py-32 grid lg:grid-cols-[1fr_1.1fr] gap-12 items-center">
+      <SectionHeading
+        light
+        align="left"
+        eyebrow="Talk to us"
+        title="Have a question? Reach out."
+        intro="Contestants, parents, partners, journalists — we'd love to hear from you."
+        className="[&_p]:!text-cream/90 [&_span.h-px]:!bg-cream"
+      />
+      <Reveal delay={0.15} className="relative">
+        {/* The spinning sun anchors the form, peeking out behind its top-right corner */}
+        <SunSpiral
+          className="pointer-events-none absolute -right-16 -top-20 z-0 w-64 md:-right-24 md:-top-28 md:w-96"
+          color="#D57500"
         />
-        <Stagger className="mt-10 space-y-4">
-          {CONTACT.phones.map((ph) => (
-            <StaggerItem key={ph}>
-              <a href={`tel:${ph.replace(/\s/g, "")}`} className="flex items-center gap-4 text-lg hover:text-bead-gold">
-                <span className="grid h-11 w-11 place-items-center rounded-full bg-cream/15">
-                  <FaPhoneAlt />
-                </span>
-                {ph}
-              </a>
-            </StaggerItem>
-          ))}
-          <StaggerItem>
-            <a href={`mailto:${CONTACT.email}`} className="flex items-center gap-4 text-lg hover:text-bead-gold">
-              <span className="grid h-11 w-11 place-items-center rounded-full bg-cream/15">
-                <FaEnvelope />
-              </span>
-              {CONTACT.email}
-            </a>
-          </StaggerItem>
-          <StaggerItem>
-            <p className="flex items-center gap-4 text-lg">
-              <span className="grid h-11 w-11 place-items-center rounded-full bg-cream/15">
-                <FaMapMarkerAlt />
-              </span>
-              {EDITION.venue}
-            </p>
-          </StaggerItem>
-        </Stagger>
-        {contactImage && (
-          <Reveal className="mt-10 hidden lg:block">
-            <img
-              src={cld(contactImage, 900)}
-              alt="Kamaru Challenge"
-              loading="lazy"
-              className="max-h-72 rounded-[2rem] object-cover shadow-2xl rotate-[-2deg]"
-            />
-          </Reveal>
-        )}
-      </div>
-      <Reveal delay={0.15}>
-        <div className="rounded-[2rem] bg-cream p-2 text-earth shadow-2xl">
+        <div className="relative z-10 rounded-[2rem] bg-cream p-2 text-earth shadow-2xl">
           <ContactForm />
         </div>
       </Reveal>
