@@ -51,14 +51,14 @@ const PhotoFrame = ({ images, index, frame, mx, my }) => {
 
   return (
     <motion.div
-      className={`absolute ${frame.className} rounded-2xl bg-cream p-2 md:p-3 shadow-2xl shadow-black/40`}
+      className={`k-cut absolute ${frame.className} bg-cream p-2 md:p-3 shadow-2xl shadow-black/40`}
       style={{ x, y, rotate: frame.rotate }}
       initial={{ opacity: 0, scale: 0.85, rotate: frame.rotate * 2 }}
       animate={{ opacity: 1, scale: 1, rotate: frame.rotate }}
       transition={{ duration: 1.1, ease: EASE, delay: 0.4 + FRAMES.indexOf(frame) * 0.15 }}
       whileHover={{ scale: 1.04, rotate: 0, zIndex: 20 }}
     >
-      <div className="relative w-full h-full overflow-hidden rounded-xl bg-earth-700">
+      <div className="k-cut relative w-full h-full overflow-hidden bg-earth-700">
         {/* Placeholder lives outside AnimatePresence: a plain div there can't report its exit and would linger on top */}
         {!img && <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-earth-600 to-earth-800" />}
         <AnimatePresence mode="popLayout" initial={false}>

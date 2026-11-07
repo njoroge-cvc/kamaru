@@ -13,8 +13,8 @@ const ValueCard = ({ value, index }) => (
     <span className="absolute -right-4 -top-8 font-display text-[9rem] font-black leading-none text-black/10 select-none">
       {String(index + 1).padStart(2, "0")}
     </span>
-    <div className="relative flex h-full min-h-[16rem] flex-col justify-end">
-      <div className="mb-auto flex gap-1.5" aria-hidden="true">
+    <div className="relative flex h-full min-h-[16rem] flex-col items-center justify-center text-center">
+      <div className="mb-6 flex justify-center gap-1.5" aria-hidden="true">
         {Array.from({ length: index + 1 }).map((_, i) => (
           <span key={i} className="h-3 w-3 rounded-full bg-cream/80 ring-2 ring-black/10" />
         ))}
@@ -54,8 +54,8 @@ const StoryValues = () => {
             <SectionHeading
               light
               align="left"
-              eyebrow="Chapter two · What we stand for"
-              title="Seven timeless values"
+              eyebrow="Mitugo, What we stand for"
+              title="Our Timeless Values"
               intro="Communality, Reverence, Justice, Courage, Diligence, Introspection and Self-control — the values that once made us a dignified, happy community. Every performance on the Kamaru stage carries one of them forward."
             />
           </div>
@@ -73,8 +73,8 @@ const StoryValues = () => {
           <SectionHeading
             light
             align="left"
-            eyebrow="Chapter two · What we stand for"
-            title="Seven timeless values"
+            eyebrow="Mitugo, What we stand for"
+            title="Our Timeless Values"
             intro="The values that once made us a dignified, happy community — carried forward by every performance."
           />
         </div>

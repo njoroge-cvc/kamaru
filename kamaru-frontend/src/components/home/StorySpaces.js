@@ -18,7 +18,7 @@ const StorySpaces = ({ aboutImage }) => {
       <SunSpiral className="pointer-events-none absolute -right-24 top-24 w-72 opacity-10" />
       <div className="container mx-auto px-5 md:px-8 py-24 md:py-32">
         <SectionHeading
-          eyebrow="Chapter three · Fanning the flame"
+          eyebrow="Fanning the flame"
           title="We chose to do our part"
           intro="To help our community rediscover and reconnect with its identity, we opened two spaces in Nguirubi, Ndeiya — free and open for community healing through authentic knowledge and shared experience."
         />

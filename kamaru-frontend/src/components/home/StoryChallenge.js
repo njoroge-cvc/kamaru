@@ -26,7 +26,7 @@ const StoryChallenge = ({ stats }) => {
         <div className="grid lg:grid-cols-[1.2fr_1fr] gap-10 items-end">
           <SectionHeading
             align="left"
-            eyebrow="Chapter four · The stage"
+            eyebrow="The stage"
             title="Kamaru Challenge"
             intro="An annual competition where Ndeiya discovers and showcases its talent — creatively, in the Kikuyu language, and always in service of the timeless values."
             className="[&_p]:!text-earth [&_span.h-px]:!bg-earth"

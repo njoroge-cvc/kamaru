@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import SocialIcons from "./SocialIcons";
+import { useBackdropTone } from "../utils/backdropTone";
 
 // Irregular four-sided shapes the tab slowly morphs between (hand-cut, not a rectangle)
 const QUADS = [
@@ -65,58 +66,11 @@ const SupportTab = () => {
   );
 };
 
-// Work out what the rail is sitting on: "dark" (earth/photos), "accent" (brand orange) or "light" (cream/white).
-const toneAt = (x, y, ignore) => {
-  const stack = document.elementsFromPoint(x, y);
-  for (const el of stack) {
-    if (ignore && ignore.contains(el)) continue;
-    if (["IMG", "VIDEO", "IFRAME", "CANVAS"].includes(el.tagName)) return "dark";
-    const m = getComputedStyle(el).backgroundColor.match(/[\d.]+/g);
-    if (!m) continue;
-    const [r, g, b, a = 1] = m.map(Number);
-    if (a < 0.5) continue;
-    if (r > 170 && g > 70 && g < 170 && b < 90) return "accent";
-    const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-    return lum < 0.45 ? "dark" : "light";
-  }
-  return "light";
-};
-
 // Rail colours per background — always the opposite of what's behind it
 const RAIL_TONES = {
   light: { label: "text-ochre", line: "bg-ochre/40", icon: "bg-earth text-cream hover:bg-kamaru hover:text-earth" },
   dark: { label: "text-kamaru-light", line: "bg-cream/30", icon: "bg-cream text-earth hover:bg-kamaru hover:text-earth" },
   accent: { label: "text-earth", line: "bg-earth/40", icon: "bg-earth text-kamaru hover:bg-cream hover:text-earth" },
-};
-
-/** Tracks the background tone under `ref` as the page scrolls. */
-const useBackdropTone = (ref, active) => {
-  const [tone, setTone] = useState("light");
-  useEffect(() => {
-    if (!active) return;
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      const el = ref.current;
-      if (!el) return;
-      const r = el.getBoundingClientRect();
-      if (!r.width) return;
-      setTone(toneAt(r.left + r.width / 2, r.top + r.height / 2, el));
-    };
-    const schedule = () => {
-      if (!frame) frame = requestAnimationFrame(update);
-    };
-    const t = setTimeout(update, 400); // after the entrance animation
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
-    return () => {
-      clearTimeout(t);
-      cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
-    };
-  }, [ref, active]);
-  return tone;
 };
 
 /**

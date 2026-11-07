@@ -129,9 +129,9 @@ const AdminDashboard = () => {
   );
 
   return (
-    <div className="flex min-h-[calc(100vh-5rem)] bg-cream">
+    <div className="flex min-h-[calc(100vh-5.5rem)] bg-cream">
       {/* Desktop sidebar */}
-      <aside className="sticky top-20 hidden h-[calc(100vh-5rem)] w-64 shrink-0 bg-earth swirl-bg lg:block">{sidebar}</aside>
+      <aside className="sticky top-[5.5rem] hidden h-[calc(100vh-5.5rem)] w-64 shrink-0 bg-earth swirl-bg lg:block">{sidebar}</aside>
 
       {/* Mobile drawer */}
       <AnimatePresence>

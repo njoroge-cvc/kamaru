@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { cld } from "../utils/cloudinary";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
@@ -7,6 +7,7 @@ import { FaTimes, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
 import { fetchSystemImage } from "../api";
 import SocialIcons from "./SocialIcons";
 import { useSession } from "./useSession";
+import { useBackdropTone } from "../utils/backdropTone";
 import { clearSession, PERMS } from "../auth";
 import { CONTACT, TAGLINE_KIKUYU } from "../content/story";
 
@@ -41,19 +42,6 @@ const AnyLink = ({ item, className, onClick, children, ...rest }) =>
       {children}
     </Link>
   );
-
-/** Hand-painted brush stroke drawn behind the desktop links. */
-const BrushStroke = ({ className = "", color = "#E8B21E" }) => (
-  <svg viewBox="0 0 400 60" preserveAspectRatio="none" className={className} aria-hidden="true">
-    <path
-      fill={color}
-      d="M8 13 C40 5 92 11 140 7 C196 3 258 10 318 5 C350 3 378 6 396 3 L391 16 L399 23 L389 33 L398 43 L388 55 C340 58 282 52 222 56 C160 60 102 54 42 58 L9 55 L13 46 L1 38 L11 30 L2 21 Z"
-    />
-    {/* dry-brush streaks */}
-    <path d="M30 20 C120 16 260 22 370 17" stroke="#000" strokeOpacity=".06" strokeWidth="2" fill="none" />
-    <path d="M24 42 C140 46 250 39 378 44" stroke="#000" strokeOpacity=".06" strokeWidth="2" fill="none" />
-  </svg>
-);
 
 /** Three bead dots — the "MORE ●●●" affordance. */
 const Beads = ({ open }) => (
@@ -189,12 +177,26 @@ const FullMenu = ({ open, onClose, logo, token, isAdmin, onLogout }) => {
   );
 };
 
+// Navbar colours follow the section beneath it, always contrasting with it
+const NAV_TONES = {
+  // At the very top of the page the bar is white; the brand's black wordmark variant keeps the logo legible
+  top: { bg: "#FFFFFF", stripe: "#D57500", text: "text-earth", link: "text-earth/80 hover:text-earth hover:bg-earth/5", active: "bg-earth text-cream", join: "bg-kamaru text-earth hover:bg-kamaru-light", more: "text-ochre", logo: "brightness-0" },
+  light: { bg: "#2B1A10", stripe: "#D57500", text: "text-cream", link: "text-cream/85 hover:text-cream hover:bg-cream/10", active: "bg-kamaru text-earth", join: "bg-kamaru text-earth hover:bg-kamaru-light", more: "text-bead-gold", logo: "" },
+  dark: { bg: "#D57500", stripe: "#2B1A10", text: "text-earth", link: "text-earth/85 hover:text-earth hover:bg-earth/10", active: "bg-earth text-kamaru", join: "bg-earth text-kamaru hover:bg-earth-700", more: "text-earth", logo: "brightness-0" },
+  accent: { bg: "#FBF3E8", stripe: "#2B1A10", text: "text-earth", link: "text-earth/80 hover:text-earth hover:bg-earth/10", active: "bg-earth text-cream", join: "bg-kamaru text-earth hover:bg-kamaru-light", more: "text-ochre", logo: "" },
+};
+
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [logo, setLogo] = useState(null);
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const navRef = useRef(null);
+  // Sample just below the bar, across the middle of the page
+  const tone = useBackdropTone(navRef, true, (r) => [window.innerWidth / 2, r.bottom + 12]);
+  const T = NAV_TONES[scrolled ? tone : "top"];
 
   const { token, permissions } = useSession();
   const isAdmin = permissions.includes(PERMS.DASHBOARD); // any staff role sees the dashboard link
@@ -225,102 +227,84 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 text-cream">
-        {/* Accent stripe revealed under the tilted edge */}
+      <nav ref={navRef} className={`sticky top-0 z-50 transition-colors duration-500 ${T.text}`} data-tone={scrolled ? tone : "top"}>
+        {/* Contrasting stripe that shows under the hand-cut bottom edge */}
+        <motion.div aria-hidden="true" className="absolute inset-0" animate={{ backgroundColor: T.stripe }} transition={{ duration: 0.5 }} />
+        {/* Hand-cut slab */}
         <motion.div
           aria-hidden="true"
-          className="absolute inset-0 bg-kamaru"
-        />
-        {/* Angled slab background (tilts like a stage banner) */}
-        <motion.div
-          aria-hidden="true"
-          className="absolute inset-0 bg-earth shadow-xl shadow-black/20"
+          className="absolute inset-0 shadow-xl shadow-black/20"
+          initial={false}
           animate={{
+            backgroundColor: T.bg,
             clipPath: scrolled
-              ? "polygon(0 0, 100% 0, 100% 100%, 0 100%)"
-              : "polygon(0 0, 100% 0, 100% 82%, 0 100%)",
+              ? "polygon(0% 0%, 100% 0%, 99.6% 90%, 0.4% 100%)"
+              : "polygon(0% 0%, 100% 0%, 99.4% 80%, 0.6% 100%)",
           }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         />
 
         <div
           className={`relative container mx-auto flex items-center justify-between gap-6 px-5 md:px-8 transition-all duration-300 ${
-            scrolled ? "py-2" : "pt-3 pb-6"
+            scrolled ? "pt-3 pb-4" : "pt-5 pb-8"
           }`}
         >
           <Link to="/" className="shrink-0" aria-label="Kamaru Challenge home">
             {logo ? (
               <motion.img
-                src={cld(logo, 400)}
+                src={cld(logo, 480)}
                 alt="Kamaru Challenge Logo"
-                animate={{ height: scrolled ? 44 : 60 }}
-                style={{ height: 60 }}
-                className="w-auto"
+                animate={{ height: scrolled ? 56 : 76 }}
+                style={{ height: 76 }}
+                className={`w-auto transition-[filter] duration-500 ${T.logo}`}
               />
             ) : (
-              <span className="font-display text-2xl font-black tracking-tight">
+              <span className="font-display text-3xl tracking-tight">
                 Kamaru<span className="text-kamaru">.</span>
               </span>
             )}
           </Link>
 
-          {/* Brush-stroke link band (desktop) */}
-          <div className="relative hidden lg:block">
-            <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-              className="absolute -inset-x-6 -inset-y-2 origin-left"
-            >
-              <BrushStroke className="h-full w-full" />
-            </motion.div>
-            <ul className="relative flex items-center gap-1 px-2">
-              {QUICK_LINKS.map((l) => (
-                <li key={l.text}>
-                  {l.hash ? (
-                    <HashLink smooth to={l.to} className="block rounded-full px-4 py-2 text-[15px] font-bold text-earth hover:bg-earth/10">
-                      {l.text}
-                    </HashLink>
-                  ) : (
-                    <NavLink
-                      to={l.to}
-                      end={l.end}
-                      className={({ isActive }) =>
-                        `relative block rounded-full px-4 py-2 text-[15px] font-bold transition-colors ${
-                          isActive ? "bg-earth text-bead-gold" : "text-earth hover:bg-earth/10"
-                        }`
-                      }
-                    >
-                      {l.text}
-                    </NavLink>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Desktop links */}
+          <ul className="hidden items-center gap-1 lg:flex">
+            {QUICK_LINKS.map((l) => (
+              <li key={l.text}>
+                {l.hash ? (
+                  <HashLink smooth to={l.to} className={`k-quad block px-4 py-2.5 text-base font-bold ${T.link}`}>
+                    {l.text}
+                  </HashLink>
+                ) : (
+                  <NavLink
+                    to={l.to}
+                    end={l.end}
+                    className={({ isActive }) => `k-quad block px-4 py-2.5 text-base font-bold ${isActive ? T.active : T.link}`}
+                  >
+                    {l.text}
+                  </NavLink>
+                )}
+              </li>
+            ))}
+          </ul>
 
           <div className="flex items-center gap-4">
             {!token && (
               <>
-                <Link to="/login" className="hidden xl:inline text-sm font-semibold uppercase tracking-[0.15em] text-cream/80 hover:text-kamaru-light">
+                <Link to="/login" className="k-quad hidden xl:inline px-3 py-2 text-sm font-semibold uppercase tracking-[0.15em] opacity-80 hover:opacity-100">
                   Login
                 </Link>
-                <Link
-                  to="/join"
-                  className="hidden md:inline-flex items-center rounded-full bg-kamaru px-5 py-2 text-sm font-bold uppercase tracking-[0.15em] text-earth transition hover:bg-kamaru-light"
-                >
+                <Link to="/join" className={`k-quad hidden md:inline-flex items-center px-6 py-2.5 text-sm font-bold uppercase tracking-[0.15em] ${T.join}`}>
                   Join
                 </Link>
               </>
             )}
             {isAdmin && (
-              <Link to="/admin" className="hidden xl:inline text-sm font-semibold uppercase tracking-[0.15em] text-cream/80 hover:text-kamaru-light">
+              <Link to="/admin" className="k-quad hidden xl:inline px-3 py-2 text-sm font-semibold uppercase tracking-[0.15em] opacity-80 hover:opacity-100">
                 Dashboard
               </Link>
             )}
             <button
               onClick={() => setMenuOpen(true)}
-              className="group flex items-center gap-3 rounded-full py-2 pl-3 pr-1 text-sm font-bold uppercase tracking-[0.2em] text-bead-gold"
+              className={`k-quad group flex items-center gap-3 py-2 pl-3 pr-2 text-sm font-bold uppercase tracking-[0.2em] ${T.more}`}
               aria-label="Open menu"
               aria-expanded={menuOpen}
             >
