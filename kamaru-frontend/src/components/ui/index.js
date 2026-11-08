@@ -2,7 +2,6 @@
 import React, { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaTimes, FaEye, FaEyeSlash } from "react-icons/fa";
-import { fetchBanners } from "../../api";
 
 /** Title row for each admin screen: eyebrow, heading, description and actions. */
 export const PageHeader = ({ eyebrow, title, description, actions }) => (
@@ -86,7 +85,7 @@ export const Spinner = ({ className = "h-5 w-5" }) => (
 );
 
 /** Centered card layout for login / register / password screens. */
-export const AuthShell = ({ title, subtitle, children, footer, banner }) => (
+export const AuthShell = ({ title, subtitle, children, footer }) => (
   <div className="relative flex min-h-[80vh] items-center justify-center overflow-hidden px-4 py-14">
     <div className="absolute inset-0 bg-kamaru" aria-hidden="true" />
     <motion.div
@@ -141,16 +140,3 @@ export const PasswordInput = ({ value, onChange, name = "password", placeholder 
   );
 };
 
-/** First uploaded banner, used as a faint backdrop on auth screens. */
-export const useBanner = () => {
-  const [banner, setBanner] = React.useState("");
-  React.useEffect(() => {
-    fetchBanners()
-      .then((res) => {
-        const list = res.data?.banners || [];
-        if (list.length) setBanner(list[0].image_url);
-      })
-      .catch(() => {});
-  }, []);
-  return banner;
-};

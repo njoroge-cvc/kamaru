@@ -181,22 +181,6 @@ export const deleteSystemImage = (imageId) =>
   });
 
 
-export const uploadBanner = (formData) =>
-  api.post("/sys_images/banners/upload", formData, {
-    headers: {
-      Authorization: `Bearer ${getToken()}`,
-      "Content-Type": "multipart/form-data",
-    },
-  });
-
-export const fetchBanners = () => api.get("/sys_images/banners");
-
-export const deleteBanner = (bannerId) =>
-  api.delete(`/sys_images/banners/${bannerId}`, {
-    headers: {
-      Authorization: `Bearer ${getToken()}`,
-    },
-  });
 
 // Video API
 export const fetchVideos = () => api.get("/videos");

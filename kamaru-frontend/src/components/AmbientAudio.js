@@ -25,7 +25,7 @@ const Bars = () => {
 };
 
 /**
- * "Listen while you browse": one background track (uploaded in Dashboard → Site Images).
+ * "Listen while you browse": one background track (uploaded in Dashboard → Site Media).
  * Nothing plays until the visitor presses play (browsers block sound before that anyway).
  * Keeps playing across pages, pauses when a video starts, and hides on the dashboard.
  */

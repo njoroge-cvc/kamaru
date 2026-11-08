@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { loginUser } from "../api";
 import { saveSession, PERMS } from "../auth";
-import { AuthShell, Field, PasswordInput, Alert, Spinner, useBanner } from "./ui";
+import { AuthShell, Field, PasswordInput, Alert, Spinner } from "./ui";
 import { useSeo } from "../utils/seo";
 
 const LoginForm = () => {
@@ -12,7 +12,6 @@ const LoginForm = () => {
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const banner = useBanner();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const expired = params.get("expired") === "1";
@@ -42,7 +41,6 @@ const LoginForm = () => {
 
   return (
     <AuthShell
-      banner={banner}
       title="Welcome back"
       subtitle="Log in to register for the Challenge or manage the site."
       footer={

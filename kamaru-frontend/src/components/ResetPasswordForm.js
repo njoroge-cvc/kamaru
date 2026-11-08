@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { resetPassword } from "../api";
-import { AuthShell, Field, PasswordInput, Alert, Spinner, useBanner } from "./ui";
+import { AuthShell, Field, PasswordInput, Alert, Spinner } from "./ui";
 import { useSeo } from "../utils/seo";
 
 const ResetPasswordForm = () => {
@@ -12,7 +12,6 @@ const ResetPasswordForm = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const banner = useBanner();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -40,7 +39,6 @@ const ResetPasswordForm = () => {
 
   return (
     <AuthShell
-      banner={banner}
       title="Reset your password"
       subtitle="Enter the code from your email and choose a new password."
       footer={

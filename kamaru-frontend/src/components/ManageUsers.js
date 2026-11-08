@@ -20,7 +20,7 @@ const PERM_LABELS = {
   "seasons:manage": "Seasons & registration",
   "gallery:manage": "Gallery",
   "videos:manage": "Videos",
-  "site_images:manage": "Site images",
+  "site_images:manage": "Site media",
   "users:manage": "Users & roles",
 };
 

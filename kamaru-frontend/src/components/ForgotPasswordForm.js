@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { forgotPassword } from "../api";
-import { AuthShell, Field, Alert, Spinner, useBanner } from "./ui";
+import { AuthShell, Field, Alert, Spinner } from "./ui";
 import { useSeo } from "../utils/seo";
 
 const ForgotPasswordForm = () => {
@@ -10,7 +10,6 @@ const ForgotPasswordForm = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const banner = useBanner();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -31,7 +30,6 @@ const ForgotPasswordForm = () => {
 
   return (
     <AuthShell
-      banner={banner}
       title="Forgot your password?"
       subtitle="Enter your email and we’ll send you a 6-character reset code."
       footer={

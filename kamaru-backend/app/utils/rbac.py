@@ -5,7 +5,7 @@ Every user has exactly one role. Roles grant permissions; routes ask for a
 permission, never for a role, so roles can be reshaped without touching routes.
 
     member       -> ordinary account (can register as a contestant)
-    media        -> gallery, videos, site images and the blog
+    media        -> gallery, videos, site media (logo, patron photo, music) and the blog
     coordinator  -> events, seasons/registration window, participants and the blog
     admin        -> everything, including users and their roles
 """
