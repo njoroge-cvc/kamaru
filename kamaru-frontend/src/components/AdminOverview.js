@@ -9,22 +9,25 @@ import { categoryLabel } from "../content/story";
 import { PageHeader } from "./ui";
 import { kk } from "./Kikuyu";
 import { useSession } from "./useSession";
-import { PERMS } from "../auth";
+import { PERMS, ROLE_LABELS } from "../auth";
+import { FaFolderOpen } from "react-icons/fa";
 
 /** Dashboard landing: registration status at a glance + shortcuts to what this role can manage. */
 const AdminOverview = ({ sections }) => {
   const { permissions } = useSession();
   const [season, setSeason] = useState(undefined);
   const [charts, setCharts] = useState(null);
+  const canSeeStats = permissions.includes(PERMS.STATS);
 
   useEffect(() => {
     fetchActiveSeason()
       .then((r) => setSeason(r.data))
       .catch(() => setSeason(null));
-    fetchDashboardStats()
-      .then((r) => setCharts(r.data))
-      .catch(() => setCharts(null));
-  }, []);
+    if (canSeeStats)
+      fetchDashboardStats()
+        .then((r) => setCharts(r.data))
+        .catch(() => setCharts(null));
+  }, [canSeeStats]);
 
   // Show categories with their Kikuyu names
   const catLabel = (v) => categoryLabel(v, { kikuyu: true });
@@ -78,7 +81,18 @@ const AdminOverview = ({ sections }) => {
         </motion.div>
       )}
 
-      <Stats />
+      {canSeeStats && <Stats />}
+
+      {permissions.includes(PERMS.DOCUMENTS_VIEW) && !canSeeStats && (
+        <Link to="/admin/documents" className="k-cut-strong group mt-2 flex items-center gap-5 bg-white p-6 shadow-sm transition hover:-translate-y-1">
+          <span className="grid h-14 w-14 shrink-0 place-items-center k-quad-shape bg-kamaru text-2xl text-earth"><FaFolderOpen /></span>
+          <span className="flex-1">
+            <span className="block font-display text-2xl text-earth">Documents</span>
+            <span className="block text-earth-600">Consent forms, judging sheets, rules and programmes for staff and officials.</span>
+          </span>
+          <FaArrowRight className="text-earth-600 transition group-hover:translate-x-1" />
+        </Link>
+      )}
 
       {charts && (
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
@@ -100,7 +114,7 @@ const AdminOverview = ({ sections }) => {
           </ChartCard>
           <ChartCard title="Members by role">
             <BarList
-              data={charts.users_by_role.map((r) => ({ label: r.role.charAt(0).toUpperCase() + r.role.slice(1), count: r.count }))}
+              data={charts.users_by_role.map((r) => ({ label: ROLE_LABELS[r.role] || r.role, count: r.count }))}
               caption="Accounts by role"
               color={SERIES.secondary}
             />

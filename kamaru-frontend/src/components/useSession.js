@@ -15,7 +15,7 @@ export const SessionSync = () => {
     if (!getSession().token) return;
     fetchMe()
       // Skip if the person signed out meanwhile (e.g. inactivity sign-out on load)
-      .then((r) => getToken() && saveSession({ role: r.data.role, permissions: r.data.permissions, is_admin: r.data.is_admin }))
+      .then((r) => getToken() && saveSession({ role: r.data.role, roles: r.data.roles, permissions: r.data.permissions, is_admin: r.data.is_admin }))
       .catch(() => {}); // expiry is handled by the API interceptor
   }, []);
   return null;

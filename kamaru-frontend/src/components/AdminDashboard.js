@@ -14,6 +14,7 @@ import {
   FaFeatherAlt,
   FaPhotoVideo,
   FaEnvelopeOpenText,
+  FaFolderOpen,
 } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import { FaBarsStaggered } from "react-icons/fa6";
@@ -26,13 +27,15 @@ import ManageSiteMedia from "./ManageSiteMedia";
 import ManageSeasons from "./ManageSeasons";
 import ManageBlog from "./ManageBlog";
 import ManageNewsletter from "./ManageNewsletter";
+import ManageDocuments from "./ManageDocuments";
 import AdminOverview from "./AdminOverview";
 import { useSession } from "./useSession";
-import { clearSession, PERMS, ROLE_LABELS } from "../auth";
+import { clearSession, PERMS, rolesLabel } from "../auth";
 import { useSeo } from "../utils/seo";
 
 // Each section declares the permission it needs; the sidebar and routes only show what the role allows.
 export const ADMIN_SECTIONS = [
+  { path: "documents", icon: FaFolderOpen, label: "Documents", perm: PERMS.DOCUMENTS_VIEW, element: <ManageDocuments /> },
   { path: "seasons", icon: FaFlag, label: "Seasons & Registration", perm: PERMS.SEASONS, element: <ManageSeasons /> },
   { path: "participants", icon: FaUsers, label: "Participants", perm: PERMS.PARTICIPANTS, element: <ManageParticipants isAdmin /> },
   { path: "events", icon: FaCalendarAlt, label: "Events", perm: PERMS.EVENTS, element: <ManageEvent /> },
@@ -81,7 +84,7 @@ const SidebarLinks = ({ sections, onNavigate }) => (
 const AdminDashboard = () => {
   useSeo({ title: "Dashboard", path: "/admin", noindex: true });
   const navigate = useNavigate();
-  const { token, role, permissions } = useSession();
+  const { token, roles, permissions } = useSession();
   const [drawer, setDrawer] = useState(false);
 
   const allowed = ADMIN_SECTIONS.filter((s) => permissions.includes(s.perm));
@@ -120,7 +123,7 @@ const AdminDashboard = () => {
         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-kamaru-light">Dashboard</p>
         <p className="mt-1 font-display text-2xl font-bold text-cream">Kamaru Admin</p>
         <span className="k-badge mt-3 bg-cream/10 text-cream">
-          <FaUserShield /> {ROLE_LABELS[role] || role}
+          <FaUserShield /> {rolesLabel(roles)}
         </span>
       </div>
       <nav className="mt-6 flex-1 overflow-y-auto px-3">

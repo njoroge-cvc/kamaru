@@ -139,6 +139,7 @@ from app.routes import (  # noqa: E402
     season_routes,
     blog_routes,
     health_routes,
+    document_routes,
 )
 
 app.register_blueprint(user_routes.bp, url_prefix="/api/users")
@@ -153,3 +154,4 @@ app.register_blueprint(video_routes.bp, url_prefix="/api/videos")
 app.register_blueprint(season_routes.bp, url_prefix="/api/seasons")
 app.register_blueprint(blog_routes.bp, url_prefix="/api/blog", strict_slashes=False)
 app.register_blueprint(health_routes.bp, url_prefix="/api/health")
+app.register_blueprint(document_routes.bp, url_prefix="/api/documents")

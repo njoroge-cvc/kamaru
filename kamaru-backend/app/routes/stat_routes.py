@@ -61,7 +61,7 @@ def _by_month(dates, n=12):
 
 
 @bp.route("/dashboard", methods=["GET"])
-@permission_required(rbac.DASHBOARD)
+@permission_required(rbac.STATS)
 def dashboard_stats():
     participants = db.session.query(Participant.category, Participant.season_id, Participant.registered_at).all()
     seasons = {s.id: s for s in Season.query.order_by(Season.year).all()}
@@ -75,7 +75,11 @@ def dashboard_stats():
         for s in seasons.values()
     ]
 
-    roles = Counter(r for (r,) in db.session.query(User.role).all())
+    # Members vs each staff role (a person holding two roles counts under both)
+    roles = Counter()
+    for u in User.query.all():
+        for r in (u.roles or ["member"]):
+            roles[r] += 1
     subs = db.session.query(NewsletterSubscriber.is_verified, NewsletterSubscriber.subscribed_at).all()
     posts = db.session.query(BlogPost.published).all()
 

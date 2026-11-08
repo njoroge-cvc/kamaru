@@ -2,7 +2,7 @@
 // The backend is the real gatekeeper (every protected endpoint checks permissions);
 // these only decide what the UI shows.
 
-const KEYS = ["token", "is_admin", "role", "permissions", "kamaru:remember", "kamaru:lastActive"];
+const KEYS = ["token", "is_admin", "role", "roles", "permissions", "kamaru:remember", "kamaru:lastActive"];
 const EVENT = "kamaru:session";
 
 export const PERMS = {
@@ -16,11 +16,15 @@ export const PERMS = {
   USERS: "users:manage",
   BLOG: "blog:manage",
   NEWSLETTER: "newsletter:manage",
+  STATS: "stats:view",
+  DOCUMENTS_VIEW: "documents:view",
+  DOCUMENTS_MANAGE: "documents:manage",
   ADMINS: "admins:manage", // Super admins: grant/remove Administrator and Super admin access
 };
 
 export const ROLE_LABELS = {
   member: "Member",
+  staff: "Staff",
   media: "Media team",
   coordinator: "Coordinator",
   admin: "Administrator",
@@ -68,14 +72,24 @@ export const getSession = () => {
   const role = safeGet("role") || (safeGet("is_admin") === "true" ? "admin" : token ? "member" : null);
   // Older sessions (before RBAC) only stored is_admin
   if (!permissions.length && role === "admin") permissions = Object.values(PERMS).filter((p) => p !== PERMS.ADMINS);
-  return { token, role, permissions };
+  let roles = [];
+  try {
+    roles = JSON.parse(safeGet("roles") || "[]");
+  } catch {
+    roles = [];
+  }
+  if (!roles.length && role && role !== "member") roles = [role];
+  return { token, role, roles, permissions };
 };
+
+/** "Coordinator · Staff" for display. */
+export const rolesLabel = (roles) => (roles?.length ? roles.map((r) => ROLE_LABELS[r] || r).join(" · ") : ROLE_LABELS.member);
 
 export const hasPermission = (perm) => getSession().permissions.includes(perm);
 export const isStaff = () => hasPermission(PERMS.DASHBOARD);
 
 /** Accepts the login response or a /users/me profile. */
-export const saveSession = ({ token, role, permissions, is_admin, remember }) => {
+export const saveSession = ({ token, role, roles, permissions, is_admin, remember }) => {
   if (token) {
     localStorage.setItem("token", token);
     // A fresh login sets the "keep me signed in" choice and starts the activity clock
@@ -83,6 +97,7 @@ export const saveSession = ({ token, role, permissions, is_admin, remember }) =>
     touchActivity();
   }
   if (role) localStorage.setItem("role", role);
+  if (roles) localStorage.setItem("roles", JSON.stringify(roles));
   if (permissions) localStorage.setItem("permissions", JSON.stringify(permissions));
   localStorage.setItem("is_admin", String(is_admin ?? ["admin", "superadmin"].includes(role)));
   window.dispatchEvent(new Event(EVENT));

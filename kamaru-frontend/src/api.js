@@ -290,3 +290,13 @@ export const fetchNewsletterSends = () => api.get("/newsletter/sends", { headers
 export const sendPostNewsletter = (postId, { test = false, force = false } = {}) =>
   api.post(`/blog/${postId}/newsletter`, { test, force }, { headers: authHeader() });
 export const unsubscribeNewsletter = (token) => api.post(`/newsletter/unsubscribe?token=${encodeURIComponent(token)}`);
+
+// ---------------------------------------------------------------------------
+// Documents (staff): list and download; admins upload, edit, delete
+// ---------------------------------------------------------------------------
+export const fetchDocuments = () => api.get("/documents/", { headers: authHeader() });
+export const fetchDocumentCategories = () => api.get("/documents/categories", { headers: authHeader() });
+export const getDocumentDownload = (id) => api.get(`/documents/${id}/download`, { headers: authHeader() });
+export const uploadDocument = (formData) => api.post("/documents/", formData, { headers: { ...authHeader(), "Content-Type": "multipart/form-data" } });
+export const updateDocument = (id, formData) => api.put(`/documents/${id}`, formData, { headers: { ...authHeader(), "Content-Type": "multipart/form-data" } });
+export const deleteDocument = (id) => api.delete(`/documents/${id}`, { headers: authHeader() });
