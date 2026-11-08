@@ -1,7 +1,9 @@
 import { toast } from "react-toastify";
 import React, { useEffect, useMemo, useState } from "react";
 import { FaTrash, FaPlus, FaCheck, FaImages } from "react-icons/fa";
-import { fetchGalleryImages, uploadImage, deleteImage, updateImage, bulkAssignSeason, fetchSeasons } from "../api";
+import { fetchGalleryImages, uploadImage, deleteImage, updateImage, bulkAssignSeason, fetchSeasons, createSeason } from "../api";
+import { useSession } from "./useSession";
+import { PERMS } from "../auth";
 import { PageHeader, Modal, Field, EmptyState, Spinner } from "./ui";
 import { cld } from "../utils/cloudinary";
 
@@ -95,6 +97,53 @@ const UploadModal = ({ open, onClose, seasons, onDone }) => {
   );
 };
 
+/** Add a past or upcoming season without leaving the gallery (e.g. Season 1 photos from before the site existed). */
+const NewSeasonModal = ({ open, onClose, onCreated }) => {
+  const [name, setName] = useState("");
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [saving, setSaving] = useState(false);
+  useEffect(() => {
+    if (open) {
+      setName("");
+      setYear(new Date().getFullYear());
+    }
+  }, [open]);
+  const submit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const r = await createSeason({ name: name.trim(), year: Number(year) });
+      toast.success(`“${name.trim()}” added. It stays inactive, so registration isn't affected.`);
+      onCreated(r.data?.season || r.data);
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Could not add the season.");
+    } finally {
+      setSaving(false);
+    }
+  };
+  return (
+    <Modal open={open} onClose={onClose} title="Add a season" size="sm">
+      <form onSubmit={submit} className="space-y-4">
+        <Field label="Season name" hint="Include the edition, e.g. “Season 1 · Ndeiya Edition”.">
+          <input value={name} onChange={(e) => setName(e.target.value)} className="k-input" required autoFocus />
+        </Field>
+        <Field label="Year">
+          <input type="number" min="2000" max="2100" value={year} onChange={(e) => setYear(e.target.value)} className="k-input" required />
+        </Field>
+        <p className="k-hint">New seasons start inactive with registration closed, so this is safe for past seasons.</p>
+        <div className="flex justify-end gap-3 pt-2">
+          <button type="button" className="k-btn-ghost" onClick={onClose}>
+            Cancel
+          </button>
+          <button type="submit" className="k-btn-primary" disabled={saving}>
+            {saving && <Spinner />} Add season
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
+};
+
 const ManageGallery = () => {
   const [images, setImages] = useState(null);
   const [seasons, setSeasons] = useState([]);
@@ -103,6 +152,9 @@ const ManageGallery = () => {
   const [moveTo, setMoveTo] = useState("");
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [addingSeason, setAddingSeason] = useState(false);
+  const { permissions } = useSession();
+  const canAddSeason = permissions.includes(PERMS.SEASONS);
 
   const load = () =>
     fetchGalleryImages()
@@ -112,11 +164,14 @@ const ManageGallery = () => {
         toast.error("Could not load the gallery.");
       });
 
-  useEffect(() => {
-    load();
+  const loadSeasons = () =>
     fetchSeasons()
       .then((r) => setSeasons(Array.isArray(r.data) ? r.data : []))
       .catch(() => setSeasons([]));
+
+  useEffect(() => {
+    load();
+    loadSeasons();
   }, []);
 
   const counts = useMemo(() => {
@@ -215,7 +270,7 @@ const ManageGallery = () => {
       />
 
       {/* Season filter */}
-      <div className="mb-5 flex flex-wrap gap-2">
+      <div className="mb-5 flex flex-wrap items-center gap-2">
         {chips.map((c) => (
           <button
             key={c.key}
@@ -225,6 +280,13 @@ const ManageGallery = () => {
             {c.label} <span className="opacity-60">· {counts[c.key] || 0}</span>
           </button>
         ))}
+        {canAddSeason ? (
+          <button onClick={() => setAddingSeason(true)} className="k-quad inline-flex items-center gap-2 border-dashed bg-transparent px-4 py-2 text-sm font-semibold text-ochre ring-1 ring-inset ring-ochre/40 hover:bg-ochre/10">
+            <FaPlus /> New season
+          </button>
+        ) : (
+          <span className="text-xs text-earth-600">Missing a season? Ask a coordinator or admin to add it in Seasons.</span>
+        )}
       </div>
 
       {/* Bulk actions */}
@@ -293,6 +355,15 @@ const ManageGallery = () => {
           })}
         </div>
       )}
+
+      <NewSeasonModal
+        open={addingSeason}
+        onClose={() => setAddingSeason(false)}
+        onCreated={() => {
+          setAddingSeason(false);
+          loadSeasons();
+        }}
+      />
 
       <UploadModal
         open={uploading}
