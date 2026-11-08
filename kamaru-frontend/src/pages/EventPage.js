@@ -39,10 +39,12 @@ const EventPage = () => {
       name: event.title,
       description: event.theme || event.details,
       startDate: event.date_time,
-      eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+      eventAttendanceMode: event.online ? "https://schema.org/OnlineEventAttendanceMode" : "https://schema.org/OfflineEventAttendanceMode",
       eventStatus: "https://schema.org/EventScheduled",
       image: event.image_url,
-      location: { "@type": "Place", name: event.location, address: { "@type": "PostalAddress", addressLocality: event.location, addressCountry: "KE" } },
+      location: event.online
+        ? { "@type": "VirtualLocation", url: event.registration_link || `${SITE}/events/${event.id}` }
+        : { "@type": "Place", name: event.location, address: { "@type": "PostalAddress", addressLocality: event.location, addressCountry: "KE" } },
       organizer: { "@id": `${SITE}/#organization` },
       isAccessibleForFree: /free/i.test(event.cost || "Free"),
     },
@@ -120,7 +122,7 @@ return (
               rel="noopener noreferrer"
               className="inline-block bg-kamaru hover:bg-kamaru-light text-earth px-8 py-4 k-quad font-semibold transition-all"
             >
-              Register Now
+              {event.kind === "podcast" ? "Listen" : event.online ? "Join online" : "Register Now"}
             </a>
           )}
           {/* Calendar file comes from the newer API (which also sends `timing`) */}
@@ -254,7 +256,7 @@ return (
                   rel="noopener noreferrer"
                   className="block text-center mt-8 bg-kamaru hover:bg-kamaru-light text-earth py-4 k-quad font-semibold transition"
                 >
-                  Register Now
+                  {event.kind === "podcast" ? "Listen" : event.online ? "Join online" : "Register Now"}
                 </a>
               )}
           </div>
@@ -284,7 +286,7 @@ return (
                 rel="noopener noreferrer"
                 className="k-btn-primary px-8 py-4"
               >
-                Register Now
+                {event.kind === "podcast" ? "Listen" : event.online ? "Join online" : "Register Now"}
               </a>
             )}
 

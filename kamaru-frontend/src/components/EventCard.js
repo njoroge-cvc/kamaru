@@ -16,6 +16,8 @@ const KIND_STYLES = {
   camp: "bg-forest text-cream",
   community: "bg-bead-blue text-cream",
   partner: "bg-cream text-earth",
+  webinar: "bg-bead-green text-cream",
+  podcast: "bg-maroon text-cream",
 };
 
 const EventCard = ({ event, compact = false }) => {

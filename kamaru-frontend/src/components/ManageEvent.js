@@ -11,8 +11,10 @@ export const KIND_OPTIONS = [
   { kind: "camp", label: "Camp / retreat", hint: "Woman Across Generations, Father and Son, Medicine Day…" },
   { kind: "community", label: "Community event", hint: "Gatherings, tree planting, Mazingira Day…" },
   { kind: "partner", label: "Partner event", hint: "Events by others that share our values" },
+  { kind: "webinar", label: "Webinar", hint: "Online talk or class. Put the platform in Location and the join link in Registration link." },
+  { kind: "podcast", label: "Podcast", hint: "Podcast episode or live recording. Put where to listen in Location and the link in Registration link." },
 ];
-const KIND_BADGE = { challenge: "k-badge-red", camp: "k-badge-gold", community: "k-badge-blue", partner: "k-badge-earth" };
+const KIND_BADGE = { challenge: "k-badge-red", camp: "k-badge-gold", community: "k-badge-blue", partner: "k-badge-earth", webinar: "k-badge-green", podcast: "k-badge-green" };
 const STATUS_BADGE = { scheduled: "k-badge-green", postponed: "k-badge-gold", cancelled: "k-badge-red" };
 
 const EMPTY = {
@@ -116,7 +118,13 @@ const EventForm = ({ initial, seasons, onClose, onSaved }) => {
         </Field>
       </div>
       <Field label="Location">
-        <input value={form.location} onChange={set("location")} className="k-input" required placeholder="Rediscovery Garden, Karera, Nguirubi" />
+        <input
+          value={form.location}
+          onChange={set("location")}
+          className="k-input"
+          required
+          placeholder={["webinar", "podcast"].includes(form.kind) ? "Online (Zoom / Google Meet / Spotify…)" : "Rediscovery Garden, Karera, Nguirubi"}
+        />
       </Field>
       <Field label="Theme / tagline" hint="One line shown above the title, e.g. “Fanning the flame of values”.">
         <input value={form.theme} onChange={set("theme")} className="k-input" />
