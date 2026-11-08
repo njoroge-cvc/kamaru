@@ -7,6 +7,7 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 from datetime import datetime
 from app.utils.email_service import send_email
 from app.models.short_token import ShortToken
+from sqlalchemy.exc import IntegrityError
 
 bp = Blueprint("user_routes", __name__) # Create a new blueprint for user routes
 
@@ -207,8 +208,14 @@ def delete_user(user_id):
     if user.role == "superadmin" and User.query.filter_by(role="superadmin").count() <= 1:
         return jsonify({"error": "You can't delete the last Super admin."}), 400
 
+    # Password-reset links point at the user and would block the delete; they're useless without the account
+    ShortToken.query.filter_by(user_id=user.id).delete(synchronize_session=False)
     db.session.delete(user)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({"error": "This account is still linked to other records, so it can't be deleted."}), 409
     return jsonify({"message": "User deleted successfully"}), 200
 
 
