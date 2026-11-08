@@ -281,3 +281,12 @@ export const createBlogPost = (formData) => api.post("/blog/", formData, { heade
 export const updateBlogPost = (id, formData) => api.put(`/blog/${id}`, formData, { headers: authHeaders(true) });
 export const deleteBlogPost = (id) => api.delete(`/blog/${id}`, { headers: authHeaders() });
 export const fetchDashboardStats = () => api.get("/stats/dashboard", { headers: authHeaders() });
+
+// ---------------------------------------------------------------------------
+// Background music (one site-wide track)
+// ---------------------------------------------------------------------------
+export const fetchSiteAudio = () => api.get("/sys_images/audio");
+export const uploadSiteAudio = (formData) =>
+  api.post("/sys_images/audio", formData, { headers: { ...authHeader(), "Content-Type": "multipart/form-data" } });
+export const renameSiteAudio = (title) => api.patch("/sys_images/audio", { title }, { headers: authHeader() });
+export const deleteSiteAudio = () => api.delete("/sys_images/audio", { headers: authHeader() });

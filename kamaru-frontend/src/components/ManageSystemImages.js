@@ -9,6 +9,7 @@ import {
   deleteBanner,
 } from "../api";
 import { FaTrash } from "react-icons/fa"; // Import trash icon
+import ManageSiteAudio from "./ManageSiteAudio";
 
 const ManageSystemImages = () => {
   const [images, setImages] = useState({});
@@ -96,6 +97,8 @@ const ManageSystemImages = () => {
   return (
     <div >
       <h2 className="k-h2 mb-6">Manage System Images</h2>
+
+      <ManageSiteAudio />
 
       {/* Upload Form */}
       <div className="k-card mb-6">

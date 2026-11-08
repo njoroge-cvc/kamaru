@@ -35,7 +35,11 @@ const VideoPlayer = ({ video, className = "", rounded = "rounded-[2rem]", size =
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setPlaying(true)}
+            onClick={() => {
+              // Let the background music know a video is starting, so it pauses
+              window.dispatchEvent(new Event("kamaru:media-play"));
+              setPlaying(true);
+            }}
             className="group absolute inset-0 h-full w-full"
             aria-label={`Play ${video.title}`}
           >

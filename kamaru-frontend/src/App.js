@@ -11,6 +11,7 @@ import SideRails from "./components/SideRails";
 import ScrollProgress from "./components/ScrollProgress";
 import { SessionSync } from "./components/useSession";
 import IdleLogout from "./components/IdleLogout";
+import AmbientAudio from "./components/AmbientAudio";
 import "./index.css"; // Import Tailwind CSS
 
 // Code-split every route except the landing page: visitors only download what they open,
@@ -117,6 +118,7 @@ const App = () => {
         </Main>
         <AppFooter />
         <SideRails />
+        <AmbientAudio />
         <ScrollProgress />
       </div>
       <ToastContainer position="top-right" autoClose={3500} theme="colored" />

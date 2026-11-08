@@ -30,13 +30,16 @@ def public_id_from_url(url):
     return "/".join(parts)
 
 
-def destroy_quietly(url):
+def destroy_quietly(url, resource_type=None):
     """Delete the asset behind `url` from Cloudinary; never raises (DB changes shouldn't fail on cleanup)."""
     public_id = public_id_from_url(url)
     if not public_id:
         return False
     try:
-        result = cloudinary.uploader.destroy(public_id)
+        # Audio and video live under Cloudinary's "video" resource type
+        if resource_type is None:
+            resource_type = "video" if "/video/upload/" in url else "image"
+        result = cloudinary.uploader.destroy(public_id, resource_type=resource_type)
         ok = result.get("result") in ("ok", "not found")
         if not ok:
             log.warning("Cloudinary destroy returned %s for %s", result, public_id)

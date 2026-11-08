@@ -121,3 +121,92 @@ def delete_banner(banner_id):
 def get_banners():
     banners = SystemImage.query.filter_by(section="banners").all()
     return jsonify({"banners": [banner.to_dict() for banner in banners]}), 200
+
+# ---------------------------------------------------------------------------
+# Background music: one track visitors can play while browsing.
+# Stored as two rows in system_images: the audio URL, and its display title.
+# ---------------------------------------------------------------------------
+AUDIO = "background_audio"
+AUDIO_TITLE = "background_audio_title"
+AUDIO_TYPES = {"mp3", "m4a", "aac", "ogg", "oga", "wav", "webm"}
+MAX_AUDIO_MB = 20
+
+
+def _audio_payload():
+    track = SystemImage.query.filter_by(section=AUDIO).first()
+    if not track:
+        return None
+    title = SystemImage.query.filter_by(section=AUDIO_TITLE).first()
+    return {"url": track.image_url, "title": title.image_url if title else "", "uploaded_at": track.uploaded_at.isoformat()}
+
+
+# Public: the current track, or {"audio": null}
+@bp.route("/audio", methods=["GET"])
+def get_audio():
+    return jsonify({"audio": _audio_payload()}), 200
+
+
+# Admin: upload or replace the track (form fields: audio=<file>, title=<text>)
+@bp.route("/audio", methods=["POST"])
+@permission_required(rbac.SITE_IMAGES)
+def upload_audio():
+    file = request.files.get("audio")
+    if not file or not file.filename:
+        return jsonify({"error": "Choose an audio file (MP3 works best)."}), 400
+    ext = file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
+    if ext not in AUDIO_TYPES and not (file.mimetype or "").startswith("audio/"):
+        return jsonify({"error": "That isn't an audio file. Please upload an MP3, M4A, OGG or WAV."}), 400
+    file.seek(0, 2)
+    size_mb = file.tell() / (1024 * 1024)
+    file.seek(0)
+    if size_mb > MAX_AUDIO_MB:
+        return jsonify({"error": f"The file is {size_mb:.0f} MB; please keep it under {MAX_AUDIO_MB} MB (a 3 to 5 minute MP3 is ideal)."}), 400
+
+    url = cloudinary.uploader.upload(file, resource_type="video", folder="site-audio").get("secure_url")
+    title = (request.form.get("title") or "").strip()[:200]
+
+    track = SystemImage.query.filter_by(section=AUDIO).first()
+    if track:
+        old = track.image_url
+        track.image_url = url
+        destroy_quietly(old, resource_type="video")
+    else:
+        db.session.add(SystemImage(section=AUDIO, image_url=url))
+    title_row = SystemImage.query.filter_by(section=AUDIO_TITLE).first()
+    if title_row:
+        title_row.image_url = title
+    else:
+        db.session.add(SystemImage(section=AUDIO_TITLE, image_url=title))
+    db.session.commit()
+    return jsonify({"message": "Background music updated", "audio": _audio_payload()}), 201
+
+
+# Admin: rename the track without re-uploading
+@bp.route("/audio", methods=["PATCH"])
+@permission_required(rbac.SITE_IMAGES)
+def rename_audio():
+    title = ((request.get_json(silent=True) or {}).get("title") or "").strip()[:200]
+    row = SystemImage.query.filter_by(section=AUDIO_TITLE).first()
+    if not SystemImage.query.filter_by(section=AUDIO).first():
+        return jsonify({"error": "No background music uploaded"}), 404
+    if row:
+        row.image_url = title
+    else:
+        db.session.add(SystemImage(section=AUDIO_TITLE, image_url=title))
+    db.session.commit()
+    return jsonify({"audio": _audio_payload()}), 200
+
+
+# Admin: remove the track (the site then hides the music button)
+@bp.route("/audio", methods=["DELETE"])
+@permission_required(rbac.SITE_IMAGES)
+def delete_audio():
+    track = SystemImage.query.filter_by(section=AUDIO).first()
+    if not track:
+        return jsonify({"error": "No background music uploaded"}), 404
+    url = track.image_url
+    db.session.delete(track)
+    SystemImage.query.filter_by(section=AUDIO_TITLE).delete()
+    db.session.commit()
+    destroy_quietly(url, resource_type="video")
+    return jsonify({"message": "Background music removed"}), 200
