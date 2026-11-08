@@ -33,6 +33,12 @@ const PostCard = ({ post, i, featured }) => (
       </div>
       <div className={`flex flex-1 flex-col p-6 ${featured ? "md:p-10 md:justify-center" : ""}`}>
         <p className="k-quad-shape self-start bg-kamaru/20 px-3 py-1 text-xs font-semibold text-ochre-dark">{formatDate(post.published_at)}</p>
+        {post.author && (
+          <p className="mt-3 text-sm text-earth-600">
+            By <span className="font-semibold text-earth">{post.author}</span>
+            {post.author_title && <>, {post.author_title}</>}
+          </p>
+        )}
         <h2 className={`mt-4 font-display text-earth ${featured ? "text-3xl md:text-4xl" : "text-2xl"}`}>{post.title}</h2>
         {post.excerpt && <p className="mt-3 text-earth-700 line-clamp-3">{post.excerpt}</p>}
         <span className="mt-auto inline-flex items-center gap-2 pt-6 font-semibold text-ochre">

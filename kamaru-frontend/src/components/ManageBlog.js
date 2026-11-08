@@ -9,7 +9,7 @@ import BlogContent from "./BlogContent";
 import { cld } from "../utils/cloudinary";
 import { formatDate } from "../pages/BlogPage";
 
-const EMPTY = { title: "", excerpt: "", content: "", published: false };
+const EMPTY = { title: "", excerpt: "", content: "", published: false, author_name: "", author_title: "", author_org: "" };
 
 const HINT = "## Heading · ### Subheading · - list item · > quote · **bold** · *italic* · [link](https://…) · blank line = new paragraph";
 
@@ -45,7 +45,7 @@ const Editor = ({ post, onDone }) => {
   const alreadyEmailed = !!post?.newsletter && post.newsletter.status !== "failed";
   const [emailToo, setEmailToo] = useState(false);
   const [testing, setTesting] = useState(false);
-  const [form, setForm] = useState(post ? { title: post.title, excerpt: post.excerpt, content: post.content, published: post.published } : EMPTY);
+  const [form, setForm] = useState(post ? { title: post.title, excerpt: post.excerpt, content: post.content, published: post.published, author_name: post.author_name || "", author_title: post.author_title || "", author_org: post.author_org || "" } : EMPTY);
   const [image, setImage] = useState(null);
   const [removeImage, setRemoveImage] = useState(false);
   const [tab, setTab] = useState("write");
@@ -59,6 +59,7 @@ const Editor = ({ post, onDone }) => {
     const fd = new FormData();
     fd.append("title", form.title);
     fd.append("excerpt", form.excerpt);
+    ["author_name", "author_title", "author_org"].forEach((k) => fd.append(k, form[k] || ""));
     fd.append("content", form.content);
     fd.append("published", String(publish));
     if (image) fd.append("image", image);
@@ -89,6 +90,22 @@ const Editor = ({ post, onDone }) => {
           <Field label="Title">
             <input value={form.title} onChange={set("title")} className="k-input text-base" placeholder="Kīhooto: the fairness that holds a community" />
           </Field>
+          <fieldset className="k-cut bg-cream p-4">
+            <legend className="sr-only">About the author</legend>
+            <p className="k-label">About the author</p>
+            <p className="k-hint -mt-1 mb-3">Shown as the byline on the post. Leave empty to use your account name.</p>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <Field label="Name">
+                <input value={form.author_name} onChange={set("author_name")} className="k-input" placeholder="Wanjiku Kamau" maxLength={120} />
+              </Field>
+              <Field label="Profession / niche">
+                <input value={form.author_title} onChange={set("author_title")} className="k-input" placeholder="Historian, poet, elder…" maxLength={120} />
+              </Field>
+              <Field label="Organisation">
+                <input value={form.author_org} onChange={set("author_org")} className="k-input" placeholder="Optional" maxLength={160} />
+              </Field>
+            </div>
+          </fieldset>
           <Field label="Summary" hint="One or two sentences shown on the blog list.">
             <textarea value={form.excerpt} onChange={set("excerpt")} rows={2} className="k-input resize-y" />
           </Field>

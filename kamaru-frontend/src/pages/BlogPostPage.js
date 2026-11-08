@@ -38,7 +38,9 @@ const BlogPostPage = () => {
       dateModified: post.updated_at || post.published_at,
       inLanguage: "en",
       mainEntityOfPage: `${SITE}/blog/${slug}`,
-      author: { "@type": "Organization", name: "Kamaru Challenge", url: SITE },
+      author: post.author_name
+        ? { "@type": "Person", name: post.author_name, ...(post.author_title && { jobTitle: post.author_title }), ...(post.author_org && { worksFor: { "@type": "Organization", name: post.author_org } }) }
+        : { "@type": "Organization", name: "Kamaru Challenge", url: SITE },
       publisher: { "@id": `${SITE}/#organization` },
     },
   });
@@ -78,6 +80,20 @@ const BlogPostPage = () => {
               <Reveal className="-mt-28 mb-12 md:-mt-36">
                 <img src={cld(post.cover_image_url, 1400)} alt="" className="k-cut-strong relative z-10 w-full shadow-2xl" />
               </Reveal>
+            )}
+            {post.author && (
+              <div className="k-cut mb-10 flex items-center gap-4 bg-white p-5 shadow-sm">
+                <span className="grid h-12 w-12 shrink-0 place-items-center k-quad-shape bg-kamaru font-display text-xl text-earth">
+                  {post.author.trim().charAt(0).toUpperCase()}
+                </span>
+                <span className="leading-snug">
+                  <span className="block text-xs font-semibold uppercase tracking-[0.2em] text-ochre">Written by</span>
+                  <span className="block font-display text-lg text-earth">{post.author}</span>
+                  {(post.author_title || post.author_org) && (
+                    <span className="block text-sm text-earth-600">{[post.author_title, post.author_org].filter(Boolean).join(", ")}</span>
+                  )}
+                </span>
+              </div>
             )}
             <BlogContent text={post.content} />
             <div className="mt-14 border-t border-earth/10 pt-8">

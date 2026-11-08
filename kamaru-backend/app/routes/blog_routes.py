@@ -34,6 +34,9 @@ def _apply_form(post, data):
         post.title = (data.get("title") or "").strip()
     if "excerpt" in data:
         post.excerpt = (data.get("excerpt") or "").strip() or None
+    for field, limit in (("author_name", 120), ("author_title", 120), ("author_org", 160)):
+        if field in data:
+            setattr(post, field, (data.get(field) or "").strip()[:limit] or None)
     if "content" in data:
         post.content = data.get("content") or ""
     if "published" in data:

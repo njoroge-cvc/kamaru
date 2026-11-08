@@ -25,6 +25,10 @@ class BlogPost(db.Model):
     published = db.Column(db.Boolean, nullable=False, default=False)
     published_at = db.Column(db.DateTime, nullable=True)
     author_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
+    # Byline shown on the post (optional; falls back to the account's username)
+    author_name = db.Column(db.String(120), nullable=True)
+    author_title = db.Column(db.String(120), nullable=True)  # profession / niche, e.g. "Historian"
+    author_org = db.Column(db.String(160), nullable=True)  # organisation
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(
         db.DateTime,
@@ -44,7 +48,10 @@ class BlogPost(db.Model):
             "published": self.published,
             "published_at": self.published_at.isoformat() if self.published_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
-            "author": self.author.username if self.author and hasattr(self.author, "username") else None,
+            "author": self.author_name or (self.author.username if self.author and hasattr(self.author, "username") else None),
+            "author_name": self.author_name or "",
+            "author_title": self.author_title or "",
+            "author_org": self.author_org or "",
         }
         if with_content:
             data["content"] = self.content
