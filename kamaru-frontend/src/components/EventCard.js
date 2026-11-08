@@ -3,17 +3,26 @@ import { cld } from "../utils/cloudinary";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaClock, FaMapMarkerAlt, FaArrowRight } from "react-icons/fa";
+import { timingOf, statusOf } from "../utils/events";
 
 const STATUS_STYLES = {
   upcoming: "bg-bead-green text-cream",
   past: "bg-earth-600 text-cream",
+  postponed: "bg-bead-gold text-earth",
   cancelled: "bg-bead-red text-cream",
+};
+const KIND_STYLES = {
+  challenge: "bg-kamaru text-earth",
+  camp: "bg-forest text-cream",
+  community: "bg-bead-blue text-cream",
+  partner: "bg-cream text-earth",
 };
 
 const EventCard = ({ event, compact = false }) => {
   const date = new Date(event.date_time);
-  const isPast = date < new Date();
-  const status = isPast && event.status === "upcoming" ? "past" : event.status || "upcoming";
+  // Upcoming/past comes from the server (Kenyan time); postponed/cancelled override it
+  const isPast = timingOf(event) === "past";
+  const status = statusOf(event) !== "scheduled" ? statusOf(event) : isPast ? "past" : "upcoming";
 
   return (
     <motion.article
@@ -28,7 +37,7 @@ const EventCard = ({ event, compact = false }) => {
 
       <div className={`relative overflow-hidden ${compact ? "h-44" : "h-60"}`}>
         <motion.img
-          src={cld(event.image_url, 800)}
+          src={event.image_url ? cld(event.image_url, 800) : "/og-image.jpg"}
           alt={event.title}
           loading="lazy"
           variants={{ rest: { scale: 1 }, hover: { scale: 1.08 } }}
@@ -46,12 +55,15 @@ const EventCard = ({ event, compact = false }) => {
           <p className="pb-1.5 text-[11px] text-earth-600">{date.getFullYear()}</p>
         </div>
 
-        <span
-          className={`absolute right-4 top-4 k-quad-shape px-3 py-1 text-xs font-semibold capitalize ${
-            STATUS_STYLES[status] || STATUS_STYLES.upcoming
-          }`}
-        >
-          {status}
+        <span className="absolute right-4 top-4 flex flex-col items-end gap-1.5">
+          <span className={`k-quad-shape px-3 py-1 text-xs font-semibold capitalize ${STATUS_STYLES[status] || STATUS_STYLES.upcoming}`}>
+            {status}
+          </span>
+          {event.kind_label && (
+            <span className={`k-quad-shape px-3 py-1 text-xs font-semibold ${KIND_STYLES[event.kind] || KIND_STYLES.community}`}>
+              {event.kind_label}
+            </span>
+          )}
         </span>
       </div>
 

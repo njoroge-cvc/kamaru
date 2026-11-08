@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { cld } from "../utils/cloudinary";
 import { useParams, Link } from "react-router-dom";
-import { fetchEvent } from "../api";
+import { fetchEvent, eventCalendarUrl } from "../api";
+import { timingOf, statusOf } from "../utils/events";
 
 import { useNavigate } from "react-router-dom";
 import ReadMore from "../components/ReadMore";
@@ -57,7 +58,11 @@ const EventPage = () => {
 
   if (!event) return <p className="text-center text-bead-red">Event not found.</p>;
 
-  const formattedDate = new Intl.DateTimeFormat("en-US", {
+  // Upcoming/past from the server (Kenyan time); postponed/cancelled override it
+  const shownStatus = statusOf(event) !== "scheduled" ? statusOf(event) : timingOf(event);
+  const STATUS_LABEL = { upcoming: "Upcoming", past: "Past", postponed: "Postponed", cancelled: "Cancelled" };
+
+  const formattedDate = new Intl.DateTimeFormat("en-KE", {
     weekday: "long",
     year: "numeric",
     month: "long",
@@ -72,7 +77,7 @@ return (
     {/* Hero Section */}
     <div className="relative h-[500px] md:h-[600px] overflow-hidden">
       <img
-        src={cld(event.image_url, 1920)}
+        src={event.image_url ? cld(event.image_url, 1920) : "/og-image.jpg"}
         alt={event.title}
         className="w-full h-full object-cover"
       />
@@ -81,17 +86,23 @@ return (
 
       <div className="absolute bottom-0 left-0 right-0 max-w-7xl mx-auto px-6 pb-10 text-white">
         
-        <span
-          className={`inline-block px-4 py-2 text-sm font-semibold k-quad-shape mb-4 ${
-            event.status === "upcoming"
-              ? "bg-bead-green text-cream"
-              : event.status === "past"
-              ? "bg-earth-600 text-cream"
-              : "bg-bead-red text-cream"
-          }`}
-        >
-          {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
-        </span>
+        <div className="mb-4 flex flex-wrap gap-2">
+          <span
+            className={`inline-block px-4 py-2 text-sm font-semibold k-quad-shape ${
+              shownStatus === "upcoming"
+                ? "bg-bead-green text-cream"
+                : shownStatus === "past"
+                ? "bg-earth-600 text-cream"
+                : shownStatus === "postponed"
+                ? "bg-bead-gold text-earth"
+                : "bg-bead-red text-cream"
+            }`}
+          >
+            {STATUS_LABEL[shownStatus]}
+          </span>
+          {event.kind_label && <span className="inline-block k-quad-shape bg-kamaru px-4 py-2 text-sm font-semibold text-earth">{event.kind_label}</span>}
+          {event.season && <span className="inline-block k-quad-shape bg-cream/20 px-4 py-2 text-sm font-semibold text-cream">{event.season}</span>}
+        </div>
 
         <h1 className="font-display text-4xl md:text-6xl font-black mb-4">
           {event.title}
@@ -101,16 +112,24 @@ return (
           {formattedDate}
         </p>
 
-        {event.registration_required && event.registration_link && (
-          <a
-            href={event.registration_link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block mt-6 bg-kamaru hover:bg-kamaru-light text-earth px-8 py-4 k-quad font-semibold transition-all"
-          >
-            Register Now
-          </a>
-        )}
+        <div className="mt-6 flex flex-wrap gap-3">
+          {event.registration_required && event.registration_link && shownStatus === "upcoming" && (
+            <a
+              href={event.registration_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block bg-kamaru hover:bg-kamaru-light text-earth px-8 py-4 k-quad font-semibold transition-all"
+            >
+              Register Now
+            </a>
+          )}
+          {/* Calendar file comes from the newer API (which also sends `timing`) */}
+          {shownStatus === "upcoming" && event.timing && (
+            <a href={eventCalendarUrl(event.id)} className="inline-block bg-cream/15 hover:bg-cream hover:text-earth text-cream px-6 py-4 k-quad font-semibold transition-all">
+              Add to calendar
+            </a>
+          )}
+        </div>
       </div>
     </div>
 
@@ -220,8 +239,8 @@ return (
                   Status
                 </p>
 
-                <p className="font-medium text-earth capitalize">
-                  {event.status}
+                <p className="font-medium text-earth">
+                  {STATUS_LABEL[shownStatus]}
                 </p>
               </div>
 

@@ -274,3 +274,7 @@ export const uploadSiteAudio = (formData) =>
   api.post("/sys_images/audio", formData, { headers: { ...authHeader(), "Content-Type": "multipart/form-data" } });
 export const renameSiteAudio = (title) => api.patch("/sys_images/audio", { title }, { headers: authHeader() });
 export const deleteSiteAudio = () => api.delete("/sys_images/audio", { headers: authHeader() });
+
+// Event types (Kamaru Challenge, camp, community, partner) and the "Add to calendar" file
+export const fetchEventKinds = () => api.get("/events/kinds");
+export const eventCalendarUrl = (eventId) => `${API_BASE_URL.replace(/\/$/, "")}/events/${eventId}/calendar.ics`;
