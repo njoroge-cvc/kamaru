@@ -1,20 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { FaMusic, FaVolumeMute } from "react-icons/fa";
+import { FaPlay, FaPause, FaVolumeMute, FaVolumeUp } from "react-icons/fa";
+import { useBackdropTone } from "../utils/backdropTone";
 import { fetchSiteAudio } from "../api";
 
 const VOLUME = 0.5;
 
 /** Small animated bars shown while the music plays. */
-const Bars = () => {
+const Bars = ({ className = "bg-earth" }) => {
   const reduce = useReducedMotion();
   return (
     <span className="flex h-4 items-end gap-[3px]" aria-hidden="true">
       {[0, 1, 2, 3].map((i) => (
         <motion.span
           key={i}
-          className="w-[3px] bg-earth"
+          className={`w-[3px] ${className}`}
           initial={{ height: "40%" }}
           animate={reduce ? { height: "60%" } : { height: ["30%", "100%", "50%", "80%", "30%"] }}
           transition={reduce ? undefined : { duration: 1.1 + i * 0.15, repeat: Infinity, ease: "easeInOut" }}
@@ -33,7 +34,13 @@ const AmbientAudio = () => {
   const { pathname } = useLocation();
   const [track, setTrack] = useState(null); // { url, title }
   const [playing, setPlaying] = useState(false);
+  const [started, setStarted] = useState(false); // pressed play at least once
+  const [muted, setMuted] = useState(false);
   const audioRef = useRef(null);
+  const boxRef = useRef(null);
+  // Switch to dark colours when sitting over orange sections, so the control never blends in
+  const tone = useBackdropTone(boxRef, true);
+  const onOrange = tone === "accent";
   const fadeRef = useRef(null);
 
   useEffect(() => {
@@ -85,17 +92,25 @@ const AmbientAudio = () => {
     try {
       a.volume = 0;
       await a.play();
-      fadeTo(VOLUME);
+      setStarted(true);
+      fadeTo(a.muted ? 0 : VOLUME);
     } catch {
       setPlaying(false); // e.g. the file couldn't load
     }
   };
 
-  const mute = () => fadeTo(0, () => audioRef.current && audioRef.current.pause());
+  const pause = () => fadeTo(0, () => audioRef.current && audioRef.current.pause());
+  const toggleMute = () => {
+    const a = audioRef.current;
+    if (!a) return;
+    a.muted = !a.muted;
+    if (!a.muted) a.volume = VOLUME;
+    setMuted(a.muted);
+  };
 
   // Pause when a performance video starts
   useEffect(() => {
-    const onMedia = () => audioRef.current && !audioRef.current.paused && mute();
+    const onMedia = () => audioRef.current && !audioRef.current.paused && pause();
     window.addEventListener("kamaru:media-play", onMedia);
     return () => window.removeEventListener("kamaru:media-play", onMedia);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -109,8 +124,16 @@ const AmbientAudio = () => {
 
   if (hidden) return null;
 
+  // Orange normally; dark when the section behind is orange
+  const skin = onOrange
+    ? { box: "bg-earth text-cream shadow-black/30", sub: "text-kamaru-light", bars: "bg-kamaru", btn: "bg-kamaru text-earth hover:bg-kamaru-light" }
+    : { box: "bg-kamaru text-earth shadow-earth/30", sub: "text-earth/70", bars: "bg-earth", btn: "bg-earth text-cream hover:bg-earth-700" };
+  const title = track.title || "Kamaru Challenge";
+
   return (
-    <div className="fixed bottom-[5.25rem] right-6 z-50">
+    <div ref={boxRef} className="fixed bottom-[5.25rem] right-6 z-50">
+      {/* Thin cream edge keeps the control visible over orange, dark and photo backgrounds alike */}
+      <div className="k-quad-shape bg-cream p-[3px] shadow-xl shadow-black/25">
       <AnimatePresence mode="wait" initial={false}>
         {playing ? (
           <motion.div
@@ -118,20 +141,24 @@ const AmbientAudio = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
-            className="k-quad-shape flex items-center gap-3 bg-kamaru py-2 pl-4 pr-2 text-earth shadow-xl shadow-earth/30"
+            className={`k-quad-shape flex items-center gap-3 p-2 transition-colors duration-500 ${skin.box}`}
           >
-            <Bars />
-            <span className="hidden max-w-[14rem] flex-col leading-tight sm:flex">
-              <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-earth/70">Now playing</span>
-              <span className="truncate text-sm font-semibold">{track.title || "Kamaru Challenge"}</span>
+            <button onClick={pause} className={`k-quad grid h-10 w-10 shrink-0 place-items-center ${skin.btn}`} aria-label="Pause the music" title="Pause">
+              <FaPause />
+            </button>
+            <Bars className={skin.bars} />
+            <span className="hidden max-w-[13rem] flex-col leading-tight sm:flex">
+              <span className={`text-[10px] font-semibold uppercase tracking-[0.2em] ${skin.sub}`}>{muted ? "Muted" : "Now playing"}</span>
+              <span className="truncate text-sm font-semibold">{title}</span>
             </span>
             <button
-              onClick={mute}
-              className="k-quad grid h-10 w-10 place-items-center bg-earth text-lg text-cream hover:bg-earth-700"
-              aria-label="Mute the music"
-              title="Mute"
+              onClick={toggleMute}
+              className={`k-quad grid h-10 w-10 shrink-0 place-items-center ${skin.btn}`}
+              aria-label={muted ? "Unmute the music" : "Mute the music"}
+              aria-pressed={muted}
+              title={muted ? "Unmute" : "Mute"}
             >
-              <FaVolumeMute />
+              {muted ? <FaVolumeUp /> : <FaVolumeMute />}
             </button>
           </motion.div>
         ) : (
@@ -141,15 +168,21 @@ const AmbientAudio = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
             onClick={play}
-            className="k-quad flex items-center gap-2 bg-kamaru px-4 py-3 font-semibold text-earth shadow-xl hover:bg-kamaru-light"
-            aria-label={`Play music while you browse${track.title ? `: ${track.title}` : ""}`}
-            title={track.title ? `Play: ${track.title}` : "Play music"}
+            className={`k-quad flex items-center gap-3 p-2 pr-4 font-semibold transition-colors duration-500 ${skin.box}`}
+            aria-label={`${started ? "Resume" : "Play"} music while you browse: ${title}`}
+            title={`${started ? "Resume" : "Play"}: ${title}`}
           >
-            <FaMusic />
-            <span className="hidden text-sm sm:inline">Listen while you browse</span>
+            <span className={`grid h-10 w-10 shrink-0 place-items-center k-quad-shape ${skin.btn}`}>
+              <FaPlay className="translate-x-[1px]" />
+            </span>
+            <span className="hidden max-w-[13rem] flex-col text-left leading-tight sm:flex">
+              <span className={`text-[10px] font-semibold uppercase tracking-[0.2em] ${skin.sub}`}>{started ? "Paused" : "Listen while you browse"}</span>
+              <span className="truncate text-sm font-semibold">{title}</span>
+            </span>
           </motion.button>
         )}
       </AnimatePresence>
+      </div>
     </div>
   );
 };

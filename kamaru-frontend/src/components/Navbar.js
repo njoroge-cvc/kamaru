@@ -19,6 +19,7 @@ const QUICK_LINKS = [
   { to: "/about_us", text: "About us" },
   { to: "/gallery", text: "Gallery" },
   { to: "/videos", text: "Videos" },
+  { to: "/blog", text: "Blog" },
   { to: "/register/participant", text: "The Challenge" },
 ];
 
@@ -191,6 +192,14 @@ const NAV_TONES = {
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  // Small laptops (1024-1279px) fit six links by using a slightly smaller logo
+  const [compact, setCompact] = useState(() => typeof window !== "undefined" && window.matchMedia("(min-width: 1024px) and (max-width: 1279px)").matches);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px) and (max-width: 1279px)");
+    const on = () => setCompact(mq.matches);
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
   // Bundled logo shows instantly (even while the API wakes up); the dashboard-managed one replaces it when it loads
   const [logo, setLogo] = useState(() => {
     try {
@@ -265,7 +274,7 @@ const Navbar = () => {
         />
 
         <div
-          className={`relative container mx-auto flex items-center justify-between gap-6 px-5 md:px-8 transition-all duration-300 ${
+          className={`relative container mx-auto flex items-center justify-between gap-3 px-5 md:px-8 xl:gap-6 transition-all duration-300 ${
             scrolled ? "pt-3 pb-4" : "pt-5 pb-8"
           }`}
         >
@@ -274,7 +283,7 @@ const Navbar = () => {
               <motion.img
                 src={cld(logo, 480)}
                 alt="Kamaru Challenge Logo"
-                animate={{ height: scrolled ? 56 : 76 }}
+                animate={{ height: scrolled ? (compact ? 46 : 56) : compact ? 60 : 76 }}
                 style={{ height: 76 }}
                 className={`w-auto transition-[filter] duration-500 ${T.logo}`}
               />
@@ -286,18 +295,18 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop links */}
-          <ul className="hidden items-center gap-1 lg:flex">
+          <ul className="hidden items-center gap-0.5 lg:flex xl:gap-1">
             {QUICK_LINKS.map((l) => (
               <li key={l.text}>
                 {l.hash ? (
-                  <HashLink smooth to={l.to} className={`k-quad block px-4 py-2.5 text-base font-bold ${T.link}`}>
+                  <HashLink smooth to={l.to} className={`k-quad block whitespace-nowrap px-2.5 py-2.5 text-[15px] font-bold xl:px-4 xl:text-base ${T.link}`}>
                     {l.text}
                   </HashLink>
                 ) : (
                   <NavLink
                     to={l.to}
                     end={l.end}
-                    className={({ isActive }) => `k-quad block px-4 py-2.5 text-base font-bold ${isActive ? T.active : T.link}`}
+                    className={({ isActive }) => `k-quad block whitespace-nowrap px-2.5 py-2.5 text-[15px] font-bold xl:px-4 xl:text-base ${isActive ? T.active : T.link}`}
                   >
                     {l.text}
                   </NavLink>
@@ -306,13 +315,13 @@ const Navbar = () => {
             ))}
           </ul>
 
-          <div className="flex items-center gap-4">
+          <div className="flex shrink-0 items-center gap-2 xl:gap-4">
             {!token && (
               <>
                 <Link to="/login" className="k-quad hidden xl:inline px-3 py-2 text-sm font-semibold uppercase tracking-[0.15em] opacity-80 hover:opacity-100">
                   Login
                 </Link>
-                <Link to="/join" className={`k-quad hidden md:inline-flex items-center px-6 py-2.5 text-sm font-bold uppercase tracking-[0.15em] ${T.join}`}>
+                <Link to="/join" className={`k-quad hidden md:inline-flex items-center whitespace-nowrap px-4 py-2.5 text-sm font-bold uppercase tracking-[0.12em] xl:px-6 xl:tracking-[0.15em] ${T.join}`}>
                   Join us
                 </Link>
               </>
@@ -329,7 +338,7 @@ const Navbar = () => {
               aria-expanded={menuOpen}
             >
               {/* Phones: just three vertical bead dots */}
-              <span className="hidden sm:inline">More</span>
+              <span className="hidden sm:inline lg:hidden xl:inline">More</span>
               <Beads open={menuOpen} />
             </button>
           </div>

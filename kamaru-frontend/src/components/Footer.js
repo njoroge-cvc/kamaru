@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaArrowUp, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 import BrandBadge from "./BrandBadge";
+import { useBackdropTone } from "../utils/backdropTone";
 import cvcLove from "../assets/cvc-love.svg";
 import SocialIcons from "./SocialIcons";
 import NewsletterForm from "./NewsletterSubscriptionForm";
@@ -40,6 +41,9 @@ const LinkList = ({ title, items }) => (
 
 const Footer = () => {
   const [showScroll, setShowScroll] = useState(false);
+  // Dark when over orange sections, so the button never blends in
+  const topRef = useRef(null);
+  const topTone = useBackdropTone(topRef, showScroll);
 
   useEffect(() => {
     const handleScroll = () => setShowScroll(window.scrollY > 400);
@@ -140,7 +144,10 @@ const Footer = () => {
             exit={{ opacity: 0, scale: 0.6, y: 20 }}
             whileHover={{ y: -4 }}
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="fixed bottom-6 right-6 z-50 grid h-12 w-12 place-items-center rounded-full bg-kamaru text-earth shadow-xl"
+            ref={topRef}
+            className={`fixed bottom-6 right-6 z-50 grid h-12 w-12 place-items-center rounded-full shadow-xl transition-colors duration-500 ${
+              topTone === "accent" ? "bg-earth text-kamaru" : "bg-kamaru text-earth"
+            }`}
             aria-label="Back to top"
           >
             <FaArrowUp />
