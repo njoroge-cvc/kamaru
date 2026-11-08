@@ -105,8 +105,8 @@ const ManageSiteAudio = () => {
           </div>
 
           <form onSubmit={upload} className="space-y-4">
-            <Field label={audio ? "Replace with a new track" : "Upload a track"} hint="MP3 works best on every phone and browser.">
-              <input type="file" accept="audio/*,.mp3,.m4a,.ogg,.wav" onChange={(e) => setFile(e.target.files?.[0] || null)} className="k-input" />
+            <Field label={audio ? "Replace with a new track" : "Upload a track"} hint="MP3, WEBA, M4A, OGG or WAV. Visitors always receive it as MP3, which plays everywhere.">
+              <input type="file" accept="audio/*,.mp3,.weba,.webm,.m4a,.ogg,.opus,.wav,.flac" onChange={(e) => setFile(e.target.files?.[0] || null)} className="k-input" />
             </Field>
             {!audio && (
               <Field label="Title" hint="Shown to visitors, e.g. “Mumburo Dancers – Mucungwa (2024)”.">

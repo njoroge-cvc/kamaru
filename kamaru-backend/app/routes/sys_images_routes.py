@@ -1,3 +1,4 @@
+import re
 from flask import Blueprint, request, jsonify
 from app import db
 from app.models.sys_images import SystemImage
@@ -128,7 +129,7 @@ def get_banners():
 # ---------------------------------------------------------------------------
 AUDIO = "background_audio"
 AUDIO_TITLE = "background_audio_title"
-AUDIO_TYPES = {"mp3", "m4a", "aac", "ogg", "oga", "wav", "webm"}
+AUDIO_TYPES = {"mp3", "m4a", "aac", "ogg", "oga", "opus", "wav", "webm", "weba", "flac"}
 MAX_AUDIO_MB = 20
 
 
@@ -155,14 +156,17 @@ def upload_audio():
         return jsonify({"error": "Choose an audio file (MP3 works best)."}), 400
     ext = file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
     if ext not in AUDIO_TYPES and not (file.mimetype or "").startswith("audio/"):
-        return jsonify({"error": "That isn't an audio file. Please upload an MP3, M4A, OGG or WAV."}), 400
+        return jsonify({"error": "That isn't an audio file. Please upload an MP3, WEBA, M4A, OGG or WAV."}), 400
     file.seek(0, 2)
     size_mb = file.tell() / (1024 * 1024)
     file.seek(0)
     if size_mb > MAX_AUDIO_MB:
         return jsonify({"error": f"The file is {size_mb:.0f} MB; please keep it under {MAX_AUDIO_MB} MB (a 3 to 5 minute MP3 is ideal)."}), 400
 
-    url = cloudinary.uploader.upload(file, resource_type="video", folder="site-audio").get("secure_url")
+    uploaded = cloudinary.uploader.upload(file, resource_type="video", folder="site-audio").get("secure_url")
+    # Deliver as MP3 whatever was uploaded (WEBA/Opus doesn't play on older iPhones/Safari):
+    # Cloudinary converts the format when the extension in the URL changes.
+    url = re.sub(r"\.[A-Za-z0-9]+$", ".mp3", uploaded)
     title = (request.form.get("title") or "").strip()[:200]
 
     track = SystemImage.query.filter_by(section=AUDIO).first()
