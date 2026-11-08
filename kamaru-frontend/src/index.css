@@ -126,9 +126,10 @@
    and to every rounded card/tile/panel, keeping each card's colour.
    ------------------------------------------------------------------ */
 :root {
-  --cut-a: polygon(0.8% 2.5%, 99.4% 0%, 100% 97.5%, 0% 100%);
-  --cut-b: polygon(0% 0.5%, 99.2% 2.8%, 100% 100%, 0.6% 97.2%);
-  --cut-c: polygon(0.5% 0%, 100% 1.6%, 99.3% 98.6%, 0% 100%);
+  /* Corners are capped in px so very tall/wide elements (long tables, lists) keep a small cut */
+  --cut-a: polygon(min(0.8%, 8px) min(2.5%, 10px), calc(100% - min(0.6%, 6px)) 0%, 100% calc(100% - min(2.5%, 10px)), 0% 100%);
+  --cut-b: polygon(0% min(0.5%, 3px), calc(100% - min(0.8%, 8px)) min(2.8%, 11px), 100% 100%, min(0.6%, 6px) calc(100% - min(2.8%, 11px)));
+  --cut-c: polygon(min(0.5%, 5px) 0%, 100% min(1.6%, 7px), calc(100% - min(0.7%, 7px)) calc(100% - min(1.4%, 6px)), 0% 100%);
 }
 .k-card, .k-panel, .k-cut,
 :is(div, article, section, a, button, li, form, figure, aside)[class*="rounded-[2rem]"]:not(.no-cut),
@@ -141,9 +142,9 @@
 :is(.k-card, .k-panel, .k-cut, [class*="rounded-[2rem]"], [class*="rounded-[2.5rem]"], [class*="rounded-3xl"]):not(.no-cut):nth-child(3n) { clip-path: var(--cut-c); }
 
 /* Stronger hand-cut for feature cards and labels that should read clearly as quadrilaterals */
-.k-cut-strong { border-radius: 0 !important; clip-path: polygon(1.5% 4%, 99% 0%, 100% 95%, 0% 100%) !important; }
-.k-cut-strong:nth-child(3n + 2) { clip-path: polygon(0% 0%, 98.5% 4.5%, 100% 100%, 1.5% 95.5%) !important; }
-.k-cut-strong:nth-child(3n) { clip-path: polygon(1% 1%, 100% 3.5%, 98.5% 99%, 0% 96%) !important; }
+.k-cut-strong { border-radius: 0 !important; clip-path: polygon(min(1.5%, 14px) min(4%, 16px), calc(100% - min(1%, 10px)) 0%, 100% calc(100% - min(5%, 18px)), 0% 100%) !important; }
+.k-cut-strong:nth-child(3n + 2) { clip-path: polygon(0% 0%, calc(100% - min(1.5%, 14px)) min(4.5%, 16px), 100% 100%, min(1.5%, 14px) calc(100% - min(4.5%, 16px))) !important; }
+.k-cut-strong:nth-child(3n) { clip-path: polygon(min(1%, 10px) min(1%, 4px), 100% min(3.5%, 14px), calc(100% - min(1.5%, 14px)) calc(100% - min(1%, 4px)), 0% calc(100% - min(4%, 16px))) !important; }
 
 /* ------------------------------------------------------------------
    Site-wide consistency: every field, label, chip and button is hand-cut,
