@@ -278,3 +278,15 @@ export const deleteSiteAudio = () => api.delete("/sys_images/audio", { headers: 
 // Event types (Kamaru Challenge, camp, community, partner) and the "Add to calendar" file
 export const fetchEventKinds = () => api.get("/events/kinds");
 export const eventCalendarUrl = (eventId) => `${API_BASE_URL.replace(/\/$/, "")}/events/${eventId}/calendar.ics`;
+
+// ---------------------------------------------------------------------------
+// Newsletter
+// ---------------------------------------------------------------------------
+export const fetchSubscribers = () => api.get("/newsletter/subscribers", { headers: authHeader() });
+export const addSubscriber = (email) => api.post("/newsletter/subscribers", { email }, { headers: authHeader() });
+export const removeSubscriber = (id) => api.delete(`/newsletter/subscribers/${id}`, { headers: authHeader() });
+export const resendConfirmations = (payload) => api.post("/newsletter/subscribers/resend-confirmation", payload, { headers: authHeader() });
+export const fetchNewsletterSends = () => api.get("/newsletter/sends", { headers: authHeader() });
+export const sendPostNewsletter = (postId, { test = false, force = false } = {}) =>
+  api.post(`/blog/${postId}/newsletter`, { test, force }, { headers: authHeader() });
+export const unsubscribeNewsletter = (token) => api.post(`/newsletter/unsubscribe?token=${encodeURIComponent(token)}`);

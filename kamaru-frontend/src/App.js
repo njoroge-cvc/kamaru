@@ -51,6 +51,7 @@ const TermsAndConditionsPage = lazyRetry(() => import("./pages/TermsAndCondition
 const SupportPage = lazyRetry(() => import("./pages/SupportPage"));
 const BlogPage = lazyRetry(() => import("./pages/BlogPage"));
 const BlogPostPage = lazyRetry(() => import("./pages/BlogPostPage"));
+const UnsubscribePage = lazyRetry(() => import("./pages/UnsubscribePage"));
 const VerifyNewsletter = lazyRetry(() => import("./pages/VerifyNewsletter"));
 
 const RouteFallback = () => (
@@ -65,7 +66,7 @@ const RouteFallback = () => (
 // everything else keeps the original centred container.
 const FULL_BLEED = [
   "/", "/gallery", "/videos", "/about_us", "/register/participant",
-  "/login", "/register/user", "/join", "/support", "/forgot_password", "/reset_password", "/verify-newsletter",
+  "/login", "/register/user", "/join", "/support", "/forgot_password", "/reset_password", "/verify-newsletter", "/unsubscribe",
 ];
 
 const Main = ({ children }) => {
@@ -108,6 +109,7 @@ const App = () => {
             <Route path="/reset_password" element={<ResetPasswordForm />} />
             <Route path="/admin/*" element={<AdminDashboard />} /> {/* Admin routes */}
             <Route path="/terms" element={<TermsAndConditionsPage />} />
+            <Route path="/unsubscribe" element={<UnsubscribePage />} />
             {/* Newsletter verification route */}
             <Route 
               path="/verify-newsletter" 

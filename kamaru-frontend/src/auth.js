@@ -15,6 +15,7 @@ export const PERMS = {
   SITE_IMAGES: "site_images:manage",
   USERS: "users:manage",
   BLOG: "blog:manage",
+  NEWSLETTER: "newsletter:manage",
   ADMINS: "admins:manage", // Super admins: grant/remove Administrator and Super admin access
 };
 

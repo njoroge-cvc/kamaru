@@ -73,7 +73,7 @@ def get_post(slug):
 @permission_required(rbac.BLOG)
 def admin_list():
     posts = BlogPost.query.order_by(BlogPost.created_at.desc()).all()
-    return jsonify({"posts": [p.to_dict() for p in posts]}), 200
+    return jsonify({"posts": [p.to_dict(include_newsletter=True) for p in posts]}), 200
 
 
 @bp.route("/", methods=["POST"])
@@ -134,3 +134,30 @@ def delete_post(post_id):
     db.session.commit()
     destroy_quietly(image)
     return jsonify({"message": "Post deleted"}), 200
+
+
+# Staff: email a published post to subscribers. {"test": true} sends only to you.
+# A post can be emailed once; pass {"force": true} to send again.
+@bp.route("/<int:post_id>/newsletter", methods=["POST"])
+@permission_required(rbac.NEWSLETTER)
+def send_post_newsletter(post_id):
+    from app.models.newsletter import NewsletterSend
+    from app.utils.newsletter import start_blog_send
+
+    post = BlogPost.query.get(post_id)
+    if not post:
+        return jsonify({"error": "Post not found"}), 404
+    data = request.get_json(silent=True) or {}
+    user = current_user()
+    if data.get("test"):
+        record = start_blog_send(post, user, test_email=user.email)
+        if record.status != "sent":
+            return jsonify({"error": "The test email couldn't be sent. Please try again."}), 502
+        return jsonify({"message": f"Test sent to {user.email}", "send": record.to_dict()}), 200
+    if not post.published:
+        return jsonify({"error": "Publish the post before emailing it."}), 400
+    already = NewsletterSend.query.filter_by(blog_post_id=post.id, kind="blog").filter(NewsletterSend.status != "failed").first()
+    if already and not data.get("force"):
+        return jsonify({"error": "This post was already emailed to subscribers.", "send": already.to_dict()}), 409
+    record = start_blog_send(post, user)
+    return jsonify({"message": f"Sending to {record.recipients} subscribers", "send": record.to_dict()}), 202

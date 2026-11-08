@@ -25,6 +25,7 @@ const PERM_LABELS = {
   "site_images:manage": "Site media",
   "users:manage": "Users & roles",
   "blog:manage": "Blog",
+  "newsletter:manage": "Newsletter",
   "admins:manage": "Administrator access",
 };
 
@@ -168,7 +169,7 @@ const ManageUsers = () => {
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
-          <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-earth-600" />
+          <FaSearch className="pointer-events-none absolute z-10 left-4 top-1/2 -translate-y-1/2 text-earth-600" />
           <input className="k-input pl-11" placeholder="Search by name or email" value={query} onChange={(e) => setQuery(e.target.value)} />
         </div>
         <select className="k-input sm:w-56" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>

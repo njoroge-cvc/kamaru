@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { FaPlus, FaEdit, FaTrash, FaExternalLinkAlt, FaArrowLeft, FaFeatherAlt } from "react-icons/fa";
-import { fetchAllBlogPosts, createBlogPost, updateBlogPost, deleteBlogPost } from "../api";
+import { FaPaperPlane, FaEnvelope, FaPlus, FaEdit, FaTrash, FaExternalLinkAlt, FaArrowLeft, FaFeatherAlt } from "react-icons/fa";
+import { fetchAllBlogPosts, createBlogPost, updateBlogPost, deleteBlogPost, sendPostNewsletter, fetchSubscribers } from "../api";
+import { useSession } from "./useSession";
+import { PERMS } from "../auth";
 import { PageHeader, Field, EmptyState, Spinner, usePaged, Pager } from "./ui";
 import BlogContent from "./BlogContent";
 import { cld } from "../utils/cloudinary";
@@ -11,7 +13,38 @@ const EMPTY = { title: "", excerpt: "", content: "", published: false };
 
 const HINT = "## Heading · ### Subheading · - list item · > quote · **bold** · *italic* · [link](https://…) · blank line = new paragraph";
 
+/** Confirm, then email a published post to subscribers. Returns true if sending started. */
+export const emailPost = async (post, recipients) => {
+  const again = !!post.newsletter && post.newsletter.status !== "failed";
+  const msg = again
+    ? `“${post.title}” was already emailed on ${new Date(post.newsletter.created_at).toLocaleDateString("en-KE")}. Send it to ${recipients} subscribers again?`
+    : `Email “${post.title}” to ${recipients} subscribers now? This can't be undone.`;
+  if (!window.confirm(msg)) return false;
+  try {
+    const r = await sendPostNewsletter(post.id, { force: again });
+    toast.success(`${r.data.message}. Delivery is tracked under Newsletter.`);
+    return true;
+  } catch (err) {
+    toast.error(err.response?.data?.error || "The newsletter couldn't be sent.");
+    return false;
+  }
+};
+
+const useRecipients = (enabled) => {
+  const [n, setN] = useState(null);
+  useEffect(() => {
+    if (enabled) fetchSubscribers().then((r) => setN(r.data.recipients)).catch(() => setN(null));
+  }, [enabled]);
+  return n;
+};
+
 const Editor = ({ post, onDone }) => {
+  const { permissions } = useSession();
+  const canEmail = permissions.includes(PERMS.NEWSLETTER);
+  const recipients = useRecipients(canEmail);
+  const alreadyEmailed = !!post?.newsletter && post.newsletter.status !== "failed";
+  const [emailToo, setEmailToo] = useState(false);
+  const [testing, setTesting] = useState(false);
   const [form, setForm] = useState(post ? { title: post.title, excerpt: post.excerpt, content: post.content, published: post.published } : EMPTY);
   const [image, setImage] = useState(null);
   const [removeImage, setRemoveImage] = useState(false);
@@ -32,9 +65,10 @@ const Editor = ({ post, onDone }) => {
     if (removeImage) fd.append("remove_image", "true");
     setSaving(true);
     try {
-      if (post) await updateBlogPost(post.id, fd);
-      else await createBlogPost(fd);
+      const r = post ? await updateBlogPost(post.id, fd) : await createBlogPost(fd);
+      const saved = r.data?.post || post;
       toast.success(publish ? "Published!" : "Draft saved.");
+      if (publish && emailToo && saved?.id) await emailPost({ ...saved, newsletter: post?.newsletter }, recipients ?? "all");
       onDone(true);
     } catch (err) {
       toast.error(err.response?.data?.error || "Could not save the post.");
@@ -136,11 +170,51 @@ const Editor = ({ post, onDone }) => {
               </span>
             </p>
             <button disabled={saving} onClick={() => save(true)} className="k-btn-primary w-full justify-center py-3">
-              {saving && <Spinner />} {post?.published ? "Update post" : "Publish"}
+              {saving && <Spinner />} {post?.published ? "Update post" : "Publish"}{emailToo && !alreadyEmailed ? " & email" : ""}
             </button>
             <button disabled={saving} onClick={() => save(false)} className="k-btn-outline w-full justify-center py-3">
               {post?.published ? "Unpublish (save as draft)" : "Save draft"}
             </button>
+            {canEmail && (
+              <div className="border-t border-earth/10 pt-3">
+                {alreadyEmailed ? (
+                  <p className="flex items-start gap-2 text-sm text-earth-600">
+                    <FaEnvelope className="mt-0.5 shrink-0 text-bead-green" />
+                    Emailed to {post.newsletter.delivered} subscribers on {new Date(post.newsletter.created_at).toLocaleDateString("en-KE")}.
+                  </p>
+                ) : (
+                  <label className="flex cursor-pointer items-start gap-2 text-sm text-earth">
+                    <input type="checkbox" checked={emailToo} onChange={(e) => setEmailToo(e.target.checked)} className="mt-0.5 h-4 w-4 accent-kamaru" />
+                    <span>
+                      <span className="font-semibold">Also email it to subscribers</span>
+                      <span className="block text-earth-600">
+                        {recipients != null ? `${recipients} people` : "Everyone on the list"} get the cover, title, summary and a “Read the full story” button. You'll confirm before it sends.
+                      </span>
+                    </span>
+                  </label>
+                )}
+                <button
+                  type="button"
+                  disabled={!post?.id || testing}
+                  onClick={async () => {
+                    setTesting(true);
+                    try {
+                      const r = await sendPostNewsletter(post.id, { test: true });
+                      toast.success(r.data.message);
+                    } catch (err) {
+                      toast.error(err.response?.data?.error || "The test couldn't be sent.");
+                    } finally {
+                      setTesting(false);
+                    }
+                  }}
+                  className="k-btn-ghost k-btn-sm mt-2 w-full justify-center"
+                  title={post?.id ? "Email a preview to yourself" : "Save a draft first"}
+                >
+                  {testing ? <Spinner /> : <FaPaperPlane />} Send a test to me
+                </button>
+                {!post?.id && <p className="k-hint text-center">Save a draft first to send yourself a test.</p>}
+              </div>
+            )}
           </div>
         </aside>
       </div>
@@ -150,6 +224,9 @@ const Editor = ({ post, onDone }) => {
 
 const ManageBlog = () => {
   const [posts, setPosts] = useState(null);
+  const { permissions } = useSession();
+  const canEmail = permissions.includes(PERMS.NEWSLETTER);
+  const recipients = useRecipients(canEmail);
   const [editing, setEditing] = useState(undefined); // undefined = list, null = new, object = edit
 
   const paged = usePaged(posts || [], 10);
@@ -223,6 +300,11 @@ const ManageBlog = () => {
                     {p.published ? "Published" : "Draft"}
                   </span>
                   {p.published_at && <span className="text-xs text-earth-600">{formatDate(p.published_at)}</span>}
+                  {p.newsletter && p.newsletter.status !== "failed" && (
+                    <span className="k-quad-shape bg-bead-blue/15 px-2 py-0.5 text-xs font-semibold text-bead-blue">
+                      Emailed to {p.newsletter.status === "sending" ? "…" : p.newsletter.delivered} · {formatDate(p.newsletter.created_at)}
+                    </span>
+                  )}
                 </div>
                 <p className="mt-1 truncate font-semibold text-earth">{p.title}</p>
                 {p.excerpt && <p className="truncate text-sm text-earth-600">{p.excerpt}</p>}
@@ -232,6 +314,11 @@ const ManageBlog = () => {
                   <a href={`/blog/${p.slug}`} target="_blank" rel="noopener noreferrer" className="k-icon-btn" aria-label="View on site">
                     <FaExternalLinkAlt />
                   </a>
+                )}
+                {canEmail && p.published && !(p.newsletter && p.newsletter.status !== "failed") && (
+                  <button onClick={async () => (await emailPost(p, recipients ?? "all")) && load()} className="k-icon-btn" aria-label="Email to subscribers" title="Email to subscribers">
+                    <FaPaperPlane />
+                  </button>
                 )}
                 <button onClick={() => setEditing(p)} className="k-icon-btn" aria-label="Edit">
                   <FaEdit />

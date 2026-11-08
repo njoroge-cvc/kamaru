@@ -3,7 +3,7 @@ from sib_api_v3_sdk.rest import ApiException
 from flask import current_app
 
 # This module provides a function to send emails using the Brevo (Sendinblue) API.
-def send_email(to_email, subject, content):
+def send_email(to_email, subject, content, reply_to=None, headers=None):
     try:
         # Set up the API client with the API key from the Flask app configuration
         configuration = sib_api_v3_sdk.Configuration()
@@ -43,7 +43,10 @@ def send_email(to_email, subject, content):
                 sender=sender,
                 to=recipient,
                 subject=subject,
-                html_content=content
+                html_content=content,
+                # Replies go to the team inbox, not the no-reply sender
+                reply_to={"email": reply_to or current_app.config.get("NEWSLETTER_REPLY_TO") or "info@kamaruchallenge.africa"},
+                headers=headers or None,
             )
         )
         # Send the email using the API instance and the constructed email payload

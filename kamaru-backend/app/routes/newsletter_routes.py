@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app import db, limiter
-from app.models.newsletter import NewsletterSubscriber
+from app.models.newsletter import NewsletterSubscriber, NewsletterSend
 from app.utils.email_service import send_email
 
 from datetime import datetime
@@ -40,6 +40,10 @@ def subscribe_newsletter():
     # --------------------------------------------------- 
     # Already verified subscriber 
     # ---------------------------------------------------
+
+    if existing and existing.unsubscribed_at:
+        existing.unsubscribed_at = None  # they're opting back in
+        db.session.commit()
 
     if existing and existing.is_verified:
             return jsonify({
@@ -267,3 +271,97 @@ def verify_newsletter():
         "message": "Subscription verified successfully!"
     }), 200                                     
 
+
+
+# --------------------------------------------------------
+# Public: one-click unsubscribe (link in every newsletter)
+# --------------------------------------------------------
+@bp.route("/newsletter/unsubscribe", methods=["GET", "POST"])
+@limiter.limit("30 per hour")
+def unsubscribe():
+    token = request.args.get("token") or (request.get_json(silent=True) or {}).get("token")
+    sub = NewsletterSubscriber.query.filter_by(unsubscribe_token=token).first() if token else None
+    if not sub:
+        return jsonify({"error": "This unsubscribe link isn't valid. It may be from a test email."}), 404
+    if not sub.unsubscribed_at:
+        sub.unsubscribed_at = datetime.utcnow()
+        db.session.commit()
+    return jsonify({"message": "You've been unsubscribed.", "email": sub.email}), 200
+
+
+# --------------------------------------------------------
+# Staff: subscribers and sends
+# --------------------------------------------------------
+from app.utils import rbac  # noqa: E402
+from app.utils.rbac import permission_required  # noqa: E402
+from app.utils.newsletter import send_confirmation, recipients  # noqa: E402
+import re  # noqa: E402
+
+EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+
+@bp.route("/newsletter/subscribers", methods=["GET"])
+@permission_required(rbac.NEWSLETTER)
+def list_subscribers():
+    subs = NewsletterSubscriber.query.order_by(NewsletterSubscriber.subscribed_at.desc().nullslast()).all()
+    return jsonify({"subscribers": [s.to_dict() for s in subs], "recipients": len(recipients())}), 200
+
+
+@bp.route("/newsletter/subscribers", methods=["POST"])
+@permission_required(rbac.NEWSLETTER)
+def add_subscriber():
+    email = ((request.get_json(silent=True) or {}).get("email") or "").strip().lower()
+    if not EMAIL_RE.match(email):
+        return jsonify({"error": "Enter a valid email address."}), 400
+    existing = NewsletterSubscriber.query.filter(db.func.lower(NewsletterSubscriber.email) == email).first()
+    if existing and not existing.unsubscribed_at:
+        return jsonify({"error": "That email is already on the list."}), 409
+    if existing:
+        return jsonify({"error": "That person unsubscribed. They can sign up again from the website footer."}), 409
+    sub = NewsletterSubscriber(email=email, is_verified=False)
+    sub.ensure_unsubscribe_token()
+    db.session.add(sub)
+    db.session.commit()
+    send_confirmation(sub)
+    db.session.commit()
+    return jsonify({"subscriber": sub.to_dict()}), 201
+
+
+@bp.route("/newsletter/subscribers/<int:sid>", methods=["DELETE"])
+@permission_required(rbac.NEWSLETTER)
+def remove_subscriber(sid):
+    sub = NewsletterSubscriber.query.get(sid)
+    if not sub:
+        return jsonify({"error": "Subscriber not found"}), 404
+    db.session.delete(sub)
+    db.session.commit()
+    return jsonify({"message": "Removed"}), 200
+
+
+# Resend confirmation links: {"ids": [...]} or {"all_unconfirmed": true}
+@bp.route("/newsletter/subscribers/resend-confirmation", methods=["POST"])
+@permission_required(rbac.NEWSLETTER)
+def resend_confirmation():
+    data = request.get_json(silent=True) or {}
+    q = NewsletterSubscriber.query.filter(NewsletterSubscriber.unsubscribed_at.is_(None),
+                                          db.or_(NewsletterSubscriber.is_verified.is_(None), NewsletterSubscriber.is_verified.is_(False)))
+    if not data.get("all_unconfirmed"):
+        ids = [i for i in (data.get("ids") or []) if isinstance(i, int)]
+        if not ids:
+            return jsonify({"error": "No subscribers selected"}), 400
+        q = q.filter(NewsletterSubscriber.id.in_(ids))
+    sent = failed = 0
+    for sub in q.all():
+        if send_confirmation(sub):
+            sent += 1
+        else:
+            failed += 1
+        db.session.commit()
+    return jsonify({"sent": sent, "failed": failed}), 200
+
+
+@bp.route("/newsletter/sends", methods=["GET"])
+@permission_required(rbac.NEWSLETTER)
+def list_sends():
+    sends = NewsletterSend.query.order_by(NewsletterSend.created_at.desc()).limit(100).all()
+    return jsonify({"sends": [s.to_dict() for s in sends]}), 200

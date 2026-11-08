@@ -25,14 +25,15 @@ SITE_IMAGES = "site_images:manage"
 USERS = "users:manage"
 DASHBOARD = "dashboard:view"
 BLOG = "blog:manage"
+NEWSLETTER = "newsletter:manage"  # subscribers and sending newsletters
 ADMINS = "admins:manage"  # make/remove Administrators and Super admins; edit or delete their accounts
 
-ALL_PERMISSIONS = [DASHBOARD, EVENTS, PARTICIPANTS, SEASONS, GALLERY, VIDEOS, SITE_IMAGES, USERS, BLOG, ADMINS]
+ALL_PERMISSIONS = [DASHBOARD, EVENTS, PARTICIPANTS, SEASONS, GALLERY, VIDEOS, SITE_IMAGES, USERS, BLOG, NEWSLETTER, ADMINS]
 
 # --- Roles ---------------------------------------------------------------
 ROLE_PERMISSIONS = {
     "member": [],
-    "media": [DASHBOARD, GALLERY, VIDEOS, SITE_IMAGES, BLOG],
+    "media": [DASHBOARD, GALLERY, VIDEOS, SITE_IMAGES, BLOG, NEWSLETTER],
     "coordinator": [DASHBOARD, EVENTS, SEASONS, PARTICIPANTS, BLOG],
     "admin": [p for p in ALL_PERMISSIONS if p != ADMINS],
     "superadmin": list(ALL_PERMISSIONS),

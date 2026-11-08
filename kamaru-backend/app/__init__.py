@@ -107,6 +107,7 @@ cloudinary.config(
 # Email (Brevo)
 app.config["BREVO_API_KEY"] = os.getenv("BREVO_API_KEY")
 app.config["BREVO_SENDER_EMAIL"] = os.getenv("BREVO_SENDER_EMAIL")
+app.config["NEWSLETTER_REPLY_TO"] = os.getenv("NEWSLETTER_REPLY_TO", "info@kamaruchallenge.africa")
 
 
 @app.route("/db_stats", methods=["GET"])

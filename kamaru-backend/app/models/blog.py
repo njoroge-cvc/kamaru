@@ -34,7 +34,7 @@ class BlogPost(db.Model):
 
     author = db.relationship("User", lazy="joined")
 
-    def to_dict(self, with_content=True):
+    def to_dict(self, with_content=True, include_newsletter=False):
         data = {
             "id": self.id,
             "title": self.title,
@@ -48,4 +48,9 @@ class BlogPost(db.Model):
         }
         if with_content:
             data["content"] = self.content
+        if include_newsletter:  # admin only
+            from app.models.newsletter import NewsletterSend  # local import avoids a cycle
+            last = (NewsletterSend.query.filter_by(blog_post_id=self.id, kind="blog")
+                    .order_by(NewsletterSend.created_at.desc()).first())
+            data["newsletter"] = last.to_dict() if last else None
         return data
