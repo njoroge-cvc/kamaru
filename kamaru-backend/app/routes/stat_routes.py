@@ -66,7 +66,9 @@ def dashboard_stats():
     participants = db.session.query(Participant.category, Participant.season_id, Participant.registered_at).all()
     seasons = {s.id: s for s in Season.query.order_by(Season.year).all()}
 
-    by_category = Counter(p.category for p in participants)
+    # "Folk Songs" (Season 2's name) counts as today's "Folk Songs and Dances"
+    from app.routes.participant_routes import CATEGORY_ALIASES
+    by_category = Counter(CATEGORY_ALIASES.get(p.category, p.category) for p in participants)
     by_season = Counter(p.season_id for p in participants)
     season_rows = [
         {"season": s.name, "year": s.year, "count": by_season.get(s.id, 0), "active": bool(s.is_active)}

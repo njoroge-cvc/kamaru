@@ -5,7 +5,7 @@ import { FaArrowRight, FaDoorOpen, FaDoorClosed } from "react-icons/fa";
 import Stats from "./Stats";
 import { fetchActiveSeason, fetchDashboardStats } from "../api";
 import { ChartCard, BarList, ColumnChart, MonthlyLine, SplitMeter, SERIES } from "./charts";
-import { CATEGORIES } from "../content/story";
+import { categoryLabel } from "../content/story";
 import { PageHeader } from "./ui";
 import { kk } from "./Kikuyu";
 import { useSession } from "./useSession";
@@ -27,10 +27,7 @@ const AdminOverview = ({ sections }) => {
   }, []);
 
   // Show categories with their Kikuyu names
-  const catLabel = (v) => {
-    const c = CATEGORIES.find((x) => x.value === v);
-    return c ? `${c.kikuyu} (${c.name})` : v;
-  };
+  const catLabel = (v) => categoryLabel(v, { kikuyu: true });
 
   const open = season?.accepting_registrations;
 

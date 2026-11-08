@@ -93,6 +93,17 @@ export const CATEGORIES = [
   },
 ];
 
+// Category names used on past entries
+export const CATEGORY_ALIASES = { "Folk Songs": "Folk Songs and Dances" }; // renamed after Season 2
+export const DISCONTINUED_CATEGORIES = { Rendition: "Rendition (until Season 2)" };
+/** Display label for any stored category, old or current. */
+export const categoryLabel = (value, { kikuyu = false } = {}) => {
+  const v = CATEGORY_ALIASES[value] || value;
+  const c = CATEGORIES.find((x) => x.value === v);
+  if (c) return kikuyu ? `${c.kikuyu} (${c.name})` : c.name;
+  return DISCONTINUED_CATEGORIES[v] || v;
+};
+
 export const PRIZES = [
   { place: "Winner", amount: 50000 },
   { place: "1st Runner-up", amount: 25000 },

@@ -17,6 +17,7 @@ import {
   FaFileExcel,
 } from "react-icons/fa";
 import * as XLSX from "xlsx";
+import { categoryLabel } from "../content/story";
 
 const ManageParticipants = ({ isAdmin }) => {
   const navigate = useNavigate();
@@ -134,7 +135,7 @@ const ManageParticipants = ({ isAdmin }) => {
       p.name,
       p.email,
       p.phone,
-      p.category,
+      categoryLabel(p.category),
       p.season,
     ]);
     autoTable(doc, {
@@ -276,7 +277,7 @@ const ManageParticipants = ({ isAdmin }) => {
                   <td className="p-3">{p.name}</td>
                   <td className="p-3">{p.email}</td>
                   <td className="p-3">{p.phone}</td>
-                  <td className="p-3">{p.category}</td>
+                  <td className="p-3">{categoryLabel(p.category)}</td>
                   <td className="p-3">{p.season}</td>
                   <td className="p-3 flex space-x-2">
                     <button
@@ -375,6 +376,10 @@ const ManageParticipants = ({ isAdmin }) => {
                 <option value="" disabled>
                   Select Category
                 </option>
+                {/* A past entry may keep its discontinued category */}
+                {!categories.includes(editingParticipant.category) && editingParticipant.category && (
+                  <option value={editingParticipant.category}>{categoryLabel(editingParticipant.category)}</option>
+                )}
                 {categories.map((cat, i) => (
                   <option key={i} value={cat}>
                     {cat}

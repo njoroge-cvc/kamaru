@@ -13,6 +13,10 @@ bp = Blueprint("participant_routes", __name__)
 
 # Allowed categories for participants - this can be expanded as needed or moved to a config file
 ALLOWED_CATEGORIES = ["Poetry", "Folk Songs and Dances", "Original Songs"]
+# Older names kept on past entries: "Folk Songs" became "Folk Songs and Dances";
+# "Rendition" ran until Season 2. New entries can't use them; existing ones keep them.
+CATEGORY_ALIASES = {"Folk Songs": "Folk Songs and Dances"}
+LEGACY_CATEGORIES = {"Folk Songs", "Rendition"}
 
 # -------------------- Public Routes --------------------
 
@@ -225,10 +229,11 @@ def update_participant(id):
     participant.name = data.get("name", participant.name)
     participant.email = data.get("email", participant.email)
     participant.phone = data.get("phone", participant.phone)
+    old_category = participant.category
     participant.category = data.get("category", participant.category)
 
-    # Validate category if updated
-    if participant.category not in ALLOWED_CATEGORIES:
+    # Validate category if changed (past entries may keep a discontinued category)
+    if participant.category not in ALLOWED_CATEGORIES and participant.category != old_category:
         db.session.rollback()
         return jsonify({"error": f"Invalid category. Choose from {ALLOWED_CATEGORIES}"}), 400
 

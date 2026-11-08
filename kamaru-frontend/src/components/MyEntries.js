@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { FaMicrophoneAlt, FaTimes } from "react-icons/fa";
 import { fetchMyEntries, withdrawMyEntry } from "../api";
+import { categoryLabel } from "../content/story";
 
 /**
  * "Your entries" panel for logged-in members. Shows every entry the account submitted;
@@ -26,7 +27,7 @@ const MyEntries = ({ season, refreshKey = 0 }) => {
   const canWithdraw = (e) => season && e.season_id === season.id && season.accepting_registrations;
 
   const withdraw = async (e) => {
-    if (!window.confirm(`Withdraw "${e.name}" (${e.category}) from ${e.season}?`)) return;
+    if (!window.confirm(`Withdraw "${e.name}" (${categoryLabel(e.category)}) from ${e.season}?`)) return;
     setBusy(e.id);
     try {
       await withdrawMyEntry(e.id);
@@ -60,7 +61,7 @@ const MyEntries = ({ season, refreshKey = 0 }) => {
               <div className="min-w-0 flex-1">
                 <p className="truncate font-semibold text-earth">{e.name}</p>
                 <p className="text-sm text-earth-600">
-                  {e.category} · {e.season}
+                  {categoryLabel(e.category)} · {e.season}
                 </p>
               </div>
               {canWithdraw(e) ? (
