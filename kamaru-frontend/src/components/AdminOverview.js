@@ -119,20 +119,6 @@ const AdminOverview = ({ sections }) => {
           </ChartCard>
         </div>
       )}
-
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {sections.map(({ path, icon: Icon, label }, i) => (
-          <motion.div key={path} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-            <Link to={`/admin/${path}`} className="group k-card flex items-center gap-4 transition hover:-translate-y-1 hover:shadow-lg">
-              <span className="grid h-12 w-12 place-items-center k-quad-shape bg-kamaru/15 text-xl text-kamaru-dark group-hover:bg-kamaru group-hover:text-earth">
-                <Icon />
-              </span>
-              <span className="flex-1 font-semibold text-earth">{label}</span>
-              <FaArrowRight className="text-earth-600 transition group-hover:translate-x-1" />
-            </Link>
-          </motion.div>
-        ))}
-      </div>
     </div>
   );
 };
