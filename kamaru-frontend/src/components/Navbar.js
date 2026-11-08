@@ -90,7 +90,6 @@ const FullMenu = ({ open, onClose, logo, token, isAdmin, onLogout }) => {
           aria-modal="true"
           aria-label="Site menu"
         >
-          <div className="chevron-band pointer-events-none absolute inset-x-0 bottom-0 h-8 opacity-20" style={{ "--c1": "#2B1A10" }} />
 
           <div className="container relative mx-auto flex min-h-full flex-col px-5 md:px-8 py-5">
             <div className="flex items-center justify-between">
@@ -163,7 +162,7 @@ const FullMenu = ({ open, onClose, logo, token, isAdmin, onLogout }) => {
               animate={{ opacity: 1, transition: { delay: 0.6 } }}
               className="flex flex-col items-center gap-4 border-t border-earth/15 pt-5 pb-8 text-sm md:flex-row md:justify-between"
             >
-              <p className="font-sans font-semibold text-base">{TAGLINE_KIKUYU}</p>
+              <p lang="ki" className="text-balance text-center font-sans text-base font-semibold md:text-left">{TAGLINE_KIKUYU}</p>
               <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 font-semibold">
                 <a href={`tel:${CONTACT.phones[0].replace(/\s/g, "")}`} className="flex items-center gap-2 hover:text-cream">
                   <FaPhoneAlt /> {CONTACT.phones[0]}

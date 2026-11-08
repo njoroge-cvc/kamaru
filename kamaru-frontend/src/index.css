@@ -239,17 +239,6 @@ body {
 
 
 
-/* Shield chevrons (zig-zag) used as section dividers */
-.chevron-band {
-  --c1: #D57500;
-  --c2: transparent;
-  background:
-    linear-gradient(135deg, var(--c1) 25%, var(--c2) 25%) -12px 0,
-    linear-gradient(225deg, var(--c1) 25%, var(--c2) 25%) -12px 0,
-    linear-gradient(315deg, var(--c1) 25%, var(--c2) 25%),
-    linear-gradient(45deg, var(--c1) 25%, var(--c2) 25%);
-  background-size: 24px 24px;
-}
 
 
 
