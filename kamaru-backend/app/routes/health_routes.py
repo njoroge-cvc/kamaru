@@ -8,6 +8,7 @@ The failure body deliberately avoids the word "connected" (e.g. "disconnected"),
 so a keyword monitor can never mistake an outage for success.
 """
 import logging
+import os
 import time
 from datetime import datetime, timezone
 
@@ -40,6 +41,8 @@ def health():
         "database": "connected" if ok else "unavailable",
         "db_latency_ms": round((time.perf_counter() - started) * 1000, 1),
         "time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        # Which commit is deployed (Render sets RENDER_GIT_COMMIT); handy for checking a release went live
+        "version": (os.getenv("RENDER_GIT_COMMIT") or "")[:7],
     }
     resp = jsonify(body)
     resp.status_code = 200 if ok else 503

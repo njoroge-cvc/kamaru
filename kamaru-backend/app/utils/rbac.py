@@ -7,7 +7,8 @@ permission, never for a role, so roles can be reshaped without touching routes.
     member       -> ordinary account (can register as a contestant)
     media        -> gallery, videos, site media (logo, patron photo, music) and the blog
     coordinator  -> events, seasons/registration window, participants and the blog
-    admin        -> everything, including users and their roles
+    admin        -> everything, including users and their roles (except admin-level accounts)
+    superadmin   -> everything, plus granting/removing Administrator and Super admin access
 """
 from functools import wraps
 
@@ -24,15 +25,17 @@ SITE_IMAGES = "site_images:manage"
 USERS = "users:manage"
 DASHBOARD = "dashboard:view"
 BLOG = "blog:manage"
+ADMINS = "admins:manage"  # make/remove Administrators and Super admins; edit or delete their accounts
 
-ALL_PERMISSIONS = [DASHBOARD, EVENTS, PARTICIPANTS, SEASONS, GALLERY, VIDEOS, SITE_IMAGES, USERS, BLOG]
+ALL_PERMISSIONS = [DASHBOARD, EVENTS, PARTICIPANTS, SEASONS, GALLERY, VIDEOS, SITE_IMAGES, USERS, BLOG, ADMINS]
 
 # --- Roles ---------------------------------------------------------------
 ROLE_PERMISSIONS = {
     "member": [],
     "media": [DASHBOARD, GALLERY, VIDEOS, SITE_IMAGES, BLOG],
     "coordinator": [DASHBOARD, EVENTS, SEASONS, PARTICIPANTS, BLOG],
-    "admin": list(ALL_PERMISSIONS),
+    "admin": [p for p in ALL_PERMISSIONS if p != ADMINS],
+    "superadmin": list(ALL_PERMISSIONS),
 }
 
 ROLE_LABELS = {
@@ -40,10 +43,12 @@ ROLE_LABELS = {
     "media": "Media team",
     "coordinator": "Coordinator",
     "admin": "Administrator",
+    "superadmin": "Super admin",
 }
 
 ROLES = list(ROLE_PERMISSIONS.keys())
 DEFAULT_ROLE = "member"
+PRIVILEGED_ROLES = {"admin", "superadmin"}  # changing these needs ADMINS
 
 
 def permissions_for(user):

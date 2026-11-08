@@ -196,6 +196,10 @@
 html, body { max-width: 100%; overflow-x: clip; }
 @supports not (overflow: clip) { body { overflow-x: hidden; } }
 
+/* Shared component classes that round themselves via @apply (the markup rules above can't see that) */
+.k-badge:not(.no-quad) { border-radius: 0 !important; clip-path: var(--quad-a); }
+.k-table-wrap:not(.no-cut) { border-radius: 0 !important; clip-path: var(--cut-a); }
+
 /* Shape-only helper for highlight pills inside quad buttons (tabs, filters) */
 .k-quad-shape { border-radius: 0 !important; clip-path: var(--quad-a); }
 @media (prefers-reduced-motion: reduce) {

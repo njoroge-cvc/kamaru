@@ -15,6 +15,7 @@ export const PERMS = {
   SITE_IMAGES: "site_images:manage",
   USERS: "users:manage",
   BLOG: "blog:manage",
+  ADMINS: "admins:manage", // Super admins: grant/remove Administrator and Super admin access
 };
 
 export const ROLE_LABELS = {
@@ -22,6 +23,7 @@ export const ROLE_LABELS = {
   media: "Media team",
   coordinator: "Coordinator",
   admin: "Administrator",
+  superadmin: "Super admin",
 };
 
 const safeGet = (k) => {
@@ -64,7 +66,7 @@ export const getSession = () => {
   }
   const role = safeGet("role") || (safeGet("is_admin") === "true" ? "admin" : token ? "member" : null);
   // Older sessions (before RBAC) only stored is_admin
-  if (!permissions.length && role === "admin") permissions = Object.values(PERMS);
+  if (!permissions.length && role === "admin") permissions = Object.values(PERMS).filter((p) => p !== PERMS.ADMINS);
   return { token, role, permissions };
 };
 
@@ -81,7 +83,7 @@ export const saveSession = ({ token, role, permissions, is_admin, remember }) =>
   }
   if (role) localStorage.setItem("role", role);
   if (permissions) localStorage.setItem("permissions", JSON.stringify(permissions));
-  localStorage.setItem("is_admin", String(is_admin ?? role === "admin"));
+  localStorage.setItem("is_admin", String(is_admin ?? ["admin", "superadmin"].includes(role)));
   window.dispatchEvent(new Event(EVENT));
 };
 

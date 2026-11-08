@@ -3,10 +3,12 @@ import { toast } from "react-toastify";
 import { FaUserEdit, FaTrash, FaFilePdf, FaFileExcel, FaSearch } from "react-icons/fa";
 import * as XLSX from "xlsx";
 import { fetchUsers, updateUser, deleteUser, fetchRoles } from "../api";
-import { ROLE_LABELS } from "../auth";
+import { ROLE_LABELS, PERMS } from "../auth";
+import { useSession } from "./useSession";
 import { PageHeader, Modal, Field, EmptyState } from "./ui";
 
 const ROLE_STYLE = {
+  superadmin: "k-badge-earth !bg-earth !text-kamaru",
   admin: "k-badge-red",
   coordinator: "k-badge-blue",
   media: "k-badge-gold",
@@ -22,9 +24,17 @@ const PERM_LABELS = {
   "videos:manage": "Videos",
   "site_images:manage": "Site media",
   "users:manage": "Users & roles",
+  "blog:manage": "Blog",
+  "admins:manage": "Administrator access",
 };
 
+const PRIVILEGED = ["admin", "superadmin"];
+
 const ManageUsers = () => {
+  // Only Super admins can grant/remove admin-level roles or change admin-level accounts
+  const { permissions } = useSession();
+  const canManageAdmins = permissions.includes(PERMS.ADMINS);
+  const lockedFor = (user) => !canManageAdmins && PRIVILEGED.includes(user.role);
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -141,7 +151,7 @@ const ManageUsers = () => {
       />
 
       {/* What each role can do */}
-      <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
         {roles.map((r) => (
           <div key={r.role} className="k-card p-5">
             <span className={ROLE_STYLE[r.role] || "k-badge-earth"}>{r.label}</span>
@@ -198,21 +208,24 @@ const ManageUsers = () => {
                   <td>
                     <select
                       value={user.role}
-                      disabled={busy === user.id}
+                      disabled={busy === user.id || lockedFor(user)}
+                      title={lockedFor(user) ? "Only a Super admin can change this account" : undefined}
                       onChange={(e) => changeRole(user, e.target.value)}
                       className="k-input w-44 py-1.5"
                       aria-label={`Role for ${user.username}`}
                     >
                       {roles.map((r) => (
-                        <option key={r.role} value={r.role}>{r.label}</option>
+                        <option key={r.role} value={r.role} disabled={!canManageAdmins && PRIVILEGED.includes(r.role)}>
+                          {r.label}
+                        </option>
                       ))}
                     </select>
                   </td>
                   <td className="text-right whitespace-nowrap">
-                    <button className="k-icon-btn" onClick={() => setEditingUser(user)} aria-label="Edit user" title="Edit">
+                    <button className="k-icon-btn" onClick={() => setEditingUser(user)} disabled={lockedFor(user)} aria-label="Edit user" title={lockedFor(user) ? "Only a Super admin can edit this account" : "Edit"}>
                       <FaUserEdit />
                     </button>
-                    <button className="k-icon-btn hover:!text-bead-red" onClick={() => handleDeleteUser(user)} disabled={busy === user.id} aria-label="Delete user" title="Delete">
+                    <button className="k-icon-btn hover:!text-bead-red" onClick={() => handleDeleteUser(user)} disabled={busy === user.id || lockedFor(user)} aria-label="Delete user" title={lockedFor(user) ? "Only a Super admin can delete this account" : "Delete"}>
                       <FaTrash />
                     </button>
                   </td>
@@ -235,7 +248,7 @@ const ManageUsers = () => {
             <Field label="Role">
               <select className="k-input" value={editingUser.role} onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}>
                 {roles.map((r) => (
-                  <option key={r.role} value={r.role}>{r.label}</option>
+                  <option key={r.role} value={r.role} disabled={!canManageAdmins && PRIVILEGED.includes(r.role)}>{r.label}</option>
                 ))}
               </select>
             </Field>

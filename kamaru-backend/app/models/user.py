@@ -9,14 +9,14 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
-    # Legacy flag kept in sync with `role` (role == "admin") for older clients.
+    # Legacy flag kept in sync with `role` (admin or superadmin) for older clients.
     is_admin = db.Column(db.Boolean, default=False)
     # RBAC role — see app/utils/rbac.py for what each role may do
     role = db.Column(db.String(20), nullable=False, default="member", server_default="member")
 
     def set_role(self, role):
         self.role = role
-        self.is_admin = role == "admin"
+        self.is_admin = role in ("admin", "superadmin")
 
     def set_password(self, password):
         """Hash and set user password."""
@@ -36,5 +36,5 @@ class User(db.Model):
             "email": self.email,
             "role": self.role,
             "permissions": permissions_for(self),
-            "is_admin": self.role == "admin",
+            "is_admin": self.role in ("admin", "superadmin"),
         }

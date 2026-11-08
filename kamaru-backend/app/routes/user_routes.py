@@ -168,18 +168,26 @@ def update_user(user_id):
         return jsonify({"error": "User not found"}), 404
 
     data = request.get_json(silent=True) or {}
-    user.username = data.get("username", user.username)
-    user.email = data.get("email", user.email)
+    can_manage_admins = rbac.has_permission(rbac.current_user(), rbac.ADMINS)
 
     # Role changes. `is_admin` is still accepted from older clients.
     new_role = data.get("role")
     if new_role is None and "is_admin" in data:
         new_role = "admin" if data["is_admin"] else "member"
+
+    # Admin-level accounts (and granting admin-level roles) are for Super admins only
+    touches_privileged = user.role in rbac.PRIVILEGED_ROLES or (new_role in rbac.PRIVILEGED_ROLES and new_role != user.role)
+    if touches_privileged and not can_manage_admins:
+        return jsonify({"error": "Only a Super admin can change Administrator or Super admin accounts."}), 403
+
+    user.username = data.get("username", user.username)
+    user.email = data.get("email", user.email)
+
     if new_role is not None and new_role != user.role:
         if new_role not in rbac.ROLES:
             return jsonify({"error": f"Unknown role. Choose from {rbac.ROLES}"}), 400
-        if user.role == "admin" and User.query.filter_by(role="admin").count() <= 1:
-            return jsonify({"error": "You can't remove the last administrator."}), 400
+        if user.role == "superadmin" and User.query.filter_by(role="superadmin").count() <= 1:
+            return jsonify({"error": "You can't remove the last Super admin. Make someone else Super admin first."}), 400
         user.set_role(new_role)
 
     db.session.commit()
@@ -194,8 +202,10 @@ def delete_user(user_id):
         return jsonify({"error": "User not found"}), 404
     if str(user.id) == str(get_jwt_identity()):
         return jsonify({"error": "You can't delete your own account here."}), 400
-    if user.role == "admin" and User.query.filter_by(role="admin").count() <= 1:
-        return jsonify({"error": "You can't delete the last administrator."}), 400
+    if user.role in rbac.PRIVILEGED_ROLES and not rbac.has_permission(rbac.current_user(), rbac.ADMINS):
+        return jsonify({"error": "Only a Super admin can delete Administrator or Super admin accounts."}), 403
+    if user.role == "superadmin" and User.query.filter_by(role="superadmin").count() <= 1:
+        return jsonify({"error": "You can't delete the last Super admin."}), 400
 
     db.session.delete(user)
     db.session.commit()
