@@ -74,7 +74,7 @@ export const Modal = ({ open, onClose, title, children, size = "md" }) => {
 
 export const EmptyState = ({ icon, title, children }) => (
   <div className="rounded-3xl border-2 border-dashed border-earth/15 p-10 text-center">
-    {icon && <div className="mx-auto mb-3 text-4xl text-kamaru">{icon}</div>}
+    {icon && <div className="mb-3 flex justify-center text-4xl text-kamaru">{icon}</div>}
     <p className="font-display text-xl font-bold text-earth">{title}</p>
     {children && <div className="mt-2 text-earth-600">{children}</div>}
   </div>
@@ -140,3 +140,50 @@ export const PasswordInput = ({ value, onChange, name = "password", placeholder 
   );
 };
 
+
+/** Client-side paging for admin lists. Returns { page, pages, slice, setPage, total }. Resets when the list changes size. */
+export const usePaged = (list, size = 10) => {
+  const [page, setPage] = React.useState(1);
+  const total = list?.length || 0;
+  const pages = Math.max(1, Math.ceil(total / size));
+  React.useEffect(() => {
+    if (page > pages) setPage(pages);
+  }, [page, pages]);
+  React.useEffect(() => setPage(1), [total]);
+  const start = (Math.min(page, pages) - 1) * size;
+  return { page: Math.min(page, pages), pages, total, setPage, slice: (list || []).slice(start, start + size), start };
+};
+
+/** "Showing 1–10 of 58" with previous/next and page numbers. Hidden when everything fits on one page. */
+export const Pager = ({ paged, label = "items" }) => {
+  const { page, pages, total, setPage, start, slice } = paged;
+  if (pages <= 1) return null;
+  const nums = Array.from({ length: pages }, (_, i) => i + 1).filter((n) => n === 1 || n === pages || Math.abs(n - page) <= 1);
+  return (
+    <nav className="mt-5 flex flex-col items-center justify-between gap-3 sm:flex-row" aria-label="Pages">
+      <p className="text-sm text-earth-600">
+        Showing {start + 1}–{start + slice.length} of {total} {label}
+      </p>
+      <div className="flex items-center gap-1">
+        <button onClick={() => setPage(page - 1)} disabled={page === 1} className="k-quad bg-white px-3 py-2 text-sm font-semibold text-earth disabled:opacity-40">
+          Previous
+        </button>
+        {nums.map((n, i) => (
+          <React.Fragment key={n}>
+            {i > 0 && n - nums[i - 1] > 1 && <span className="px-1 text-earth-600">…</span>}
+            <button
+              onClick={() => setPage(n)}
+              aria-current={n === page ? "page" : undefined}
+              className={`k-quad min-w-[2.5rem] px-3 py-2 text-sm font-semibold ${n === page ? "bg-earth text-cream" : "bg-white text-earth hover:bg-cream-dark"}`}
+            >
+              {n}
+            </button>
+          </React.Fragment>
+        ))}
+        <button onClick={() => setPage(page + 1)} disabled={page === pages} className="k-quad bg-white px-3 py-2 text-sm font-semibold text-earth disabled:opacity-40">
+          Next
+        </button>
+      </div>
+    </nav>
+  );
+};

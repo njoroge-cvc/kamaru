@@ -18,10 +18,12 @@ import {
 } from "react-icons/fa";
 import * as XLSX from "xlsx";
 import { categoryLabel } from "../content/story";
+import { usePaged, Pager } from "./ui";
 
 const ManageParticipants = ({ isAdmin }) => {
   const navigate = useNavigate();
   const [participants, setParticipants] = useState([]);
+  const paged = usePaged(participants, 10);
   const [seasons, setSeasons] = useState([]);
   const [selectedSeason, setSelectedSeason] = useState("");
   const [newParticipant, setNewParticipant] = useState({
@@ -272,7 +274,7 @@ const ManageParticipants = ({ isAdmin }) => {
           </thead>
           <tbody>
             {participants.length > 0 ? (
-              participants.map((p) => (
+              paged.slice.map((p) => (
                 <tr key={p.id} className="border-t">
                   <td className="p-3">{p.name}</td>
                   <td className="p-3">{p.email}</td>
@@ -311,6 +313,7 @@ const ManageParticipants = ({ isAdmin }) => {
           </tbody>
         </table>
       </div>
+      <Pager paged={paged} label="participants" />
 
       {/* Edit Modal */}
       {showEditModal && editingParticipant && (

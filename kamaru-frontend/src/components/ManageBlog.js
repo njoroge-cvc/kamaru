@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { FaPlus, FaEdit, FaTrash, FaExternalLinkAlt, FaArrowLeft, FaFeatherAlt } from "react-icons/fa";
 import { fetchAllBlogPosts, createBlogPost, updateBlogPost, deleteBlogPost } from "../api";
-import { PageHeader, Field, EmptyState, Spinner } from "./ui";
+import { PageHeader, Field, EmptyState, Spinner, usePaged, Pager } from "./ui";
 import BlogContent from "./BlogContent";
 import { cld } from "../utils/cloudinary";
 import { formatDate } from "../pages/BlogPage";
@@ -152,6 +152,8 @@ const ManageBlog = () => {
   const [posts, setPosts] = useState(null);
   const [editing, setEditing] = useState(undefined); // undefined = list, null = new, object = edit
 
+  const paged = usePaged(posts || [], 10);
+
   const load = () =>
     fetchAllBlogPosts()
       .then((r) => setPosts(r.data?.posts || []))
@@ -208,8 +210,9 @@ const ManageBlog = () => {
           Write the first story about Kikuyu culture.
         </EmptyState>
       ) : (
+        <>
         <ul className="space-y-3">
-          {posts.map((p) => (
+          {paged.slice.map((p) => (
             <li key={p.id} className="k-card flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
               <div className="k-quad-shape h-20 w-32 shrink-0 overflow-hidden bg-cream-dark">
                 {p.cover_image_url && <img src={cld(p.cover_image_url, 300)} alt="" className="h-full w-full object-cover" />}
@@ -240,6 +243,8 @@ const ManageBlog = () => {
             </li>
           ))}
         </ul>
+        <Pager paged={paged} label="posts" />
+        </>
       )}
     </div>
   );

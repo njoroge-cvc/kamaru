@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { FaPlus, FaEdit, FaTrash, FaCopy, FaStar, FaRegCalendarAlt, FaMapMarkerAlt, FaExclamationTriangle, FaExternalLinkAlt } from "react-icons/fa";
 import { fetchEvents, createEvent, updateEvent, deleteEvent, fetchSeasons } from "../api";
-import { PageHeader, Modal, Field, EmptyState, Spinner } from "./ui";
+import { PageHeader, Modal, Field, EmptyState, Spinner, usePaged, Pager } from "./ui";
 import { cld } from "../utils/cloudinary";
 import { timingOf, statusOf } from "../utils/events";
 
@@ -211,6 +211,8 @@ const ManageEvent = () => {
     return tab === "upcoming" ? [...list].sort((a, b) => a.date_time.localeCompare(b.date_time)) : list;
   }, [events, tab, kind]);
 
+  const paged = usePaged(shown, 10);
+
   const duplicate = (e) =>
     setEditing({ ...e, id: undefined, title: `${e.title} (copy)`, featured: false, status: "scheduled" });
 
@@ -263,8 +265,9 @@ const ManageEvent = () => {
           {tab === "upcoming" ? "Add the next Kamaru Challenge, camp or community day." : "Try another tab or type."}
         </EmptyState>
       ) : (
+        <>
         <ul className="space-y-3">
-          {shown.map((e) => {
+          {paged.slice.map((e) => {
             const dup = findDuplicate(e, events);
             return (
               <li key={e.id} className="k-card flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
@@ -300,6 +303,8 @@ const ManageEvent = () => {
             );
           })}
         </ul>
+        <Pager paged={paged} label="events" />
+        </>
       )}
 
       <Modal open={editing !== undefined} onClose={() => setEditing(undefined)} title={editing?.id ? "Edit event" : editing ? "Duplicate event" : "New event"} size="lg">

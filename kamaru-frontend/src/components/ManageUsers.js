@@ -5,7 +5,7 @@ import * as XLSX from "xlsx";
 import { fetchUsers, updateUser, deleteUser, fetchRoles } from "../api";
 import { ROLE_LABELS, PERMS } from "../auth";
 import { useSession } from "./useSession";
-import { PageHeader, Modal, Field, EmptyState } from "./ui";
+import { PageHeader, Modal, Field, EmptyState, usePaged, Pager } from "./ui";
 
 const ROLE_STYLE = {
   superadmin: "k-badge-earth !bg-earth !text-kamaru",
@@ -112,6 +112,7 @@ const ManageUsers = () => {
         (!q || u.username.toLowerCase().includes(q) || u.email.toLowerCase().includes(q))
     );
   }, [users, query, roleFilter]);
+  const paged = usePaged(filtered, 10);
 
   const roleLabel = (r) => ROLE_LABELS[r] || r;
 
@@ -194,7 +195,7 @@ const ManageUsers = () => {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((user) => (
+              {paged.slice.map((user) => (
                 <tr key={user.id}>
                   <td>
                     <div className="flex items-center gap-3">
@@ -235,6 +236,7 @@ const ManageUsers = () => {
           </table>
         </div>
       )}
+      <Pager paged={paged} label="users" />
 
       <Modal open={!!editingUser} onClose={() => setEditingUser(null)} title="Edit user" size="sm">
         {editingUser && (
