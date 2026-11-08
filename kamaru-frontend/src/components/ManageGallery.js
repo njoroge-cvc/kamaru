@@ -281,7 +281,7 @@ const ManageGallery = () => {
           </button>
         ))}
         {canAddSeason ? (
-          <button onClick={() => setAddingSeason(true)} className="k-quad inline-flex items-center gap-2 border-dashed bg-transparent px-4 py-2 text-sm font-semibold text-ochre ring-1 ring-inset ring-ochre/40 hover:bg-ochre/10">
+          <button onClick={() => setAddingSeason(true)} className="k-quad inline-flex items-center gap-2 bg-ochre/15 px-4 py-2 text-sm font-semibold text-ochre-dark hover:bg-ochre hover:text-cream">
             <FaPlus /> New season
           </button>
         ) : (

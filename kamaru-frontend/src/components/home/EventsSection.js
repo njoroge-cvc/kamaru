@@ -72,7 +72,7 @@ const EventsSection = ({ upcoming = [], past = [] }) => {
                 ))}
               </div>
             ) : (
-              <div className="rounded-[2rem] border-2 border-dashed border-earth/15 p-10 md:p-14 text-center">
+              <div className="k-cut-strong bg-cream p-10 text-center shadow-sm md:p-14">
                 <FaRegBell className="mx-auto text-4xl text-kamaru" />
                 <p className="mt-4 font-display text-2xl font-bold text-earth">
                   {tab === "upcoming" ? "The next gathering is being planned." : "No past events to show yet."}

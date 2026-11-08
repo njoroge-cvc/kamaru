@@ -157,8 +157,6 @@
   border-radius: 0 !important;
   clip-path: polygon(min(0.6%, 5px) min(6%, 4px), calc(100% - min(0.4%, 4px)) 0%, 100% calc(100% - min(6%, 4px)), 0% 100%);
 }
-/* Dashed boxes keep a plain rectangle: a slanted cut would slice the dashes into fragments */
-[class*="border-dashed"] { clip-path: none !important; border-radius: 0 !important; }
 /* Buttons & links using any small rounding */
 :is(a, button):is([class~="rounded"], [class~="rounded-sm"], [class~="rounded-md"], [class~="rounded-lg"], [class~="rounded-xl"], [class~="rounded-2xl"]):not(.no-quad):not([role="switch"]) {
   border-radius: 0 !important;

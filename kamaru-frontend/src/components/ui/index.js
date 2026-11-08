@@ -73,7 +73,7 @@ export const Modal = ({ open, onClose, title, children, size = "md" }) => {
 };
 
 export const EmptyState = ({ icon, title, children }) => (
-  <div className="rounded-3xl border-2 border-dashed border-earth/15 p-10 text-center">
+  <div className="k-cut-strong bg-cream-dark/70 p-10 text-center">
     {icon && <div className="mb-3 flex justify-center text-4xl text-kamaru">{icon}</div>}
     <p className="font-display text-xl font-bold text-earth">{title}</p>
     {children && <div className="mt-2 text-earth-600">{children}</div>}
