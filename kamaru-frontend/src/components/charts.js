@@ -38,8 +38,10 @@ export const ChartCard = ({ title, subtitle, children, className = "" }) => (
 );
 
 /** Screen-reader table for any chart. */
+// Wrapped in a div: tables ignore the 1px sr-only box and would still take up height
 const SrTable = ({ caption, rows }) => (
-  <table className="sr-only">
+  <div className="sr-only">
+  <table>
     <caption>{caption}</caption>
     <tbody>
       {rows.map(([k, v]) => (
@@ -50,6 +52,7 @@ const SrTable = ({ caption, rows }) => (
       ))}
     </tbody>
   </table>
+  </div>
 );
 
 const Tooltip = ({ x, y, title, value }) => (
