@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { FaPlay, FaPause, FaVolumeMute, FaVolumeUp } from "react-icons/fa";
+import { FaPlay, FaPause, FaVolumeMute, FaVolumeUp, FaMusic } from "react-icons/fa";
 import { useBackdropTone } from "../utils/backdropTone";
 import { fetchSiteAudio } from "../api";
 
@@ -168,13 +168,15 @@ const AmbientAudio = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
             onClick={play}
-            className={`k-quad flex items-center gap-3 p-2 pr-4 font-semibold transition-colors duration-500 ${skin.box}`}
+            className={`k-quad flex items-center gap-2 p-2 pr-3 font-semibold transition-colors duration-500 sm:gap-3 sm:pr-4 ${skin.box}`}
             aria-label={`${started ? "Resume" : "Play"} music while you browse: ${title}`}
             title={`${started ? "Resume" : "Play"}: ${title}`}
           >
             <span className={`grid h-10 w-10 shrink-0 place-items-center k-quad-shape ${skin.btn}`}>
               <FaPlay className="translate-x-[1px]" />
             </span>
+            {/* Phones: a music note so it isn't mistaken for a video's play button */}
+            <FaMusic className="sm:hidden" aria-hidden="true" />
             <span className="hidden max-w-[13rem] flex-col text-left leading-tight sm:flex">
               <span className={`text-[10px] font-semibold uppercase tracking-[0.2em] ${skin.sub}`}>{started ? "Paused" : "Listen while you browse"}</span>
               <span className="truncate text-sm font-semibold">{title}</span>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaArrowRight, FaPlay } from "react-icons/fa";
@@ -6,10 +6,13 @@ import { Reveal, SectionHeading } from "../motion";
 import VideoPlayer from "../VideoPlayer";
 import { youTubeThumb } from "../../utils/youtube";
 import { SoundBars } from "./Ornaments";
+import useAutoScroll from "../../hooks/useAutoScroll";
 
 const VideosSection = ({ videos = [] }) => {
   const [active, setActive] = useState(0);
+  const rowRef = useRef(null);
   const playlist = videos.slice(0, 6);
+  useAutoScroll(rowRef, { interval: 3000, key: playlist.length });
   const current = playlist[active];
 
   return (
@@ -32,7 +35,8 @@ const VideosSection = ({ videos = [] }) => {
               <VideoPlayer video={current} />
             </Reveal>
 
-            <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-visible pb-2 [scrollbar-width:none]">
+            {/* On phones/tablets the row auto-slides so visitors see there are more videos (pauses when touched) */}
+            <div ref={rowRef} className="flex snap-x snap-mandatory lg:snap-none lg:flex-col gap-3 overflow-x-auto lg:overflow-visible pb-2 [scrollbar-width:none]">
               {playlist.map((v, i) => (
                 <motion.button
                   key={v.id}
@@ -41,7 +45,7 @@ const VideosSection = ({ videos = [] }) => {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.08 }}
-                  className={`k-quad group flex w-64 lg:w-auto shrink-0 gap-3 p-2.5 text-left ${
+                  className={`k-quad group flex w-64 lg:w-auto shrink-0 snap-center gap-3 p-2.5 text-left ${
                     i === active ? "bg-kamaru text-earth" : "bg-cream/5 hover:bg-cream/15"
                   }`}
                 >

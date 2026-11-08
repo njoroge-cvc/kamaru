@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
  * runs only while the row is on screen and never for reduced-motion users.
  * Returns the index of the child currently closest to the centre (for dots).
  */
-export default function useAutoScroll(ref, { interval = 3500 } = {}) {
+export default function useAutoScroll(ref, { interval = 3500, key } = {}) {
   const [active, setActive] = useState(0);
 
   useEffect(() => {
@@ -52,7 +52,8 @@ export default function useAutoScroll(ref, { interval = 3500 } = {}) {
       row.removeEventListener("scroll", onScroll);
       ["touchstart", "pointerdown", "wheel", "mouseenter"].forEach((ev) => row.removeEventListener(ev, pause));
     };
-  }, [ref, interval]);
+  // `key` (e.g. the item count) restarts it once content that loads later has appeared
+  }, [ref, interval, key]);
 
   return active;
 }

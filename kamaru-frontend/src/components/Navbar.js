@@ -183,11 +183,11 @@ const FullMenu = ({ open, onClose, logo, token, isAdmin, onLogout }) => {
 
 // Navbar colours follow the section beneath it, always contrasting with it
 const NAV_TONES = {
-  // At the very top of the page the bar is white; the brand's black wordmark variant keeps the logo legible
+  // On the white and cream bars the logo is shown all-black: its white parts (mic, "CHALLENGE") would vanish otherwise
   top: { bg: "#FFFFFF", stripe: "#D57500", text: "text-earth", link: "text-earth/80 hover:text-earth hover:bg-earth/5", active: "bg-earth text-cream", join: "bg-kamaru text-earth hover:bg-kamaru-light", more: "text-ochre", logo: "brightness-0" },
   light: { bg: "#2B1A10", stripe: "#D57500", text: "text-cream", link: "text-cream/85 hover:text-cream hover:bg-cream/10", active: "bg-kamaru text-earth", join: "bg-kamaru text-earth hover:bg-kamaru-light", more: "text-bead-gold", logo: "" },
   dark: { bg: "#D57500", stripe: "#2B1A10", text: "text-earth", link: "text-earth/85 hover:text-earth hover:bg-earth/10", active: "bg-earth text-kamaru", join: "bg-earth text-kamaru hover:bg-earth-700", more: "text-earth", logo: "brightness-0" },
-  accent: { bg: "#FBF3E8", stripe: "#2B1A10", text: "text-earth", link: "text-earth/80 hover:text-earth hover:bg-earth/10", active: "bg-earth text-cream", join: "bg-kamaru text-earth hover:bg-kamaru-light", more: "text-ochre", logo: "" },
+  accent: { bg: "#FBF3E8", stripe: "#2B1A10", text: "text-earth", link: "text-earth/80 hover:text-earth hover:bg-earth/10", active: "bg-earth text-cream", join: "bg-kamaru text-earth hover:bg-kamaru-light", more: "text-ochre", logo: "brightness-0" },
 };
 
 const Navbar = () => {

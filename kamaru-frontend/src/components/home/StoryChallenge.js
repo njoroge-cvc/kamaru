@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaFeatherAlt, FaDrum, FaMicrophoneAlt, FaArrowRight, FaTrophy } from "react-icons/fa";
 import { CountUp, Reveal, SectionHeading, Stagger, StaggerItem } from "../motion";
-import { CATEGORIES, PRIZES } from "../../content/story";
+import { CATEGORIES, PRIZES, SEASONS_HELD } from "../../content/story";
 import { SoundBars } from "./Ornaments";
 import { kk } from "../Kikuyu";
 
@@ -99,29 +99,50 @@ const StoryChallenge = () => (
   </section>
 );
 
-/** Live numbers: shown on the homepage below the videos. */
+/** Live numbers, with a plain-language line for each: shown on the homepage below the videos. */
 export const StatsBand = ({ stats }) => {
   const items = stats
     ? [
-        { label: "Contestants", value: stats.total_participants },
-        { label: "Community members", value: stats.total_users },
-        { label: "Moments captured", value: stats.total_gallery_items },
-        { label: "Performance videos", value: stats.total_videos },
+        { label: "Contestants", note: "performers who have entered the Challenge", value: stats.total_participants, to: "/register/participant" },
+        { label: "Community members", note: "people who have joined this site", value: stats.total_users, to: "/join" },
+        { label: "Moments captured", note: "photos in our gallery", value: stats.total_gallery_items, to: "/gallery" },
+        { label: "Performance videos", note: "performances you can watch", value: stats.total_videos, to: "/videos" },
       ].filter((s) => s.value > 0)
     : [];
   if (!items.length) return null;
   return (
     <section className="bg-kamaru">
-      <Stagger className="container mx-auto grid grid-cols-2 gap-6 px-5 py-16 md:grid-cols-4 md:px-8">
-        {items.map((s, i) => (
-          <StaggerItem key={s.label} className={`k-cut-strong p-6 ${i % 2 ? "bg-earth text-cream" : "bg-cream text-earth"}`}>
-            <p className="font-display text-5xl md:text-6xl font-black">
-              <CountUp to={s.value || 0} suffix="+" />
-            </p>
-            <p className="mt-1 font-medium opacity-80">{s.label}</p>
-          </StaggerItem>
-        ))}
-      </Stagger>
+      <div className="container mx-auto px-5 py-20 md:px-8">
+        <SectionHeading
+          align="left"
+          eyebrow="Kamaru in numbers"
+          title="The Challenge so far"
+          intro={`Since 2024, across ${SEASONS_HELD} seasons in Ndeiya. These numbers update as new contestants, members, photos and videos arrive.`}
+          className="[&_p]:!text-earth"
+        />
+        <Stagger className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {items.map((s, i) => (
+            <StaggerItem key={s.label} className="h-full">
+              <Link
+                to={s.to}
+                className={`k-cut-strong group flex h-full flex-col p-7 text-center transition-transform hover:-translate-y-1 sm:text-left ${
+                  i % 2 ? "bg-earth text-cream" : "bg-cream text-earth"
+                }`}
+              >
+                <span className="font-display text-5xl md:text-6xl">
+                  <CountUp to={s.value || 0} suffix="+" />
+                </span>
+                <span className="mt-3 font-display text-xl">{s.label}</span>
+                <span className="mt-1 opacity-75">{s.note}</span>
+                <span className="mt-auto inline-flex items-center justify-center gap-2 pt-5 text-sm font-semibold opacity-80 group-hover:opacity-100 sm:justify-start">
+                  {s.to === "/register/participant" ? "Enter the Challenge" : s.to === "/join" ? "Join us" : "Have a look"}
+                  <FaArrowRight className="transition-transform group-hover:translate-x-1" />
+                </span>
+              </Link>
+            </StaggerItem>
+          ))}
+        </Stagger>
+      </div>
     </section>
   );
 };
